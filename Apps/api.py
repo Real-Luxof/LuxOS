@@ -597,6 +597,7 @@ def reachableindex(liste, index):
 # - Engine -
 
 # Image Type -
+# Kinda required if you wanna use colors with the Display() command
 class createimage(string='Stn', foreorback = "Fore", color='LIGHTBLACK', internal='S'):
     def __init__(self, string, foreorback, color, internal):
         self.character = string
