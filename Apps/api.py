@@ -597,8 +597,52 @@ def reachableindex(liste, index):
 # - Engine -
 
 # Image Type -
-def createimage(string='Stn', foreorback = "Fore", color='LIGHTBLACK'):
+class createimage(string='Stn', foreorback = "Fore", color='LIGHTBLACK', internal='S'):
+    def __init__(self, string, foreorback, color, internal):
+        self.character = string
+        self.color = color
+        self.internal = internal
+        if str.lower(foreorback) == "Fore":
+            match str.lower(color):
+                case "white": self.color = colorama.Fore.WHITE
+                case "black": self.color = colorama.Fore.BLACK
+                case "blue": self.color = colorama.Fore.BLUE
+                case "cyan": self.color = colorama.Fore.CYAN
+                case "green": self.color = colorama.Fore.GREEN
+                case "lightblack": self.color = colorama.Fore.LIGHTBLACK_EX
+                case "lightblue": self.color = colorama.Fore.LIGHTBLUE_EX
+                case "lightcyan": self.color = colorama.Fore.LIGHTCYAN_EX
+                case "lightgreen": self.color = colorama.Fore.LIGHTGREEN_EX
+                case "lightmagenta": self.color = colorama.Fore.LIGHTMAGENTA_EX
+                case "lightred": self.color = colorama.Fore.LIGHTRED_EX
+                case "lightwhite": self.color = colorama.Fore.LIGHTWHITE_EX
+                case "lightyellow": self.color = colorama.Fore.LIGHTYELLOW_EX
+                case "red": self.color = colorama.Fore.RED
+                case "magenta": self.color = colorama.Fore.MAGENTA
+                case "yellow": self.color = colorama.Fore.YELLOW
+        elif str.lower(foreorback) == "back":
+            match str.lower(color):
+                case "white": self.color = colorama.Back.WHITE
+                case "black": self.color = colorama.Back.BLACK
+                case "blue": self.color = colorama.Back.BLUE
+                case "cyan": self.color = colorama.Back.CYAN
+                case "green": self.color = colorama.Back.GREEN
+                case "lightblack": self.color = colorama.Back.LIGHTBLACK_EX
+                case "lightblue": self.color = colorama.Back.LIGHTBLUE_EX
+                case "lightcyan": self.color = colorama.Back.LIGHTCYAN_EX
+                case "lightgreen": self.color = colorama.Back.LIGHTGREEN_EX
+                case "lightmagenta": self.color = colorama.Back.LIGHTMAGENTA_EX
+                case "lightred": self.color = colorama.Back.LIGHTRED_EX
+                case "lightwhite": self.color = colorama.Back.LIGHTWHITE_EX
+                case "lightyellow": self.color = colorama.Back.LIGHTYELLOW_EX
+                case "red": self.color = colorama.Back.RED
+                case "magenta": self.color = colorama.Back.MAGENTA
+                case "yellow": self.color = colorama.Back.YELLOW
     
+    def __str__(self, internal):
+        if internal == True: return self.internal
+        else: return self.character
+
 
 # Playing audio -
 def playaudiothread(file, loop):
@@ -732,7 +776,7 @@ class inventory:
 # Player
 class player:
     type = "player"
-    def __init__(self, character=createimage('Player', 'YELLOW'), health=100, armor=0, attack=5, defense=5, speed=1, position=[2,2], inventory=inventory()):
+    def __init__(self, character=createimage('Player', 'Fore' 'YELLOW', 'Player'), health=100, armor=0, attack=5, defense=5, speed=1, position=[2,2], inventory=inventory()):
         self.character = character
         self.health = health
         self.armor = armor
