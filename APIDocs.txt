@@ -1,0 +1,199 @@
+I heard you wanted a Documentation for api.py.
+Well, here you go.
+
+First off, you should write "from api import *" in the beginning of your
+app, or else you will type "api." before every function of the api.
+
+Second, nothing.
+
+Here are the API's non-legacy functions.
+
+- Misceallanous -
+
+clear() -
+    Clears the screen.
+
+wait(time) -
+    NUMBERS: time
+
+    This function takes a number (time).
+    Pauses the thread for the inputed time in seconds.
+
+calculate(number1, operator, number2) -
+    NUMBERS: number1, number2
+    STIRNGS: operator
+
+    This function takes two numbers (number1 and number2) and an operator
+    (operator) as arguments. The operator must be one of these:
+        +, -, *, x, %, /
+    And it will work.
+
+- Variable Checking -
+
+isint(string) -
+    STRINGS: string
+
+    This function takes a string.
+    Returns True if it contains only integers.
+    Returns False otherwise.
+
+islist(variable) -
+    VARIABLES: variable
+
+    This function takes any variable.
+    Returns True if the type of the variable is a list.
+    Returns False otherwise.
+
+isstring(variable) -
+    VARIABLES: variable
+
+    This function takes any variable.
+    Returns True if the type of the variable is a string.
+    Returns False otherwise.
+
+isoperator(string) -
+    STRINGS: string
+
+    This function takes a string.
+    Returns True if it contains ONLY one of these letters:
+        +, -, *, x, %, /
+    Returns False otherwise.
+
+ismore(list, index) -
+    NUMBERS: index
+    LIST: list
+
+    This function takes a list (list) and a number (index).
+    Returns True if the index in the list is reachable.
+    Returns False otherwise.
+
+- 2D ASCII Art Game Engine -
+
+display(listoflists) -
+    MINIMUM HEIGHT: 1
+    MINIMUM WIDTH: 1
+
+    This function takes a list of lists (you can call it a bunch of rows)
+    and prints the lists contents out without a space. It can support any
+    height and any width.
+
+    - The lists in the one list are the height,
+    their contents are the width. -
+
+    the number of lists you put in the one list you are sending to this
+    function determines the height of the display you want to create.
+    Here's an example of how to use this function:
+
+        Air = "Air"
+        Plr = "Plr"
+        Drt = "Drt"
+
+        list1 = [Air,Air,Air]
+        list2 = [Air,Plr,Air]
+        list3 = [Drt,Drt,Drt]
+        list4 = [Drt,Drt,Drt]
+        fulldisplay = [list1,list2,list3,list4]
+
+        display(fulldisplay)
+
+    This code would output something like this to the console:
+
+        AirAirAir
+        AirPlrAir
+        DrtDrtDrt
+        DrtDrtDrt
+    
+    It should even work with color-coded text. Have fun!
+
+playerpos(listoflists, playervariable):
+    VARIABLES: playervariable
+    LISTS: listoflists
+
+    This function requires a "listoflists" (For its definition, look at
+    the display() function) and the player character.
+
+    This function takes the inputs and spits out a list, the first one
+    containing the Y Axis of the Player, and the last one containing the X
+    Axis of the player.
+
+    This is an example of how to use this function:
+
+    Air = "Air"
+    Drt = "Drt"
+    Plr = "Plr"
+
+    A = [Air,Air,Air]
+    B = [Air,Plr,Air]
+    C = [Drt,Drt,Drt]
+    fullspace = [A,B,C]
+
+    playerposition = playerpos(fullspace,Plr)
+
+    # Playerposition[0] is the X coordinates of the Player character.
+    # Playerposition[1] is the Y coordinates of the Player character.
+
+    X = playerposition[0]
+    Y = playerposition[1]
+
+    You could optionally do this:
+
+    Y = playerposition[0]
+    Z = fullspace[Y]
+    X = Z[X]
+
+    # Now X points to the exact X Axis of the Player inside the Y Axis.
+    # Z is just made to refer to the Y Axis of fullspace.
+
+moveplayer(listoflists, playervariable, direction, blocks, passableobjects, replacingentity, teleport?):
+    VARIABLES: playervariable, replacingentity
+    LISTS: listoflists, passableobjects
+    STRINGS: direction
+    NUMBERS: blocks
+    BOOLEANS: teleport?
+
+    Explanation for the inputs:
+
+    listoflists -
+        For its defintion, look at its definition from the display()
+        function.
+    
+    playervariable -
+        For its definition, look at its definition from the playerpos()
+        function.
+    
+    direction -
+        The direction the player will move in. It can be any of these,
+        regardless of capitalization:
+            To go up: "W", "U", "Up"
+            To go left: "A", "L", "Left"
+            To go down: "S", "D", "Down"
+            To go right: "D", "R", "Right"
+                                                                         |
+    blocks -
+        How many blocks the player will go through relative to the player.
+    
+    passableobjects -
+        The blocks that the player can pass through or teleport into.
+    
+    replacingentity -
+        What will be left in the space after the player departs from its
+        original space.
+    
+    teleport? -
+        If the player should teleport to the target block (in this case
+        the engine will check if ONLY the target block is in the list of
+        passable objects and nothing in-between) or not (in this case
+        the engine will check the blocks between the player and the target
+        block)
+    
+    Moves the player any number of blocks in the specified direction.
+
+    Returns a list.
+    Index 0: the listoflists after the moving of the player.
+    Index 1 is a list with the position of the player after moving it.
+        Index 0: The X coordinates of the player character.
+        Index 1: The Y coordinates of the player character.
+    
+    P.S.: the Y levels in the listoflists should ALWAYS be top-
+    to-bottom, e.g. listoflists[0] being the highest point of the game
+    world while listoflists[-1] is the lowest point of the game world.
