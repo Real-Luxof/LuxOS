@@ -108,18 +108,13 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, structures, oreconf
         try: nextplace = random.randint(above,below)
         except(ValueError): nextplace = 2
         
-        f = open("logs.txt", "a")
-        f.write(f"originalY: {originalY}\nnextplace: {nextplace}\nlimit[0]: {limit[0]}\nlimit[1]: {limit[1]}\ni: {i}\nwidth: {width}\nabove: {above}\nbelow: {below}\n\n")
         if X < width - 1:
             if nextplace == 1: # If nextplace is equal to 1, the block placed in the next X coord's Y coord will be higher than the last X coord block's Y coord.
-                f.write("Up.\n\n")
                 originalY -= 1
                 X += 1
             elif nextplace == 2: # If nextplace is equal to 2, the block placed in the next X coord's Y coord will be the same as the last X coord block's Y coord.
-                f.write("Middle.\n\n")
                 X += 1
             elif nextplace == 3 : # If nextplace is equal to 3, the block placed in the next X coord's Y coord will be lower than the last X coord block's Y coord.
-                f.write("Down.\n\n")
                 originalY += 1
                 X += 1
             Y = originalY # Set Y to the top solid block.
