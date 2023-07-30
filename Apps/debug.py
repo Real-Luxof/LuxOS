@@ -123,7 +123,6 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, structures, oreconf
                 # If nextplace = 3, go down a block.
                 # Otherwise select a different value for nextplace.
                 # Then start generating blocks from the top to the bottom."
-        f.close()
         toplayer.append([originalY, X])
     
     # Ore and Structure Generation
