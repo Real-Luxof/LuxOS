@@ -203,7 +203,8 @@ def error(errorcode):
 # Display at ANY height and ANY width, But without spaces.
 # Only takes 12 lines without the processcolor() function.
 # The processcolor() function takes 34 lines.
-# Takes 46 lines in total.
+# Takes 46 lines excluding empty lines and lines with just a comment in them.
+# Oh yeah, and processcolor() exists because I can't just colorama.userinputground.userinputcolor.
 
 def processcolor(color, foreorback):
     match str.lower(foreorback):
@@ -242,17 +243,25 @@ def processcolor(color, foreorback):
 
 def display(todisplay, colors={}): # The function takes a list of lists (let's call it X).
     buffer = " " # Makes the variable "buffer".
+
     for n in todisplay: # Checks every list in X.
+
         previousi = None # Sets the previous i for use in a new line.
         for i in n: # Checks every item in that list.
+
             if i != previousi or previousi == None: # Checks if i is identical to previousi.
                 buffer = buffer + processcolor(colors[i][0], colors[i][1]) + colors[i][2] # If it is, change the color.
+
             elif i == previousi: # Checks if i is NOT identical to previousi.
                 buffer = buffer + colors[i][2] # If it isn't, then don't change the color.
+
             previousi = i # Updates previousi.
-        buffer = buffer + Style.RESET_ALL + "\n" # Adds a newline to the buffer.
-    print(buffer) # Prints the variable "buffer".
+
         # Now it moves on to the next list in X.
+
+        buffer = buffer + "\n" # Adds a newline to the buffer.
+    buffer = buffer + Style.RESET_ALL # Reset the style
+    print(buffer) # Prints the variable "buffer".
 
 # Object Defining -
 

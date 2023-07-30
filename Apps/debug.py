@@ -27,12 +27,12 @@ colors = {
     "Air": ["lightblue", "back", "  "],
     "Grs": ["green", "back", "  "],
     "Drt": ["yellow", "back", "  "],
-    "Stn": ["green", "back", "  "],
-    "Bdr": ["green", "back", "  "],
+    "Stn": ["lightblack", "back", "  "],
+    "Bdr": ["lightwhite", "back", "  "],
     "Leaf": ["green", "back", "  "],
-    "Logg": ["green", "back", "  "],
-    "I_ore": ["green", "back", "  "],
-    "L_ore": ["green", "back", "  "]
+    "Logg": ["lightyellow", "back", "  "],
+    "I_ore": ["white", "back", "  "],
+    "L_ore": ["blue", "back", "  "]
 }
 structures = {
     "tree": {
@@ -168,5 +168,5 @@ import os
 space = generate(width, height, config, Air, Stn, Bdr, limit=limit, oreconfig=oreconfig, structures=structures)
 while True:
     display(space,colors)
-    time.sleep(1/15)
-    os.system('cls')
+    time.sleep(1/20)
+    os.system("cls")
