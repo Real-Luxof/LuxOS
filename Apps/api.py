@@ -4,12 +4,12 @@ import time
 import os
 import random
 from threading import Thread, Event
-try: import colorama
-except(ModuleNotFoundError): os.system("pip install colorama"); import colorama
 try: import pyaudio
 except(ModuleNotFoundError): os.system("pip install pyaudio"); import pyaudio
 try: import wave
 except(ModuleNotFoundError): os.system("pip install wave"); import wave
+try: from colorama import Back, Fore, Style
+except(ModuleNotFoundError): os.system("pip install colorama"); from colorama import Back, Fore, Style
 
 # - Misceallanous -
 
@@ -132,54 +132,6 @@ def reachableindex(liste, index):
 
 # - Engine -
 
-# Image Type -
-class createimage(string='Stn', foreorback = "Fore", color='LIGHTBLACK', internal='S'):
-    def __init__(self, string, foreorback, color, internal):
-        self.character = string
-        self.color = color
-        self.internal = internal
-        if str.lower(foreorback) == "Fore":
-            match str.lower(color):
-                case "white": self.color = colorama.Fore.WHITE
-                case "black": self.color = colorama.Fore.BLACK
-                case "blue": self.color = colorama.Fore.BLUE
-                case "cyan": self.color = colorama.Fore.CYAN
-                case "green": self.color = colorama.Fore.GREEN
-                case "lightblack": self.color = colorama.Fore.LIGHTBLACK_EX
-                case "lightblue": self.color = colorama.Fore.LIGHTBLUE_EX
-                case "lightcyan": self.color = colorama.Fore.LIGHTCYAN_EX
-                case "lightgreen": self.color = colorama.Fore.LIGHTGREEN_EX
-                case "lightmagenta": self.color = colorama.Fore.LIGHTMAGENTA_EX
-                case "lightred": self.color = colorama.Fore.LIGHTRED_EX
-                case "lightwhite": self.color = colorama.Fore.LIGHTWHITE_EX
-                case "lightyellow": self.color = colorama.Fore.LIGHTYELLOW_EX
-                case "red": self.color = colorama.Fore.RED
-                case "magenta": self.color = colorama.Fore.MAGENTA
-                case "yellow": self.color = colorama.Fore.YELLOW
-        elif str.lower(foreorback) == "back":
-            match str.lower(color):
-                case "white": self.color = colorama.Back.WHITE
-                case "black": self.color = colorama.Back.BLACK
-                case "blue": self.color = colorama.Back.BLUE
-                case "cyan": self.color = colorama.Back.CYAN
-                case "green": self.color = colorama.Back.GREEN
-                case "lightblack": self.color = colorama.Back.LIGHTBLACK_EX
-                case "lightblue": self.color = colorama.Back.LIGHTBLUE_EX
-                case "lightcyan": self.color = colorama.Back.LIGHTCYAN_EX
-                case "lightgreen": self.color = colorama.Back.LIGHTGREEN_EX
-                case "lightmagenta": self.color = colorama.Back.LIGHTMAGENTA_EX
-                case "lightred": self.color = colorama.Back.LIGHTRED_EX
-                case "lightwhite": self.color = colorama.Back.LIGHTWHITE_EX
-                case "lightyellow": self.color = colorama.Back.LIGHTYELLOW_EX
-                case "red": self.color = colorama.Back.RED
-                case "magenta": self.color = colorama.Back.MAGENTA
-                case "yellow": self.color = colorama.Back.YELLOW
-    
-    def __str__(self, internal):
-        if internal == True: return self.internal
-        else: return self.character
-
-
 # Playing audio -
 def playaudiothread(file, loop):
     if type(file) == str and type(loop) == bool:
@@ -248,15 +200,57 @@ def error(errorcode):
 
 # Display -
     
-# Display at ANY height and ANY width. But without spaces.
-# Only takes 7 lines.
+# Display at ANY height and ANY width, But without spaces.
+# Only takes 12 lines without the processcolor() function.
+# The processcolor() function takes 34 lines.
+# Takes 46 lines in total.
 
-def display(todisplay): # The function takes a list of lists (let's call it X).
-    buffer = "" # Makes the variable "buffer".
+def processcolor(color, foreorback):
+    match str.lower(foreorback):
+        case "fore": 
+            match str.lower(color):
+                case "black": return Fore.BLACK
+                case "blue": return Fore.BLUE
+                case "cyan": return Fore.CYAN
+                case "green": return Fore.GREEN
+                case "lightblack": return Fore.LIGHTBLACK_EX
+                case "lightblue": return Fore.LIGHTBLUE_EX
+                case "lightcyan": return Fore.LIGHTCYAN_EX
+                case "lightgreen": return Fore.LIGHTGREEN_EX
+                case "lightred": return Fore.LIGHTRED_EX
+                case "lightwhite": return Fore.LIGHTYELLOW_EX
+                case "magenta": return Fore.MAGENTA
+                case "red": return Fore.RED
+                case "white": return Fore.WHITE
+                case "yellow": return Fore.YELLOW
+        case "back":
+            match str.lower(color):
+                case "black": return Back.BLACK
+                case "blue": return Back.BLUE
+                case "cyan": return Back.CYAN
+                case "green": return Back.GREEN
+                case "lightblack": return Back.LIGHTBLACK_EX
+                case "lightblue": return Back.LIGHTBLUE_EX
+                case "lightcyan": return Back.LIGHTCYAN_EX
+                case "lightgreen": return Back.LIGHTGREEN_EX
+                case "lightred": return Back.LIGHTRED_EX
+                case "lightwhite": return Back.LIGHTYELLOW_EX
+                case "magenta": return Back.MAGENTA
+                case "red": return Back.RED
+                case "white": return Back.WHITE
+                case "yellow": return Back.YELLOW
+
+def display(todisplay, colors={}): # The function takes a list of lists (let's call it X).
+    buffer = " " # Makes the variable "buffer".
     for n in todisplay: # Checks every list in X.
+        previousi = None # Sets the previous i for use in a new line.
         for i in n: # Checks every item in that list.
-            buffer = buffer + i # Adds the currently selected item to the variable "buffer".
-        buffer = buffer + "\n" # Adds a newline to the buffer.
+            if i != previousi or previousi == None: # Checks if i is identical to previousi.
+                buffer = buffer + processcolor(colors[i][0], colors[i][1]) + colors[i][2] # If it is, change the color.
+            elif i == previousi: # Checks if i is NOT identical to previousi.
+                buffer = buffer + colors[i][2] # If it isn't, then don't change the color.
+            previousi = i # Updates previousi.
+        buffer = buffer + Style.RESET_ALL + "\n" # Adds a newline to the buffer.
     print(buffer) # Prints the variable "buffer".
         # Now it moves on to the next list in X.
 
@@ -312,8 +306,9 @@ class inventory:
 # Player
 class player:
     type = "player"
-    def __init__(self, character=createimage('Player', 'Fore' 'YELLOW', 'Player'), health=100, armor=0, attack=5, defense=5, speed=1, position=[2,2], inventory=inventory()):
+    def __init__(self, character='[ ]', maxhealth=100, health=100, armor=0, attack=5, defense=5, speed=1, position=[2,2], inventory=inventory(), death=False, deffactor=0.5, armfactor=0.5):
         self.character = character
+        self.maxhealth = health
         self.health = health
         self.armor = armor
         self.attack = attack
@@ -322,6 +317,9 @@ class player:
         self.inventory = inventory
         self.X = position[0]
         self.Y = position[1]
+        self.death = death
+        self.deffactor = deffactor
+        self.armfactor = armfactor
         
     def __str__(self):
         return self.character
@@ -384,18 +382,25 @@ class player:
             Z[X] = currentpos
             data[Y] = Z
         return data
-
-    # Apply Gravity to the player
-    def applygravity(self, direction, data, replace, blocks):
-        # Load Variables
-        
-        i = 0
-        
-        # Main
+    
+    # Hurt the player
+    def hurt(self, amount):
+        self.health -= (amount - (self.defense / self.deffactor) - (self.armor / self.armfactor))
+        if self.health <= 0:
+            self.death = True
+            return self.death
+        else: return self.death
+    
+    # Heal the player
+    def heal(self, amount):
+        self.health += amount
+        if self.health > self.maxhealth:
+            while self.health > self.maxhealth:
+                self.health -= 1
 
 # Block
 class block:
-    def __init__(self, image=createimage(), passable=False, breakablebytool=True, droptoolvalue=2, drop=createimage('Stone'), falling=False):
+    def __init__(self, image='Stn', passable=False, breakablebytool=True, droptoolvalue=2, drop='Stone', falling=False):
         self.image = image
         self.passable = passable
         self.breakablebytool = breakablebytool
@@ -508,5 +513,3 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig):
     # FINALLY return the world.
     
     return list(space.values())
-
->>>>>>> 78e17e3 (Syncing VS Code with Git)
