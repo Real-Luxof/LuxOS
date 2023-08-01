@@ -3,11 +3,9 @@
 import time
 import os
 import random
-from threading import Thread, Event
-try: import pyaudio
-except(ModuleNotFoundError): os.system("pip install pyaudio"); import pyaudio
-try: import wave
-except(ModuleNotFoundError): os.system("pip install wave"); import wave
+import multiprocessing
+try: from playsound import playsound
+except(ModuleNotFoundError): os.system("pip install playsound"); from playsound import playsound
 try: from colorama import Back, Fore, Style
 except(ModuleNotFoundError): os.system("pip install colorama"); from colorama import Back, Fore, Style
 
@@ -133,38 +131,14 @@ def reachableindex(liste, index):
 # - Engine -
 
 # Playing audio -
-def playaudiothread(file, loop):
-    if type(file) == str and type(loop) == bool:
-        CHUNK = 1024
-        try:
-            with wave.open("Music/" + file, 'rb') as wf:
-                # Instantiate PyAudio and initialize PortAudio system resources (1)
-                p = pyaudio.PyAudio()
+def playaudio(filename):
+    path = os.path.join(os.path.dirname(__file__), filename)
+    p = multiprocessing.Process(target=playsound, args=[path])
+    p.start()
+    return p
 
-                # Open stream (2)
-                stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                                channels=wf.getnchannels(),
-                                rate=wf.getframerate(),
-                                output=True)
-
-                # Play samples from the wave file (3)
-                while len(data := wf.readframes(CHUNK)):  # Requires Python 3.8+ for :=
-                    stream.write(data)
-
-                # Close stream (4)
-                stream.close()
-
-                # Release PortAudio system resources (5)
-                p.terminate()
-        except(FileNotFoundError): return "AUDIO FNFE"
-    elif type(file) == str and type(loop) != bool: return "AUDIO LUP " + str(type(loop)) + error("AUDIO LUP " + str(type(loop)))
-    elif type(file) != str and type(loop) == bool: return "AUDIO FILE" + str(type(file)) + error('AUDIO FILE' + str(type(file)))
-    else: return "AUDIO LUP " + str(type(loop)) + error("AUDIO LUP " + str(type(loop))) + "\nAUDIO FILE" + str(type(file)) + error('AUDIO FILE' + str(type(file)))
-
-def playaudio(file, loop):
-    global audiothread
-    audiothread = Thread(target=playaudiothread, args=[file,loop])
-    audiothread.start()
+def stopcurrentaudio(p):
+    p.terminate()
 
 # Error finding -
 def processvalue(value):
@@ -522,3 +496,5 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig):
     # FINALLY return the world.
     
     return list(space.values())
+
+multiprocessing.freeze_support()
