@@ -1,10 +1,6 @@
 from api import display
 from api import reachableindex
-try: from colorama import init, Back
-except(ModuleNotFoundError): import os; os.system("pip install colorama"); from colorama import init, Back; os.system("cls")
 import random
-
-init(convert=True)
 
 width = 84
 height = 47

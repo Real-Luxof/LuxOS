@@ -6,8 +6,8 @@ import random
 import multiprocessing
 try: from playsound import playsound
 except(ModuleNotFoundError): os.system("pip install playsound"); from playsound import playsound
-try: from colorama import Back, Fore, Style
-except(ModuleNotFoundError): os.system("pip install colorama"); from colorama import Back, Fore, Style
+try: from colorama import init, Back, Fore, Style
+except(ModuleNotFoundError): os.system("pip install colorama"); from colorama import init, Back, Fore, Style
 
 # - Misceallanous -
 
@@ -175,9 +175,9 @@ def error(errorcode):
 # Display -
     
 # Display at ANY height and ANY width, But without spaces.
-# Only takes 12 lines without the processcolor() function.
+# Only takes 19 lines without the processcolor() function.
 # The processcolor() function takes 34 lines.
-# Takes 46 lines excluding empty lines and lines with just a comment in them.
+# Takes 53 lines excluding empty lines and lines with just a comment in them.
 # Oh yeah, and processcolor() exists because I can't just colorama.userinputground.userinputcolor.
 
 def processcolor(color, foreorback):
@@ -216,25 +216,32 @@ def processcolor(color, foreorback):
                 case "yellow": return Back.YELLOW
 
 def display(todisplay, colors={}): # The function takes a list of lists (let's call it X).
-    buffer = " " # Makes the variable "buffer".
+    if colors != {}:
+        buffer = "" # Makes the variable "buffer".
 
-    for n in todisplay: # Checks every list in X.
+        for n in todisplay: # Checks every list in X.
 
-        previousi = None # Sets the previous i for use in a new line.
-        for i in n: # Checks every item in that list.
+            previousi = None # Sets the previous i for use in a new line.
+            for i in n: # Checks every item in that list.
 
-            if i != previousi or previousi == None: # Checks if i is identical to previousi.
-                buffer = buffer + processcolor(colors[i][0], colors[i][1]) + colors[i][2] # If it is, change the color.
+                if i != previousi or previousi == None: # Checks if i is identical to previousi.
+                    buffer = buffer + processcolor(colors[i][0], colors[i][1]) + colors[i][2] # If it is, change the color.
 
-            elif i == previousi: # Checks if i is NOT identical to previousi.
-                buffer = buffer + colors[i][2] # If it isn't, then don't change the color.
+                elif i == previousi: # Checks if i is NOT identical to previousi.
+                    buffer = buffer + colors[i][2] # If it isn't, then don't change the color.
 
-            previousi = i # Updates previousi.
+                previousi = i # Updates previousi.
 
-        # Now it moves on to the next list in X.
+            # Now it moves on to the next list in X.
 
-        buffer = buffer + "\n" # Adds a newline to the buffer.
-    buffer = buffer + Style.RESET_ALL # Reset the style
+            buffer = buffer + "\n" # Adds a newline to the buffer.
+        buffer = buffer + Style.RESET_ALL # Reset the style
+    else:
+        buffer = "" # Makes the variable "buffer".
+        for n in todisplay: # Checks every list in X.
+            for i in n: # Checks every item in that list.
+                buffer += i # Adds that item to "buffer".
+            buffer += "\n" # Adds a newline to "buffer".
     print(buffer) # Prints the variable "buffer".
 
 # Object Defining -
@@ -396,7 +403,7 @@ class block:
 
 # World Generation -
 
-def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig):
+def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig, originalY=None):
     # Air = literally the air, the thing that permeates open spaces.
     
     # Stn = the thing that permeates closed spaces deep underground.
@@ -420,7 +427,8 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig):
     # Add blocks (finally use config)
     
     # The top solid layer of the world
-    originalY = random.randint(limit[0],limit[1])
+    if originalY == None or originalY < limit[0] or originalY > limit[1]:
+        originalY = random.randint(limit[0],limit[1])
     # Y is used for config, to generate things belwo the top layer.
     Y = originalY
     # X is used for.. Well, X.
@@ -454,18 +462,13 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig):
         try: nextplace = random.randint(above,below)
         except(ValueError): nextplace = 2
         
-        f = open("logs.txt", "a")
-        f.write(f"originalY: {originalY}\nnextplace: {nextplace}\nlimit[0]: {limit[0]}\nlimit[1]: {limit[1]}\ni: {i}\nwidth: {width}\nabove: {above}\nbelow: {below}\n\n")
         if X < width - 1:
             if nextplace == 1: # If nextplace is equal to 1, the block placed in the next X coord's Y coord will be higher than the last X coord block's Y coord.
-                f.write("Up.\n\n")
                 originalY -= 1
                 X += 1
             elif nextplace == 2: # If nextplace is equal to 2, the block placed in the next X coord's Y coord will be the same as the last X coord block's Y coord.
-                f.write("Middle.\n\n")
                 X += 1
             elif nextplace == 3 : # If nextplace is equal to 3, the block placed in the next X coord's Y coord will be lower than the last X coord block's Y coord.
-                f.write("Down.\n\n")
                 originalY += 1
                 X += 1
             Y = originalY # Set Y to the top solid block.
@@ -474,7 +477,6 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig):
                 # If nextplace = 3, go down a block.
                 # Otherwise select a different value for nextplace.
                 # Then start generating blocks from the top to the bottom."
-        f.close()
         toplayer.append([originalY, X])
     
     # Ore and Structure Generation
@@ -498,3 +500,4 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig):
     return list(space.values())
 
 multiprocessing.freeze_support()
+init(convert=True)
