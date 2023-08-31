@@ -6,10 +6,21 @@ import random
 import multiprocessing
 try: from playsound import playsound
 except(ModuleNotFoundError): os.system("pip install playsound"); from playsound import playsound
-try: from colorama import init, Back, Fore, Style
-except(ModuleNotFoundError): os.system("pip install colorama"); from colorama import init, Back, Fore, Style
+try: import keyboard
+except(ModuleNotFoundError): os.system("pip install keyboard"); import keyboard
+try: import pygame
+except(ModuleNotFoundError): os.system("pip install pygame"); import pygame
 
 # - Misceallanous -
+
+# Install a module
+
+def install(module):
+    os.system("pip install " + module)
+# Delete a file
+
+def delete(file):
+    os.system("del gamedata\\" + file)
 
 # Calculate when the operator is a string.
 
@@ -30,6 +41,9 @@ def calculate(num1, op, num2):
         return num1 / num2
 
 # Clear Screen.
+
+def fullclear():
+    os.system("cls")
 
 def clear():
     os.system("cls")
@@ -53,31 +67,6 @@ def clear():
 def wait(secs):
     time.sleep(secs)
 
-# Display with a height of 5 (maximum of 20) and with any width. But without spaces.
-# LEGACY FEATURE
-
-def don5ns(list1, list2, list3, list4, list5, list6 = None, list7 = None, list8 = None, list9 = None, list10 = None, list11 = None, list12 = None, list13 = None, list14 = None, list15 = None, list16 = None, list17 = None, list18 = None, list19 = None, list20 = None):
-    alllists = []
-    alluncompiledlists = [list1,list2,list3,list4,list5,list6,list7,list8,list9,list10,list11,list12,list13,list14,list15,list16,list17,list18,list19,list20]
-    for i in alluncompiledlists:
-        if i != None:
-            alllists.append(i)
-    for alist in alllists:
-        for i in alist:
-            print(i, end="")
-        print("")
-
-# - Inventory management -
-
-# Inventory Find and Replace.
-
-def inventoryFR(inventory, item):
-    if type(inventory) == list:
-        try:
-            inventory[inventory.index(" ")] = item
-            return inventory
-        except(ValueError): return False
-
 # - The Checkers -
 
 # Check if one list has an element of the other.
@@ -92,6 +81,7 @@ def comparelist(list1, list2):
 def ismore(list, index):
     try: list[index]; return True
     except(IndexError): return False
+    except(KeyError): return False
 
 # Check if the string is a math operator.
 
@@ -117,13 +107,18 @@ def isstring(var):
 def isint(string):
     try: int(string); return True
     except(ValueError): return False
+    except(TypeError): return False
 
 # Check if an index in a list or dictionary exists.
 
 def reachableindex(liste, index):
     if type(liste) == list:
-        if index < len(liste): return True
-        else: return False
+        if isint(index):
+            if index < len(liste): return True
+            else: return False
+        else:
+            try: liste.index(index); return True
+            except(ValueError): return False
     else:
         try: liste[index]; return True
         except(KeyError): return False
@@ -131,143 +126,101 @@ def reachableindex(liste, index):
 # - Engine -
 
 # Playing audio -
-def playaudio(filename):
-    path = os.path.join(os.path.dirname(__file__), filename)
+def playaudio(relativepathtofile):
+    path = f"{os.path.dirname(__file__)}{relativepathtofile}"
     p = multiprocessing.Process(target=playsound, args=[path])
     p.start()
     return p
-
-def stopcurrentaudio(p):
-    p.terminate()
-
-# Error finding -
-def processvalue(value):
-    match value:
-        case "INT": return "INTEGER"
-        case "FLT": return "FLOAT"
-        case "STR": return "STRING"
-        case "BUL": return "BOOLEAN"
-        case "LST": return "LIST"
-        case "TPL": return "TUPLE"
-        case "DCT": return "DICTIONARY"
-        case "ABV": return "above"
-        case "EQ": return "equal to"
-        case "BLO": return "below"
-        case "<class 'str'>": return "STRING"
-        case "<class 'float'>": return "FLOAT"
-        case "<class 'int'>": return "INTEGER"
-        case "<class 'bool'>": return "BOOLEAN"
-        case "<case 'list'>": return "LIST"
-        case "<case 'tuple'>": return "TUPLE"
-        case "<case 'dict'>": return "DICTIONARY"
-
-def error(errorcode):
-    code = errorcode.split()
-    if code[0] == "INV2":
-        return ": Expected INTEGER, received " + processvalue(code[1]) + "."
-    elif code[0] == "INV1":
-        return ": Expected INTEGER above 0, received " + code[1] + "."
-    elif code[0] == "AUDIO":
-        if code[1] == "FILE": return ": Expected STRING, received " + code[2]
-        elif code[1] == "LUP": return ": Expected BOOL, received " + code[2]
-        elif code[1] == "FNFE": return ": Could not find file."
+# To stop it, use p.terminate()
 
 # Display -
-    
-# Display at ANY height and ANY width, But without spaces.
-# Only takes 19 lines without the processcolor() function.
-# The processcolor() function takes 34 lines.
-# Takes 53 lines excluding empty lines and lines with just a comment in them.
-# Oh yeah, and processcolor() exists because I can't just colorama.userinputground.userinputcolor.
 
-def processcolor(color, foreorback):
-    match str.lower(foreorback):
-        case "fore": 
-            match str.lower(color):
-                case "black": return Fore.BLACK
-                case "blue": return Fore.BLUE
-                case "cyan": return Fore.CYAN
-                case "green": return Fore.GREEN
-                case "lightblack": return Fore.LIGHTBLACK_EX
-                case "lightblue": return Fore.LIGHTBLUE_EX
-                case "lightcyan": return Fore.LIGHTCYAN_EX
-                case "lightgreen": return Fore.LIGHTGREEN_EX
-                case "lightred": return Fore.LIGHTRED_EX
-                case "lightwhite": return Fore.LIGHTYELLOW_EX
-                case "magenta": return Fore.MAGENTA
-                case "red": return Fore.RED
-                case "white": return Fore.WHITE
-                case "yellow": return Fore.YELLOW
-        case "back":
-            match str.lower(color):
-                case "black": return Back.BLACK
-                case "blue": return Back.BLUE
-                case "cyan": return Back.CYAN
-                case "green": return Back.GREEN
-                case "lightblack": return Back.LIGHTBLACK_EX
-                case "lightblue": return Back.LIGHTBLUE_EX
-                case "lightcyan": return Back.LIGHTCYAN_EX
-                case "lightgreen": return Back.LIGHTGREEN_EX
-                case "lightred": return Back.LIGHTRED_EX
-                case "lightwhite": return Back.LIGHTYELLOW_EX
-                case "magenta": return Back.MAGENTA
-                case "red": return Back.RED
-                case "white": return Back.WHITE
-                case "yellow": return Back.YELLOW
+# Set Display Resolution among some other things.
+def setres(width=800, height=600, flags=0, depth=0, display=0, vsync=0):
+    # Width = width of the screen
+    # Height = height of the screen
+    # I honestly have no idea what flags, depth, and display do.
+    # Vsync = Vertical Sync, prevents screen tearing but does take additional GPU resources.
+    screen = pygame.display.set_mode((width, height), flags, depth, display, vsync)
+    return screen
 
-def display(todisplay, colors={}): # The function takes a list of lists (let's call it X).
-    if colors != {}:
-        buffer = "" # Makes the variable "buffer".
+# The Main Function that puts shit on screen.
+# Takes only 8 lines excluding empty lines or lines with only comment in them.
 
-        for n in todisplay: # Checks every list in X.
+def display(screen, newscreen, widthofeachblock, heightofeachblock):
+    # screen is obtained through api.setres
+    # newscreen is a list of lists, with higher indexes more at the bottom of the map.
+    # widthofeachblock and heightofeachblock are self-explanatory.
+    Y = 0
+    for Ycoord in newscreen: # Selects a list from newscreen.
+        X = 0 # Set X to 0 for use in a new Y axis.
+        for Xcoord in Ycoord: # Selects a block in said list.
+            # Draws the block on screen,
+            # with it's color being what comes from its __repr__ function,
+            # the rest is self-explanatory.
+            Xcoord = str(Xcoord) # Turn it into <type 'str'> instead of <class 'api.block'> or smth
+            pygame.draw.rect(screen, pygame.Color(Xcoord), (X, Y, widthofeachblock, heightofeachblock))
+            X += widthofeachblock # Add widthofeachblock to X. Why?
+            # or else it would try to overlap all the colors on the same X coordinates.
+        Y += heightofeachblock # Add heightofeachblock to Y. Why?
+        # or else it would try to overlap all the colors on the same Y coordinates.
+    pygame.display.flip() # Display the newly drawn screen on the window.
 
-            previousi = None # Sets the previous i for use in a new line.
-            for i in n: # Checks every item in that list.
+# Keyboard functions
 
-                if i != previousi or previousi == None: # Checks if i is identical to previousi.
-                    buffer = buffer + processcolor(colors[i][0], colors[i][1]) + colors[i][2] # If it is, change the color.
+# Any key -
+# Pause thread until any key is pressed.
+def wait_any(): return keyboard.read_key()
 
-                elif i == previousi: # Checks if i is NOT identical to previousi.
-                    buffer = buffer + colors[i][2] # If it isn't, then don't change the color.
+# Check if any key is currently being pressed.
+def ispressed_any(): return keyboard.on_press()
 
-                previousi = i # Updates previousi.
+# Check if any key has just been released.
+def isreleased_any(): return keyboard.on_release()
 
-            # Now it moves on to the next list in X.
+# Specific key -
+# Pause thread until key is pressed.
+def wait_key(key): return keyboard.wait(key)
 
-            buffer = buffer + "\n" # Adds a newline to the buffer.
-        buffer = buffer + Style.RESET_ALL # Reset the style
-    else:
-        buffer = "" # Makes the variable "buffer".
-        for n in todisplay: # Checks every list in X.
-            for i in n: # Checks every item in that list.
-                buffer += i # Adds that item to "buffer".
-            buffer += "\n" # Adds a newline to "buffer".
-    print(buffer) # Prints the variable "buffer".
+# Check if key is currently being pressed.
+def ispressed_key(key): return keyboard.is_pressed(key)
 
-# Object Defining -
+# Check if key has just been released.
+def isreleased_key(key): return keyboard.on_release_key(key)
+
+# The X -
+# Check if the user clicked the X on the top-right of the window.
+def isquit():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: return True
+    return False
+
+# Objects -
 
 # Inventory
 class inventory:
-    type = "player inventory"
-    def __init__(self, slotnum=10, slotdata=None):
-        if type(slotnum) == int:
+    def __init__(self, slotnum=10, slotdata=None, selectedindex=None):
+        if type(slotnum) == int or isint(slotnum):
+            slotnum = int(slotnum)
             if slotnum > 0:
                 slots = {}
-                i = 0
-                while i < slotnum:
-                    if slotdata != None and ismore(slotdata, i):
-                        slots["slot" + str(i + 1)] = slotdata[i]
-                    else:
+                if slotdata != None:
+                    for i in slotdata:
+                        slots["slot" + str(list(slotdata.values()).index(i))] = slotdata[i]
+                for i in range(slotnum):
+                    if ismore(slots, "slot" + str(i + 1)) == False:
                         slots["slot" + str(i + 1)] = None
-                    i += 1
                 self.slots = slots
-                self.selected = slots["slot1"]
-            else: return "INV1 " + str(slotnum) + error("INV1" + str(slotnum))
-        else:
-            return "INV2"
-    
-    def __str__(self):
-        return self.slots
+                if selectedindex == None:
+                    self.selected = slots["slot1"]
+                    self.selectedindex = "slot1"
+                else:
+                    self.selected = slots[selectedindex]
+                    self.selectedindex = selectedindex
+                self.slotnum = slotnum
+                self.type = "inventory"
+            else: raise ValueError
+        else: raise TypeError
     
     # Select a slot in the inventory for use
     def select(self, selectnum):
@@ -283,6 +236,7 @@ class inventory:
     def shrinkinventory(self, slotnum):
         for i in range(slotnum):
             del list(self.slots)[-1]
+            self.slotnum -= 1
     
     # Make the inventory bigger
     def enlargeinventory(self, slotnum, slotdata):
@@ -292,86 +246,95 @@ class inventory:
         for i in range(slotnum):
             self.slots["slot" + str(current + 1)] = slotdata[i]
             current += 1
+            self.slotnum += 1
+
+    def __str__(self):
+        return self.slots
 
 # Player
 class player:
-    type = "player"
-    def __init__(self, character='[ ]', maxhealth=100, health=100, armor=0, attack=5, defense=5, speed=1, position=[2,2], inventory=inventory(), death=False, deffactor=0.5, armfactor=0.5):
+    def __init__(self, character='Plr', maxhealth=100, health=100, armor=0, attack=5, defense=5, speed=1, position=[2,2], inventory=inventory(), dead=False, deffactor=0.5, atkfactor=0.5):
         self.character = character
-        self.maxhealth = health
+        self.maxhealth = maxhealth
         self.health = health
         self.armor = armor
         self.attack = attack
         self.defense = defense
         self.speed = speed
         self.inventory = inventory
-        self.X = position[0]
-        self.Y = position[1]
-        self.death = death
+        self.position = position
+        self.dead = dead
         self.deffactor = deffactor
-        self.armfactor = armfactor
-        
-    def __str__(self):
-        return self.character
+        self.atkfactor = atkfactor
+        self.type = "player"
+        self.passable = False
 
     # Move the player
-    def move(self, direction, data, replace):
+    def move(self, direction, data, replace, speed=None):
         
         # Load -
         
-        X = self.X
-        Y = self.Y
-        Z = data[Y]
-
+        X = self.position[0]
+        Y = self.position[1]
+        Z = data[self.position[1]]
+        final2 = replace
         direction = str.lower(direction)
         aboveplayer = None
         westplayer = None
         belowplayer = None
         eastplayer = None
         currentpos = Z[X]
-        if reachableindex(data, Y - 1):
-            aboveplayer = data[Y - 1]
-        if reachableindex(Z, X - 1):
-            westplayer = Z[X - 1]
-        if reachableindex(data, Y + 1):
-            belowplayer = data[Y + 1]
-        if reachableindex(Z, X + 1):
-            eastplayer = Z[X + 1]
-        i = 0
+        if reachableindex(data, self.position[1] - 1):
+            aboveplayer = data[self.position[1] - 1]
+        if reachableindex(Z, self.position[0] + 1):
+            westplayer = Z[self.position[0] + 1]
+        if reachableindex(data, self.position[1] + 1):
+            belowplayer = data[self.position[1] + 1]
+        if reachableindex(Z, self.position[0] - 1):
+            eastplayer = Z[self.position[0] - 1]
+        if speed != None:
+            usespeed = speed
+        else:
+            usespeed = self.speed
         
         # Main -
         
-        while i < self.speed:
+        for i in range(usespeed):
             if direction == "w" and aboveplayer != None:
-                if aboveplayer[X].passable:
-                    self.Y -= 1
+                if aboveplayer[self.position[0]].passable:
+                    self.position[1] -= 1
                     currentpos = replace
-                    aboveplayer[X] = self.character
+                    final2 = aboveplayer[self.position[0]]
+                    aboveplayer[self.position[0]] = self
             elif direction == "a" and westplayer != None:
                 if westplayer.passable:
-                    self.X -= 1
+                    self.position[0] -= 1
                     currentpos = replace
-                    westplayer = self.character
-            elif direction == "s" and belowplayer[X] != None:
-                if belowplayer[X].passable:
-                    self.Y += 1
+                    final2 = westplayer
+                    westplayer = self
+            elif direction == "s" and belowplayer[self.position[0]] != None:
+                if belowplayer[self.position[0]].passable:
+                    self.position[1] += 1
                     currentpos = replace
-                    belowplayer[X] = self.character
+                    final2 = belowplayer[self.position[0]]
+                    belowplayer[self.position[0]] = self
             elif direction == "d" and eastplayer != None:
                 if eastplayer.passable:
-                    self.X += 1
+                    self.position[0] += 1
                     currentpos = replace
-                    eastplayer = self.character
-            i += 1
+                    final2 = eastplayer
+                    eastplayer = self
+            
+        # Return -
+            
+            data[self.position[1]] = Z
+            data[self.position[1] + 1] = belowplayer
+            data[self.position[1] - 1] = aboveplayer
+            Z[self.position[0] - 1] = eastplayer
+            Z[self.position[0] + 1] = westplayer
+            Z[self.position[0]] = currentpos
         
-            # Return -
-            data[Y + 1] = belowplayer
-            data[Y - 1] = aboveplayer
-            Z[X + 1] = eastplayer
-            Z[X - 1] = westplayer
-            Z[X] = currentpos
-            data[Y] = Z
-        return data
+        return [data, final2]
     
     # Hurt the player
     def hurt(self, amount):
@@ -387,48 +350,65 @@ class player:
         if self.health > self.maxhealth:
             while self.health > self.maxhealth:
                 self.health -= 1
+    
+    def __str__(self):
+        return self.character
+    
+    def __repr__(self):
+        return self.character
 
 # Block
 class block:
-    def __init__(self, image='Stn', passable=False, breakablebytool=True, droptoolvalue=2, drop='Stone', falling=False):
+    def __init__(self, image='  ', passable=False, breakablebytool=True, droptoolvalue=2, drop='Stone', falling=False):
         self.image = image
         self.passable = passable
         self.breakablebytool = breakablebytool
         self.droptoolvalue = droptoolvalue
         self.drop = drop
         self.falling = falling
+        self.type = "block"
     
     def __str__(self):
         return self.image
+    
+    def __repr__(self):
+        return self.image
+#        return f"api.block(image=\"{self.image}\",passable={str(self.passable)},breakablebytool={str(self.breakablebytool)},droptoolvalue={str(self.droptoolvalue)},drop={str(self.drop)},falling={str(self.falling)})"
 
 # World Generation -
 
-def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig, originalY=None):
+def generate(width=30,height=20,config=None,Air="Air",Stn="Stn",Bedrock="Bdr",limit=None,oreconfig=None,originalYY=None,oreeverywhere=False):
     # Air = literally the air, the thing that permeates open spaces.
-    
-    # Stn = the thing that permeates closed spaces deep underground.
-    
+    # Stn = the thing that permeates closed spaces underground.
     # Bedrock = the bottom layer of the world that separates the player from the void.
-    
     # config = Layers, e.g. if there should be two layers of dirt at the top then one layer of Crs, then
     # config should be [Drt,Drt,Crs] provided Drt and Crs are variables.
     
-    # Create the initial space
+    # - Create the initial space -
     
-    space = {}
-    for i in range(height):
-        space["y" + str(i + 1)] = []
-        for n in range(width): # Do it for every X
-            if i != range(height)[-1]: # And Y value
-                space["y" + str(i + 1)].append(Air) # Add Air if the Y value is not the last one (if the selected Y value is not at the bottom)
-            else:
-                space["y" + str(i + 1)].append(Bedrock) # Add Bedrock otherwise
+    space = {} # Create the empty world
+    for ylevel in range(height): # For every number in height,
+        space["y" + str(ylevel + 1)] = [] # Add a new Ylevel in "space",
+        for xlevel in range(width): # And then for every number in width,
+            if ylevel != range(height)[-1]: # If it's not at bedrock,
+                space["y" + str(ylevel + 1)].append(Air) # Then put Air there.
+            else: # If it is at bedrock level,
+                space["y" + str(ylevel + 1)].append(Bedrock) # Put Bedrock there.
 
-    # Add blocks (finally use config)
+    # - Add blocks (finally use config) -
+    
+    # Check limit
+    if limit == None:
+        limit = [5, height + 1]
     
     # The top solid layer of the world
-    if originalY == None or originalY < limit[0] or originalY > limit[1]:
-        originalY = random.randint(limit[0],limit[1])
+    if originalYY == None:
+        if limit[0] == 0:
+            originalY = random.randint(limit[0] + 1,limit[1])
+        else:
+            originalY = random.randint(limit[0],limit[1])
+    else:
+        originalY = originalYY
     # Y is used for config, to generate things belwo the top layer.
     Y = originalY
     # X is used for.. Well, X.
@@ -482,22 +462,42 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, oreconfig, original
     # Ore and Structure Generation
 
     # Ore -
-    for n in toplayer:
-        for i in list(oreconfig.values()):
+    if oreconfig != None:
+        if oreeverywhere == False:
+            for n in toplayer:
+                for i in list(oreconfig.values()):
             
-            spawnchance = random.randint(1, i[0])
+                    spawnchance = random.randint(1, i[0])
 
-            if spawnchance == 1 and reachableindex(space,"y" + str(n[0] + i[1])):
-                area = random.randint(i[1], i[2])
-                carea = n[0] + area
-                if carea >= height:
-                    while carea >= height: carea -= 1
-                space["y" + str(carea)][n[1]] = list(oreconfig.values())[list(oreconfig.values()).index(i)][3]
-                
+                    if spawnchance == 1 and reachableindex(space,"y" + str(n[0] + i[1])):
+                        area = random.randint(i[1], i[2])
+                        carea = n[0] + area
+                        if carea >= height:
+                            while carea >= height: carea -= 1
+                        if reachableindex(list(oreconfig.values()), i):
+                            space["y" + str(carea)][n[1]] = list(oreconfig.values())[list(oreconfig.values()).index(i)][3]
+        elif oreeverywhere == True:
+            spacevalues = list(space.values())
+            for x in spacevalues:
+                for n in x:
+                    for i in list(oreconfig.values()):
+                        spawnchance = random.randint(1, i[0])
+
+                        if spawnchance == 1:
+                            area = random.randint(i[1], i[2])
+                            if reachableindex(space,"y" + str(area)):
+                                area
+                                if area >= height:
+                                    while area >= height: carea -= 1
+                                if reachableindex(x, n):
+                                    space["y" + str(area)][x.index(n)] = list(oreconfig.values())[list(oreconfig.values()).index(i)][3]
     
     # FINALLY return the world.
     
     return list(space.values())
 
+# Initiate an actual window to display stuff.
+def initiatewindow():
+    pygame.init()
+
 multiprocessing.freeze_support()
-init(convert=True)

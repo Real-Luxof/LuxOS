@@ -16,11 +16,18 @@ input("This is an even more advanced version of iliketomoveit.\nSame rules, but 
 
 # Loading Colors
 
-Drt = simple_colors.green("Drt")
-Stn = simple_colors.black("Stn", "bright")
-Air = simple_colors.cyan("Air")
-Plr = simple_colors.yellow("[ ]")
-bedrock = simple_colors.black("Bdr", "bright")
+Drt = "Drt"
+Stn = "Stn"
+Air = "Air"
+Plr = "Plr"
+bedrock = "Bdr"
+colors = {
+    "Drt": ["green", "fore", "Drt"],
+	"Stn": ["lightblack", "fore", "Stn"],
+	"Air": ["cyan", "fore", "Air"],
+	"Plr": ["yellow", "fore", "[ ]"],
+	"Bdr": ["white", "fore", "Bdr"]
+}
 oreconfig = {}
 Log = ("Log")
 
@@ -70,14 +77,6 @@ impassableobj = [Drt, Stn, Log]
 debugmode = False
 allvariables = ["quitorhelp:", quitorhelp, "inventorycoms:", inventorycoms, "movementcoms:", movementcoms, "allsets:", allsets, "X:", X, "maxleft:", maxleft, "maxright:", maxright, "Y:", Y, "Y[X]:", Y[X], "playerpos:", playerpos, "inventory:", inventory, "equippeditem:", equippeditem]
 
-# Functions
-
-def makescreen():
-	while True:
-		api.wait(1)
-		api.clear()
-		api.don5ns(A, B, C, D, E)
-
 def ismore(list, index):
     try:
         list[index]
@@ -97,7 +96,7 @@ def isint(string):
 while True:
 
 	api.clear()
-	api.display(allsets)
+	api.display(allsets, colors)
 
 	Pinput = input("> ")
 
@@ -236,11 +235,11 @@ while True:
 			Y = belowplayerpos
 	# Update Playerpos
 	playerpos = allsets.index(Y, 0, allsets.index(allsets[-1]))
-	if playerpos != J:
+	if playerpos != allsets[-1]:
 		belowplayerpos = allsets[playerpos + 1]
 	else:
 		belowplayerpos = None
-	if playerpos != A:
+	if playerpos != allsets[0]:
 		aboveplayerpos = allsets[playerpos - 1]
 	else:
 		aboveplayerpos = None

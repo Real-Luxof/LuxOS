@@ -40,11 +40,15 @@ def terminal():
 
     # Music command
     
-    os.system("cd Apps")
-    os.system("mkdir music")
-    os.system("cd..")
+    if os.path.exists("music") == False:
+        os.system("md music")
     global p
     p = None
+    
+    # Game Data Folder
+    
+    if os.path.exists("Apps\\gamedata") == False:
+        os.system("md Apps\\gamedata")
     
     # Loading Ended
     
@@ -89,7 +93,7 @@ def terminal():
                 elif cinput[0] == listofcommands[3]:
                     downloaded = os.listdir("Apps/")
                     for i in downloaded:
-                        if i != "api.py" and i != "__pycache__":
+                        if i != "api.py" and i != "__pycache__" and i != "gamedata":
                             print(i.replace(".py", ""))
                     input("\nThat's all the apps you have.")
                     os.system("cls")
@@ -97,13 +101,13 @@ def terminal():
             # Music Command
                 
                 elif cinput[0] == listofcommands[4]:
-                    musicorno = input("Do you want to play music or stop the currently playing music? (Y/N) >")
+                    musicorno = input("Do you want to play music? (Y/N) > ")
                     if str.lower(musicorno).startswith("y") and p == None:
                         music = os.listdir("music")
                         n = 1
                         for i in music:
                             print(str(n) + ". " + i)
-                        selection = input("Select your music of choice (with the file extension) >")
+                        selection = input("Select your music of choice (with the file extension) > ")
                         p = api.playaudio(selection)
                     elif str.lower(musicorno).startswith("n") and p == None:
                         p.terminate()
@@ -143,6 +147,7 @@ def terminal():
                     downloaded = os.listdir("Apps/")
                     cinput[1] = cinput[1] + ".py"
                     if cinput[1] in downloaded:
+                        title()
                         os.system("py Apps/" + cinput[1])
                         input("\nThe App was executed. That's the result. Now go away by pressing Enter.")
                     else:

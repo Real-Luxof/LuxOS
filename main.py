@@ -5,6 +5,7 @@ def bootloader():
     from os import system
     from time import sleep as wait
     import sys
+    system("title [ LuxOS Bootloader ]")
     def typewriter(string):
         for char in string:
             print(char, end="")
@@ -32,6 +33,7 @@ def bootloader():
     import interface
     typewriter("           Loading...")
 
+    system("title [ LuxOS ]")
     interface.terminal()
 
 if __name__ == "__main__":

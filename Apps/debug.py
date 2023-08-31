@@ -2,8 +2,8 @@ from api import display
 from api import reachableindex
 import random
 
-width = 84
-height = 47
+width = 70
+height = 70
 Air = "Air"
 Grs = "Grs"
 Drt = "Drt"
@@ -32,19 +32,19 @@ colors = {
 }
 structures = {
     "tree": {
-        "struct": {
-            "y4": [Aire, Leaf, Leaf, Leaf, Aire],
-            "y3": [Leaf, Leaf, Leaf, Leaf, Leaf],
-            "y2": [Leaf, Leaf, Logg, Leaf, Leaf],
-            "y1": [Aire, Aire, Logg, Aire, Aire],
-            "y0": [Aire, Aire, Logg, Aire, Aire],
-        },
+        "struct": [
+            [Aire, Leaf, Leaf, Leaf, Aire],
+            [Leaf, Leaf, Leaf, Leaf, Leaf],
+            [Leaf, Leaf, Logg, Leaf, Leaf],
+            [Aire, Aire, Logg, Aire, Aire],
+            [Aire, Aire, Logg, Aire, Aire],
+        ],
         "spawnchance": 5,
         "ylevel": -1,
         "totalspace": [-4, 5]
     }
 }
-limit = [20, 30]
+limit = [1, 30]
 
 def generate(width,height, config, Air, Stn, Bedrock, limit, structures, oreconfig={}):
     # Air = literally the air, the thing that permeates open spaces.
@@ -138,24 +138,28 @@ def generate(width,height, config, Air, Stn, Bedrock, limit, structures, oreconf
                     space["y" + str(carea)][n[1]] = list(oreconfig.values())[list(oreconfig.values()).index(i)][3]
     
     # Structures -
-    for n in toplayer:
-        for i in list(structures.values()):
-            spawnchance = random.randint(1, i["spawnchance"])
-            totalspace = i["totalspace"]
+    '''
+    for currenttop in toplayer:
+        for structuredata in list(structures.values()):
+            spawnchance = random.randint(1, structuredata["spawnchance"])
+            totalspace = structuredata["totalspace"]
             
             if True:
                 if spawnchance == 1 and reachableindex(space["y" + str(n[0])], totalspace[1] + 1):
-                    for x in reversed(i["struct"].values()):
-                        for y in x:
-                            if reachableindex(space["y" + str(n[0] - i["ylevel"])], X + x.index(y)):
-                                space["y" + str(n[0] - i["ylevel"])][X + x.index(y)] = y
-    
+                    for structure in reversed(structuredata["struct"]):
+                        for structlayer in structure:
+                            for structblock in structlayer:
+                                input(int(n[1]) + structlayer.index(structblock))
+                                space["y" + str(currenttop[0] + structuredata["ylevel"])][int(n[1]) + structlayer.index(structblock)] = structblock
+    '''
     # FINALLY return the world.
     
     return list(space.values())
 import time
 import os
 space = generate(width, height, config, Air, Stn, Bdr, limit=limit, oreconfig=oreconfig, structures=structures)
+display(space,colors)
+input()
 while True:
     display(space,colors)
     time.sleep(1/20)
