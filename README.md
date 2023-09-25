@@ -6,4 +6,4 @@ It cannot edit files or stuff like that, though I do plan to add those.
 The Music command is incomplete, it will not work.
 
 Please only download it from https://programhub.survivalist260.repl.co/ rather than this place for a fresh setup.
-Planning to compile all libraries to executable so anyone with a Windows machine can run it.
+Probably never gonna compile all libraries to .exe files so anyone with a Windows machine can run it.
