@@ -5,7 +5,7 @@ import os
 import random
 import multiprocessing
 try: from playsound import playsound
-except(ModuleNotFoundError): os.system("pip install playsound"); from playsound import playsound
+except(ModuleNotFoundError): os.system("pip install wheel"); os.system("pip install playsound"); from playsound import playsound
 try: import keyboard
 except(ModuleNotFoundError): os.system("pip install keyboard"); import keyboard
 try: import pygame
@@ -131,7 +131,13 @@ def playaudio(relativepathtofile):
     p = multiprocessing.Process(target=playsound, args=[path])
     p.start()
     return p
-# To stop it, use p.terminate()
+
+def playaudio(absolutepathtofile):
+    p = multiprocessing.Process(target=playsound, args=[absolutepathtofile])
+    p.start()
+    return p
+
+# To stop the audio, use p.terminate()
 
 # Display -
 
@@ -154,12 +160,12 @@ def display(screen, newscreen, widthofeachblock, heightofeachblock):
     Y = 0
     for Ycoord in newscreen: # Selects a list from newscreen.
         X = 0 # Set X to 0 for use in a new Y axis.
-        for Xcoord in Ycoord: # Selects a block in said list.
+        for block in Ycoord: # Selects a block in said list.
             # Draws the block on screen,
             # with it's color being what comes from its __repr__ function,
             # the rest is self-explanatory.
-            Xcoord = str(Xcoord) # Turn it into <type 'str'> instead of <class 'api.block'> or smth
-            pygame.draw.rect(screen, pygame.Color(Xcoord), (X, Y, widthofeachblock, heightofeachblock))
+            block = str(block) # Turn it into <type 'str'> instead of <class 'api.block'> or smth
+            pygame.draw.rect(screen, pygame.Color(block), (X, Y, widthofeachblock, heightofeachblock))
             X += widthofeachblock # Add widthofeachblock to X. Why?
             # or else it would try to overlap all the colors on the same X coordinates.
         Y += heightofeachblock # Add heightofeachblock to Y. Why?
@@ -274,65 +280,40 @@ class player:
         
         # Load -
         
-        X = self.position[0]
-        Y = self.position[1]
-        Z = data[self.position[1]]
-        final2 = replace
         direction = str.lower(direction)
-        aboveplayer = None
-        westplayer = None
-        belowplayer = None
-        eastplayer = None
-        currentpos = Z[X]
-        if reachableindex(data, self.position[1] - 1):
-            aboveplayer = data[self.position[1] - 1]
-        if reachableindex(Z, self.position[0] + 1):
-            westplayer = Z[self.position[0] + 1]
-        if reachableindex(data, self.position[1] + 1):
-            belowplayer = data[self.position[1] + 1]
-        if reachableindex(Z, self.position[0] - 1):
-            eastplayer = Z[self.position[0] - 1]
-        if speed != None:
-            usespeed = speed
-        else:
-            usespeed = self.speed
+        final2 = replace
+        if speed != None: usespeed = speed
+        else: usespeed = self.speed
         
         # Main -
         
         for i in range(usespeed):
-            if direction == "w" and aboveplayer != None:
-                if aboveplayer[self.position[0]].passable:
+            if direction == "w" and reachableindex(data, self.position[1] - 1):
+                if data[self.position[1] - 1][self.position[0]].passable:
+                    data[self.position[1]][self.position[0]] = replace
+                    final2 = data[self.position[1] - 1][self.position[0]]
+                    data[self.position[1] - 1][self.position[0]] = self
                     self.position[1] -= 1
-                    currentpos = replace
-                    final2 = aboveplayer[self.position[0]]
-                    aboveplayer[self.position[0]] = self
-            elif direction == "a" and westplayer != None:
-                if westplayer.passable:
+            elif direction == "a" and reachableindex(data[self.position[1]], self.position[0] - 1):
+                if data[self.position[1]][self.position[0] - 1].passable:
+                    data[self.position[1]][self.position[0]] = replace
+                    final2 = data[self.position[1]][self.position[0] - 1]
+                    data[self.position[1]][self.position[0] - 1] = self
                     self.position[0] -= 1
-                    currentpos = replace
-                    final2 = westplayer
-                    westplayer = self
-            elif direction == "s" and belowplayer[self.position[0]] != None:
-                if belowplayer[self.position[0]].passable:
+            elif direction == "s" and reachableindex(data, self.position[1] + 1):
+                if data[self.position[1] + 1][self.position[0]].passable:
+                    data[self.position[1]][self.position[0]] = replace
+                    final2 = data[self.position[1] + 1][self.position[0]]
+                    data[self.position[1] + 1][self.position[0]] = self
                     self.position[1] += 1
-                    currentpos = replace
-                    final2 = belowplayer[self.position[0]]
-                    belowplayer[self.position[0]] = self
-            elif direction == "d" and eastplayer != None:
-                if eastplayer.passable:
+            elif direction == "d" and reachableindex(data[self.position[1]], self.position[0] + 1):
+                if data[self.position[1]][self.position[0] + 1].passable:
+                    data[self.position[1]][self.position[0]] = replace
+                    final2 = data[self.position[1]][self.position[0] + 1]
+                    data[self.position[1]][self.position[0] + 1] = self
                     self.position[0] += 1
-                    currentpos = replace
-                    final2 = eastplayer
-                    eastplayer = self
             
         # Return -
-            
-            data[self.position[1]] = Z
-            data[self.position[1] + 1] = belowplayer
-            data[self.position[1] - 1] = aboveplayer
-            Z[self.position[0] - 1] = eastplayer
-            Z[self.position[0] + 1] = westplayer
-            Z[self.position[0]] = currentpos
         
         return [data, final2]
     
@@ -377,12 +358,15 @@ class block:
 
 # World Generation -
 
-def generate(width=30,height=20,config=None,Air="Air",Stn="Stn",Bedrock="Bdr",limit=None,oreconfig=None,originalYY=None,oreeverywhere=False):
+def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",limit=None,oreconfig=None,originalYY=None,oreeverywhere=False):
     # Air = literally the air, the thing that permeates open spaces.
     # Stn = the thing that permeates closed spaces underground.
     # Bedrock = the bottom layer of the world that separates the player from the void.
-    # config = Layers, e.g. if there should be two layers of dirt at the top then one layer of Crs, then
-    # config should be [Drt,Drt,Crs] provided Drt and Crs are variables.
+    # biomes = biomes, the first index should be the minimum size of the biome and the second should be the maximum size of the biome. For example:
+    # biomes = [
+    #    [10, 30, Grs, Grs, Drt, Drt],
+    #    [10, 30, Snd, Snd, Snd, Sndst]
+    #]
     
     # - Create the initial space -
     
@@ -395,7 +379,7 @@ def generate(width=30,height=20,config=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
             else: # If it is at bedrock level,
                 space["y" + str(ylevel + 1)].append(Bedrock) # Put Bedrock there.
 
-    # - Add blocks (finally use config) -
+    # - Add blocks (finally use biomes) -
     
     # Check limit
     if limit == None:
@@ -409,15 +393,26 @@ def generate(width=30,height=20,config=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
             originalY = random.randint(limit[0],limit[1])
     else:
         originalY = originalYY
-    # Y is used for config, to generate things belwo the top layer.
+    # Y is used for biomes, to generate things belwo the top layer.
     Y = originalY
     # X is used for.. Well, X.
     X = 0
     # Used later for structure and ore generation
     toplayer = []
     toplayer.append([originalY, X])
+    # Select the first biome
+    uncbiome = random.choice(biomes)
+    biome = []
+    for i in uncbiome:
+        biome.append(i)
+    minim = biome[0] # Set the minimum biome size
+    maxim = biome[1] # Set the maximum biome size
+    del biome[0] # Delete the minimum biome size FROM THE BIOME VARIABLE
+    del biome[0] # Delete the maximum biome size FROM THE BIOME VARIABLE
+    biomelength = 1 # Set the initial biome length to 1
+    internalmaximum = random.randint(minim, maxim) # Set a random internal maximum biome size FOR THIS BIOME ONLY. Allows for varying biome sizes.
     # First initial layer
-    space["y" + str(Y)][X] = config[0]
+    space["y" + str(Y)][X] = biome[0]
 
     for i in range(width): # Width has been chosen for 3. (1)
 
@@ -427,8 +422,8 @@ def generate(width=30,height=20,config=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
             elif Y >= height:
                 while Y >= height: Y-= 1 # If Y is somehow lower than or at the Bedrock layer, decrease it.
             if (i - 1) >= 0 and space["y" + str(Y)][X] != Bedrock: # If Y is not 0 and the currently selected Block isn't Bedrock.
-                if reachableindex(config, i - 1): space["y" + str(Y)][X] = config[i - 1] # If the config hasn't ran out, apply the latest layer.
-                elif reachableindex(config, i - 1) == False: space["y" + str(Y)][X] = Stn # Otherwise, may the block be Stone.
+                if reachableindex(biome, i - 1): space["y" + str(Y)][X] = biome[i - 1] # If the biome hasn't ran out, apply the latest layer.
+                elif reachableindex(biome, i - 1) == False: space["y" + str(Y)][X] = Stn # Otherwise, may the block be Stone.
                 if Y < height: Y += 1 # If Y is not at the Bedrock layer, increase it.
         # nextplace can be one of three values chosen randomly: 1, 2, and 3.
         # No matter what value nextplace is, X will always increase as long as it doesn't surpass width while doing so.
@@ -458,6 +453,20 @@ def generate(width=30,height=20,config=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
                 # Otherwise select a different value for nextplace.
                 # Then start generating blocks from the top to the bottom."
         toplayer.append([originalY, X])
+        biomelength += 1
+        # Determine if it's time to switch up the biome
+        if biomelength > internalmaximum:
+            # If so, set some variables to some stuff and pick a new biome
+            uncbiome = random.choice(biomes)
+            biome = []
+            for i in uncbiome:
+                biome.append(i)
+            minim = biome[0]
+            maxim = biome[1]
+            del biome[0]
+            del biome[0]
+            biomelength = 1
+            internalmaximum = random.randint(minim, maxim)
     
     # Ore and Structure Generation
 
@@ -486,7 +495,6 @@ def generate(width=30,height=20,config=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
                         if spawnchance == 1:
                             area = random.randint(i[1], i[2])
                             if reachableindex(space,"y" + str(area)):
-                                area
                                 if area >= height:
                                     while area >= height: carea -= 1
                                 if reachableindex(x, n):

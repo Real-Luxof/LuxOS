@@ -8,14 +8,18 @@ input("Yooo! wassup my man?\nHeard you wanted the newest version of LUX OS, and 
 # Deleting files to make space for new ones.
 os.system("del main.py") # Delete main.py aka the bootloader.
 os.system("del interface.py") # Delete interface.py aka the kernel.
-os.system("del APIDocs.txt") # Delete APIDocs.txt aka the Engine Manual.os.system("del Apps\\api.py") # Delete API.py aka the Engine.
+os.system("del Apps/api.py") # Delete api.py aka the Engine.
+os.system("del APIDocs.txt") # Delete APIDocs.txt aka the Engine Manual.
 
-site = "https://programhub.survivalist260.repl.co/static/"
+site = "https://programhub.survivalist260.repl.co/static/" # The site/URL from which to download system files from.
+
 
 urllib.request.urlretrieve(site + "LUXOS_MAIN.txt", "main.py") # Download the latest version of main.py aka the bootloader.
 urllib.request.urlretrieve(site + "LUXOS_INTERFACE.txt", "interface.py") # Download the latest version of interface.py aka the kernel.
 urllib.request.urlretrieve(site + "LUXOS_APIDOCS.txt", "APIDocs.txt") # Download the latest version of APIDocs.txt aka the Engine Manual.
 os.system("mkdir Apps") # Make the directory "Apps"
-urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps/api.py") # Download the latest version of API.py aka the Engine.
+os.system("md Apps/gamedata") # Make the directory "gamedata" inside "Apps"
+urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps/api.py") # Download the latest version of API.py aka the Engine to Apps.
+urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps/gamedata/api.py") # Download API.py to Apps/gamedata.
 
 print("Aight bro, peace!")

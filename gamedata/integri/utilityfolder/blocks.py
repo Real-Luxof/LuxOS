@@ -1,26 +1,4 @@
-import os
-import sys
-# Get the absolute path of the current file
-current_file_path = os.path.abspath(__file__)
-
-# Get the parent directory of the current file
-parent_dir = os.path.dirname(current_file_path)
-
-# Get the parent directory of the parent directory
-grandparent_dir = os.path.dirname(parent_dir)
-
-# Get the parent directory of the grandparent directory
-greatgrandparent_dir = os.path.dirname(grandparent_dir)
-
-# Get the parent directory of the greatgrandparent directory
-final_dir = os.path.dirname(greatgrandparent_dir)
-
-# Get the path to final_dir
-final_path = os.path.abspath(final_dir)
-
-sys.path.append(final_path)
-
-import api
+from ... import api
 
 # - Variables -
 print("Loading Variables..")
@@ -40,31 +18,61 @@ Col = api.block(image="#202020",passable=False,breakablebytool=True,droptoolvalu
 Irn = api.block(image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
 # Oreconfig
-print("Loading ore configurations..")
+print("Loading ore configuration..")
 
-global oreconfigabove # Declare oreconfigabove a global variable.
-oreconfigabove = { # oreconfigabove is used to define ore rarity and placement near the surface.
-    "Ironore": [20, 10, 40, Iro],
-    # Iron ore has a 1/20th (5%) chance of spawning on each Y level between 10 and 40.
+global oreconfig # Declare oreconfig a global variable.
+oreconfig = { # oreconfigabove is used to define ore rarity and placement near the surface.
+    "Ironore": [50, 10, 40, Iro],
+    # Iron ore has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block.
     # Its block is Iro.
-    "Coalore": [20, 20, 30, Col]
-    # Coal ore has a 1/20th (5%) chance of spawning on each Y level between 20 and 30.
+    "Coalore": [50, 20, 30, Col],
+    # Coal ore has a 1/50th (2%) chance of spawning between 20 and 30 blocks below the top solid block.
     # Its block is Col.
-}
-
-global oreconfigbelow # Declare oreconfigbelow a global variable.
-oreconfigbelow = { # oreconfigbelow is used to define ore rarity and placement below the surface level.
-    "Ironore": [10, 0, 30, Iro],
-    # Iron ore has a 1/10th (10%) chance of spawning on each Y level between 0 and 20.
+    
+    # Switching to deeper blocks.
+    
+    "Ironore1": [45, 40, 60, Iro],
+    # Iron ore has a 1/45th (2.2%) chance of spawning between 40 and 70 blocks below the top solid block.
     # Its block is Iro.
-    "Coalore": [8, 0, 30, Col]
-    # Coal ore has a 1/8th (12.5%) chance of spawning on each Y level between 0 and 30.
+    "Coalore1": [45, 30, 50, Col],
+    # Coal ore has a 1/45th (2.2%) chance of spawning between 30 and 70 blocks below the top solid block.
     # Its block is Col.
+    
+    # Just imagine this below every entry:
+    # "[x] has a 1/[index0] chance of spawning between [index1] and [index2] blocks below the top solid block.
+    # Its block is [index3]."
+    # I don't wanna continue commenting.
+    
+    "Ironore2": [35, 70, 100, Iro],
+    "Coalore2": [35, 70, 100, Col],
+    
+    "Ironore2": [30, 100, 200, Iro],
+    "Coalore2": [30, 100, 200, Col],
+    
+    "Ironore2": [20, 200, 350, Iro],
+    "Coalore2": [20, 200, 350, Col],
+    
+    "Ironore2": [15, 350, 450, Iro],
+    "Coalore2": [15, 350, 450, Col],
+    
+    "Ironore2": [10, 450, 99999999999999, Iro],
+    "Coalore2": [10, 450, 99999999999999, Col],
 }
 
 # Biome layers
 print("Loading biome layers..")
 
-desertlayers = [Snd,Snd,Snd,Snd,Snd,Snd,Snd] # Biome layers for the Desert biome.
-plainslayers = [Grs,Grs,Grs,Drt,Drt] # Biome layers for the Plains biome.
-allbiomes = [desertlayers,plainslayers]
+# Gonna do the oreconfig shenanigans with biomes.
+desert1 = [10, 30, Snd,Snd,Snd,Snd,Snd,Snd,Snd] # Biome layers for the Desert biome.
+plains1 = [10, 30, Grs,Grs,Grs,Drt,Drt] # Biome layers for the Plains biome.
+desert2 = [15,50,Snd,Snd,Snd,Snd,Snd,Snd]
+plains2 = [15,50,Grs,Grs,Grs,Drt,Drt]
+desert3 = [25,60,Snd,Snd,Snd,Snd,Snd,Snd]
+plains3 = [25,60,Grs,Grs,Grs,Drt,Drt]
+desert4 = [40,90,Snd,Snd,Snd,Snd,Snd,Snd]
+plains4 = [40,90,Grs,Grs,Grs,Drt,Drt]
+desert5 = [60,120,Snd,Snd,Snd,Snd,Snd,Snd]
+plains5 = [60,120,Grs,Grs,Grs,Drt,Drt]
+desert6 = [70,200,Snd,Snd,Snd,Snd,Snd,Snd]
+plains6 = [70,200,Grs,Grs,Grs,Drt,Drt]
+biomes = [desert1,plains1,desert2,plains2,desert3,plains3,desert4,plains4,desert5,plains5,desert6,plains6]

@@ -1,5 +1,25 @@
-import api
-block = api.block()
-block2 = api.block()
-list = [block, block2, block, block2]
-print(list[1] == block2)
+foo = [
+    ["foo","foo","foo","foo","foo","foo","foo","foo","foo","foo",],
+    ["foo","foo","foo","foo","foo","foo","foo","foo","foo","foo",],
+    ["foo","foo","foo","foo","foo","foo","foo","foo","foo","foo",],
+    ["foo","foo","foo","baa","foo","baa","foo","foo","foo","foo",],
+    ["foo","foo","foo","foo","bar","foo","foo","foo","foo","foo",],
+    ["foo","foo","foo","foo","foo","foo","foo","foo","foo","foo",],
+    ["foo","foo","foo","foo","foo","foo","foo","foo","foo","foo",],
+    ["foo","foo","foo","foo","foo","foo","foo","foo","foo","foo",],
+    ["foo","foo","foo","foo","foo","foo","foo","foo","foo","foo",],
+    ["foo","foo","foo","foo","foo","foo","foo","foo","foo","foo",]
+]
+foobar = [
+    [[],[],[]],
+    [[],[],[]],
+    [[],[],[]]
+]
+bary = 4
+barx = 4
+ycoord = 3
+xcoord = 3
+for i in range(len(foobar)):
+    for j in range(len(i)):
+        if foo[i][j] == "bar":
+            for n in (foo[i - 1], foo[i + 1])

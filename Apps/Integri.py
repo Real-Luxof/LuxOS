@@ -3,11 +3,6 @@
 # Import os. It is needed to check for and create folders, as well as to install modules.
 import os
 
-# Try to import colorama. If it's not available, try to install it and then import it.
-try: from colorama import Fore, Back, Style, init
-except(ModuleNotFoundError): api.install("colorama"); from colorama import Fore, Back, Style, init
-init()
-
 # Loading Bar
 l = "Loading." # Set l to "Loading."
 bar = "|          |" # Set bar to "|          |"
@@ -43,6 +38,12 @@ try: import api # Try to import it.
 except(ModuleNotFoundError): input("Couldn't find the engine, I'm gonna quit now! LUL."); quit
 # If the program can't for whatever reason, quit.
 
+# Try to import colorama. If it's not available, try to install it and then import it.
+print("Importing colorama..")
+try: from colorama import Fore, Back, Style, init
+except(ModuleNotFoundError): api.install("colorama"); from colorama import Fore, Back, Style, init
+init()
+
 # Import the import_module function from the importlib module
 print("Importing function: import_module from module: importlib")
 from importlib import import_module
@@ -50,6 +51,10 @@ from importlib import import_module
 # Import the Thread function from the threading module
 print("Importing function: Thread from module: threading")
 from threading import Thread
+
+# Import the ceil function from the math module
+print("Importing function: ceil from module: math")
+from math import ceil
 
 increment()
 increment()
@@ -170,29 +175,7 @@ if os.path.exists(integrifiles + "\\utilityfolder\\") == False:
 # Check the blocks file.
 print("Checking blocks file..")
 with open(integrifiles + "\\utilityfolder\\blocks.py", "w+") as f:
-    data = """import os
-import sys
-# Get the absolute path of the current file
-current_file_path = os.path.abspath(__file__)
-
-# Get the parent directory of the current file
-parent_dir = os.path.dirname(current_file_path)
-
-# Get the parent directory of the parent directory
-grandparent_dir = os.path.dirname(parent_dir)
-
-# Get the parent directory of the grandparent directory
-greatgrandparent_dir = os.path.dirname(grandparent_dir)
-
-# Get the parent directory of the greatgrandparent directory
-final_dir = os.path.dirname(greatgrandparent_dir)
-
-# Get the path to final_dir
-final_path = os.path.abspath(final_dir)
-
-sys.path.append(final_path)
-
-import api
+    data = """from ... import api
 
 # - Variables -
 print("Loading Variables..")
@@ -212,34 +195,64 @@ Col = api.block(image="#202020",passable=False,breakablebytool=True,droptoolvalu
 Irn = api.block(image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
 # Oreconfig
-print("Loading ore configurations..")
+print("Loading ore configuration..")
 
-global oreconfigabove # Declare oreconfigabove a global variable.
-oreconfigabove = { # oreconfigabove is used to define ore rarity and placement near the surface.
-    "Ironore": [20, 10, 40, Iro],
-    # Iron ore has a 1/20th (5%) chance of spawning on each Y level between 10 and 40.
+global oreconfig # Declare oreconfig a global variable.
+oreconfig = { # oreconfigabove is used to define ore rarity and placement near the surface.
+    "Ironore": [50, 10, 40, Iro],
+    # Iron ore has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block.
     # Its block is Iro.
-    "Coalore": [20, 20, 30, Col]
-    # Coal ore has a 1/20th (5%) chance of spawning on each Y level between 20 and 30.
+    "Coalore": [50, 20, 30, Col],
+    # Coal ore has a 1/50th (2%) chance of spawning between 20 and 30 blocks below the top solid block.
     # Its block is Col.
-}
-
-global oreconfigbelow # Declare oreconfigbelow a global variable.
-oreconfigbelow = { # oreconfigbelow is used to define ore rarity and placement below the surface level.
-    "Ironore": [10, 0, 30, Iro],
-    # Iron ore has a 1/10th (10%) chance of spawning on each Y level between 0 and 20.
+    
+    # Switching to deeper blocks.
+    
+    "Ironore1": [45, 40, 60, Iro],
+    # Iron ore has a 1/45th (2.2%) chance of spawning between 40 and 70 blocks below the top solid block.
     # Its block is Iro.
-    "Coalore": [8, 0, 30, Col]
-    # Coal ore has a 1/8th (12.5%) chance of spawning on each Y level between 0 and 30.
+    "Coalore1": [45, 30, 50, Col],
+    # Coal ore has a 1/45th (2.2%) chance of spawning between 30 and 70 blocks below the top solid block.
     # Its block is Col.
+    
+    # Just imagine this below every entry:
+    # "[x] has a 1/[index0] chance of spawning between [index1] and [index2] blocks below the top solid block.
+    # Its block is [index3]."
+    # I don't wanna continue commenting.
+    
+    "Ironore2": [35, 70, 100, Iro],
+    "Coalore2": [35, 70, 100, Col],
+    
+    "Ironore2": [30, 100, 200, Iro],
+    "Coalore2": [30, 100, 200, Col],
+    
+    "Ironore2": [20, 200, 350, Iro],
+    "Coalore2": [20, 200, 350, Col],
+    
+    "Ironore2": [15, 350, 450, Iro],
+    "Coalore2": [15, 350, 450, Col],
+    
+    "Ironore2": [10, 450, 99999999999999, Iro],
+    "Coalore2": [10, 450, 99999999999999, Col],
 }
 
 # Biome layers
 print("Loading biome layers..")
 
-desertlayers = [Snd,Snd,Snd,Snd,Snd,Snd,Snd] # Biome layers for the Desert biome.
-plainslayers = [Grs,Grs,Grs,Drt,Drt] # Biome layers for the Plains biome.
-allbiomes = [desertlayers,plainslayers]"""
+# Gonna do the oreconfig shenanigans with biomes.
+desert1 = [10, 30, Snd,Snd,Snd,Snd,Snd,Snd,Snd] # Biome layers for the Desert biome.
+plains1 = [10, 30, Grs,Grs,Grs,Drt,Drt] # Biome layers for the Plains biome.
+desert2 = [15,50,Snd,Snd,Snd,Snd,Snd,Snd]
+plains2 = [15,50,Grs,Grs,Grs,Drt,Drt]
+desert3 = [25,60,Snd,Snd,Snd,Snd,Snd,Snd]
+plains3 = [25,60,Grs,Grs,Grs,Drt,Drt]
+desert4 = [40,90,Snd,Snd,Snd,Snd,Snd,Snd]
+plains4 = [40,90,Grs,Grs,Grs,Drt,Drt]
+desert5 = [60,120,Snd,Snd,Snd,Snd,Snd,Snd]
+plains5 = [60,120,Grs,Grs,Grs,Drt,Drt]
+desert6 = [70,200,Snd,Snd,Snd,Snd,Snd,Snd]
+plains6 = [70,200,Grs,Grs,Grs,Drt,Drt]
+biomes = [desert1,plains1,desert2,plains2,desert3,plains3,desert4,plains4,desert5,plains5,desert6,plains6]"""
     if f.read != data:
         f.write(data)
 
@@ -247,146 +260,24 @@ allbiomes = [desertlayers,plainslayers]"""
 print("Checking generateworldpackage..")
 with open(integrifiles + "\\utilityfolder\\generateworldpackage.py", "w+") as f:
     data = """from ...integri.utilityfolder.blocks import *
-import random
-import os
-import sys
-import time
-# Get the absolute path of the current file
-current_file_path = os.path.abspath(__file__)
-
-# Get the parent directory of the current file
-parent_dir = os.path.dirname(current_file_path)
-
-# Get the parent directory of the parent directory
-grandparent_dir = os.path.dirname(parent_dir)
-
-# Get the parent directory of the grandparent directory
-greatgrandparent_dir = os.path.dirname(grandparent_dir)
-
-# Get the parent directory of the greatgrandparent directory
-final_dir = os.path.dirname(greatgrandparent_dir)
-
-# Get the path to final_dir
-final_path = os.path.abspath(final_dir)
-
-sys.path.append(final_path)
-
-import api
-
-# generateworld's generation dependencies "skygeneration", and "belowgeneration".
-print("Making generateworld function's dependencies skygeneration, and belowgeneration..")
-def skygeneration():
-    global widdth
-    global heeight
-    return api.generate(widdth,heeight,config=[Air],Air=Air,Stn=Air,Bedrock=Air,limit=[heeight - heeight + 1, heeight])
-
-def belowgeneration(multiplier):
-    global widdth
-    global heeight
-    return api.generate(widdth,heeight,config=[Stn],Air=Stn,Stn=Stn,Bedrock=Bdr,limit=[heeight - heeight + 1, heeight],oreconfig=multiplyoreconfig(oreconfigbelow,multiplier),oreeverywhere=True)
-
-# generateworld's dependency multiplyoreconfig
-print("Making generateworld function's dependency multiplyoreconfig..")
-def multiplyoreconfig(config,multiplier):
-    product = {} # Declare an empty dictionary named "product".
-    for i in range(multiplier): # For multiplier many times,
-        for n in config.keys(): # go through every key in config,
-            product[n + str(i)] = config[n] # add it to "product" but add the a number in front of it.
-    return product
-
-# generateworld's dependency findlastY
-print("Making generateworld function's dependency findlastY..")
-def findlastY(part, width):
-    for i in part: # Scroll through all Y coordinates in part.
-        if i[width - 1].passable == False and part[part.index(i) + 1][width - 1].passable == False:
-            return part.index(i)
-            # if the block at the last X coordinate in the current Y coordinate is solid and
-            # The block below it is also solid, return the Y coordinate of that block.
+from ... import api
 
 # Actual main function
 print("Making generateworld function..")
-def generateworld(worldtype, width, height):
-    global widdth
-    global heeight
-    widdth = width
-    heeight = height
-    global oreconfigabove
-    global oreconfigbelow
+def generateworld(worldtype):
     world = {}
-    if worldtype == 1:
-        for i in range(1, 4):
-            for n in range(1, 4):
-                world["1" + str(i)] = skygeneration()
-                world[str(n + 2) + str(i)] = belowgeneration(n)
-            if i == 1:
-                world["2" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove)
-            else:
-                world["2" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove,originalYY=findlastY(world["2" + str(i - 1)],width))
-    elif worldtype == 2:
-        for i in range(1, 6):
-            for n in range(1, 6):
-                world[str(n) + str(i)] = skygeneration()
-                world[str(n + 3) + str(i)] = belowgeneration(n)
-            world["2" + str(i)] = skygeneration()
-            if i == 1:
-                world["3" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove)
-            else:
-                world["3" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove,originalYY=findlastY(world["2" + str(i - 1)],width))
-    elif worldtype == 3:
-        for i in range(1, 10):
-            for n in range(1, 10):
-                world[str(n) + str(i)] = skygeneration()
-                world[str(n + 4) + str(i)] = belowgeneration(n)
-            if i == 1:
-                world["4" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove)
-            else:
-                world["4" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove,originalYY=findlastY(world["2" + str(i - 1)],width))
-    elif worldtype == 4:
-        for i in range(1, 14):
-            for n in range (1, 14):
-                world[str(n) + str(i)] = skygeneration()
-                world[str(n + 6) + str(i)] = belowgeneration(n)
-            if i == 1:
-                world["6" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove)
-            else:
-                world["6" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove,originalYY=findlastY(world["2" + str(i - 1)],width))
-    elif worldtype == 5:
-        for i in range(1, 20):
-            for n in range (1, 20):
-                world[str(n) + str(i)] = skygeneration()
-                world[str(n + 8) + str(i)] = belowgeneration(n)
-            if i == 1:
-                world["8" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove)
-            else:
-                world["8" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove,originalYY=findlastY(world["2" + str(i - 1)],width))
-    elif worldtype == 6:
-        for i in range(1, 26):
-            for n in range (1, 26):
-                world[str(n) + str(i)] = skygeneration()
-                world[str(n + 10) + str(i)] = belowgeneration(n)
-            if i == 1:
-                world["10" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove)
-            else:
-                world["10" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove,originalYY=findlastY(world["2" + str(i - 1)],width))
-    elif worldtype == 7:
-        for i in range(1, 30):
-            for n in range (1, 30):
-                world[str(n) + str(i)] = skygeneration()
-                world[str(n + 12) + str(i)] = belowgeneration(n)
-            if i == 1:
-                world["12" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove)
-            else:
-                world["12" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove,originalYY=findlastY(world["2" + str(i - 1)],width))
-    elif worldtype == 8:
-        for i in range(1, 50):
-            for n in range (1, 50):
-                world[str(n) + str(i)] = skygeneration()
-                world[str(n + 25) + str(i)] = belowgeneration(n)
-            if i == 1:
-                world["25" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove)
-            else:
-                world["25" + str(i)] = api.generate(width,height,config=random.choice(allbiomes),Air=Air,Stn=Stn,Bedrock=Stn,limit=[20, height - 20],oreconfig=oreconfigabove,originalYY=findlastY(world["2" + str(i - 1)],width))
-    return world"""
+    match worldtype:
+        case 1: newworldtype = [100, 5, 95]
+        case 2: newworldtype = [200, 10, 190]
+        case 3: newworldtype = [400, 20, 380]
+        case 4: newworldtype = [700, 35, 665]
+        case 5: newworldtype = [1000, 50, 950]
+        case 6: newworldtype = [1500, 75, 425]
+        case 7: newworldtype = [2000, 100, 1900]
+        case 8: newworldtype = [3000, 150, 2850]
+        case 9: newworldtype = [10000, 500, 9500]
+    world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,[newworldtype[1],newworldtype[2]],oreconfig,)
+    return [world, newworldtype]"""
     if f.read != data:
         f.write(data)
 
@@ -430,6 +321,12 @@ def displaytitle(): # Define a function named displaytitle.
     for row in title: # Check, and
         print(row) # Print out every row in the title variable.
 
+def air(listt, index, index2): # "air" stands for "Add If Reachable"
+    if api.reachableindex(listt, index):
+        if api.reachableindex(listt[index], index2): return listt[index][index2]
+        else: return "#000000"
+    else: return "#000000"
+
 increment()
 
 # - Loading Finished -
@@ -465,21 +362,8 @@ while True:
     # Decide what to do with the variable option's value.
     if option == 1: # If it's 1,
         displaytitle() # Clear the screen and display the title.
-        '''
-        if Saves == []:
-            worldlimit = [5, 20]
-            width = 40
-            height = 25
-            playerspawnY = 15
-            playerspawn = 0
-            space = api.generate(width=width,height=height,config=plainslayers,Air=Air,Stn=Stn,Bedrock=Bdr,limit=worldlimit,originalYY=playerspawnY)
-            playerspawnY = 13
-            space[playerspawnY][0] = plr
-            display = Thread(target=displaythread,args=[space])
-            display.start()
-            playworld(save)
-        '''
         
+        # Initialize the save options
         availablesaveoptions = ["1", "2", "3", "4"]
         availabledeletesaveoptions = ["5", "6", "7", "8"]
 
@@ -487,15 +371,15 @@ while True:
             Saves = checksaves()
             displaytitle()
             print(Fore.LIGHTBLACK_EX + "            Please select an option.            ")
-            print(Fore.LIGHTBLACK_EX + "Click the number before the option to select it.")
+            print("Click the number before the option to select it.")
             print(Fore.GREEN + "                1. " + Saves[0])
-            print(Fore.GREEN + "                2. " + Saves[1])
-            print(Fore.GREEN + "                3. " + Saves[2])
-            print(Fore.GREEN + "                4. " + Saves[3])
+            print("                2. " + Saves[1])
+            print("                3. " + Saves[2])
+            print("                4. " + Saves[3])
             print(Fore.RED + "                5. Delete " + Saves[0])
-            print(Fore.RED + "                6. Delete " + Saves[1])
-            print(Fore.RED + "                7. Delete " + Saves[2])
-            print(Fore.RED + "                8. Delete " + Saves[3])
+            print("                6. Delete " + Saves[1])
+            print("                7. Delete " + Saves[2])
+            print("                8. Delete " + Saves[3])
             selectedsave = api.wait_any()
             if selectedsave in availablesaveoptions:
                 if Saves[int(selectedsave) - 1] == "":
@@ -508,16 +392,16 @@ while True:
                             break
                     displaytitle()
                     print(Fore.LIGHTBLACK_EX + "           Please select a world size.          ")
-                    print(Fore.LIGHTBLACK_EX + "Click the number before the option to select it.\n")
+                    print("Click the number before the option to select it.\n")
                     print(Fore.GREEN + "1. Very small - I'm 35 and have an hour for this\ngame.\n")
-                    print(Fore.GREEN + "2. Small - I want to play alone.\n")
+                    print("2. Small - I want to play alone.\n")
                     print(Fore.CYAN + "3. Medium - I have someone to play with or wanna\nplay for a long time.\n")
-                    print(Fore.CYAN + "4. Medium Large - There are 3-4 people here.\n")
+                    print("4. Medium Large - There are 3-4 people here.\n")
                     print(Fore.BLUE + "5. Large - The entire family's playing.\n")
-                    print(Fore.BLUE + "6. Very Large - I'm gonna be here for some\nmonths.\n")
+                    print("6. Very Large - I'm gonna be here for some\nmonths.\n")
                     print(Fore.YELLOW + "7. Extremely Large - This world will exist for\nyears.\n")
-                    print(Fore.YELLOW + "8. Too Large - I just don't ever want to worry\nabout world size.\n")
-                    print(Fore.RED + "9. Infinite - Generate as I go, I'm planning\ndecades!" + Fore.RESET)
+                    print("8. Too Large - I just don't ever want to worry\nabout world size.\n")
+                    print(Fore.RED + "9. Never stop playing - I never want to stop\nplaying, and alsowaiting for the world to\ngenerate." + Fore.RESET)
                     
                     availableoptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
                     while True:
@@ -526,29 +410,19 @@ while True:
                             worldtype = int(selectedoption)
                             break
                     api.fullclear()
-                    world = generateworld(worldtype,100,100)
-                    match worldtype:
-                        case 1: middleworld = world["22"]; middleworldindex = "22"
-                        case 2: middleworld = world["33"]; middleworldindex = "33"
-                        case 3: middleworld = world["44"]; middleworldindex = "44"
-                        case 4: middleworld = world["66"]; middleworldindex = "66"
-                        case 5: middleworld = world["88"]; middleworldindex = "88"
-                        case 6: middleworld = world["1010"]; middleworldindex = "1010"
-                        case 7: middleworld = world["1212"]; middleworldindex = "1212"
-                        case 8: middleworld = world["2525"]; middleworldindex = "2525"
+                    worlddata = generateworld(worldtype)
+                    world = worlddata[0]
+                    worldtype = worlddata[1]
                     api.fullclear()
-                    plr.position[0] = 50
-                    # Set the X Value of the player to be the middle of the screen
-                    plr.position = [plr.position[0], plr.position[1], middleworldindex, middleworld]
-                    # Append "middleworldindex" and "middleworld" to plr.position
-                    for i in plr.position[3]:
-                        if i[plr.position[0]].passable and plr.position[3][plr.position[3].index(i) + 1][plr.position[0]].passable == False:
+                    plr.position[0] = 50 # Set the X Value of the player to be the middle of the screen
+                    for Ycoord in world:
+                        if Ycoord[plr.position[0]].passable and world[world.index(Ycoord) + 1][plr.position[0]].passable == False:
                             # If the player can pass through the currently selected block and below that is a solid surface,
-                            plr.position.append(i[plr.position[0]]) # Add the element to plr.position.
-                            i[plr.position[0]] = plr # Spawn the player there.
-                            plr.position[1] = plr.position[3].index(i) # Also adjust the Y value of the player to be accurate.
-                            if plr.position[1] != plr.position[3].index(i):
-                                plr.position[1] = plr.position[3].index(i)
+                            plr.position.append(Ycoord[plr.position[0]]) # Add the element to plr.position.
+                            Ycoord[plr.position[0]] = plr # Spawn the player there.
+                            plr.position[1] = world.index(Ycoord) # Also adjust the Y value of the player to be accurate.
+                            if plr.position[1] != world.index(Ycoord):
+                                plr.position[1] = world.index(Ycoord)
                             break
                     savegame(savename=savename,world=world,worldtype=worldtype,single=True,plr=plr)
                     # Save the game
@@ -559,11 +433,18 @@ while True:
                     worldtype = save.worldtype
                     break
                 api.initiatewindow()
-                screen = api.setres()
+                screen = api.setres(800, 600)
                 
                 def displaythread(screen):
                     while api.isquit() == False:
-                        api.display(screen, plr.position[3], 8, 6)
+                        displayoutput = []
+                        for n in range(100):
+                            displayoutput.append([])
+                            for m in range(100):
+                                displayoutput[n].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
+                        for layer in displayoutput:
+                            layer = reversed(layer)
+                        api.display(screen, reversed(displayoutput), 8, 6)
                         api.wait(1/60)
                 
                 displayfunc = Thread(target=displaythread,args=[screen],daemon=True)
@@ -571,23 +452,23 @@ while True:
                 
                 gravtimer = 0
                 gravmltp = 1
-                newdata = [plr.position[3], plr.position[4]]
+                newdata = [world, plr.position[2]]
                 while api.isquit() == False:
                     
                     # Player interaction
                     
                     if api.ispressed_key("w"):
-                        newdata = plr.move("w", plr.position[3], plr.position[4])
+                        newdata = plr.move("w", world, plr.position[2])
                     elif api.ispressed_key("a"):
-                        newdata = plr.move("a", plr.position[3], plr.position[4])
+                        newdata = plr.move("a", world, plr.position[2])
                     elif api.ispressed_key("s"):
-                        newdata = plr.move("s", plr.position[3], plr.position[4])
+                        newdata = plr.move("s", world, plr.position[2])
                     elif api.ispressed_key("d"):
-                        newdata = plr.move("d", plr.position[3], plr.position[4])
+                        newdata = plr.move("d", world, plr.position[2])
                     
                     # Apply Gravity
                     
-                    #if plr.position[3][plr.position[1] + 1][plr.position[0]].passable == True:
+                    #if world[plr.position[1] + 1][plr.position[0]].passable == True:
                     #    gravtimer += 1
                     #else:
                     #    gravmltp = 0
@@ -595,12 +476,12 @@ while True:
                     #if gravtimer >= 2:
                     #    gravmltp += 1
                     #if gravmltp > 0:
-                    #    newdata = plr.move("s", plr.position[3], plr.position[4], gravmltp)
+                    #    newdata = plr.move("s", world, plr.position[2], gravmltp)
                     
                     # Other stuff
                     
-                    plr.position[3] = newdata[0] # Update display
-                    plr.position[4] = newdata[1] # Update what used to be at a position before the player was.
+                    world = newdata[0] # Update display
+                    plr.position[2] = newdata[1] # Update what used to be at a position before the player was.
                     api.wait(1/20)
                 
             elif selectedsave in availabledeletesaveoptions:
