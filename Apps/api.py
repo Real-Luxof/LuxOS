@@ -4,6 +4,7 @@ import time
 import os
 import random
 import multiprocessing
+from sys import exit as theactualsysexit
 try: from playsound import playsound
 except(ModuleNotFoundError): os.system("pip install wheel"); os.system("pip install playsound"); from playsound import playsound
 try: import keyboard
@@ -132,7 +133,7 @@ def playaudio(relativepathtofile):
     p.start()
     return p
 
-def playaudio(absolutepathtofile):
+def playaudioabs(absolutepathtofile):
     p = multiprocessing.Process(target=playsound, args=[absolutepathtofile])
     p.start()
     return p
@@ -200,6 +201,14 @@ def isquit():
     for event in pygame.event.get():
         if event.type == pygame.QUIT: return True
     return False
+
+# Close the window
+def closewindow():
+    pygame.quit()
+
+# Close the entire program
+def sysexit():
+    theactualsysexit()
 
 # Objects -
 
@@ -288,13 +297,13 @@ class player:
         # Main -
         
         for i in range(usespeed):
-            if direction == "w" and reachableindex(data, self.position[1] - 1):
+            if direction == "w" and reachableindex(data, self.position[1] - 1) and not self.position[1] - 1 < 0:
                 if data[self.position[1] - 1][self.position[0]].passable:
                     data[self.position[1]][self.position[0]] = replace
                     final2 = data[self.position[1] - 1][self.position[0]]
                     data[self.position[1] - 1][self.position[0]] = self
                     self.position[1] -= 1
-            elif direction == "a" and reachableindex(data[self.position[1]], self.position[0] - 1):
+            elif direction == "a" and reachableindex(data[self.position[1]], self.position[0] - 1) and not self.position[0] - 1 < 0:
                 if data[self.position[1]][self.position[0] - 1].passable:
                     data[self.position[1]][self.position[0]] = replace
                     final2 = data[self.position[1]][self.position[0] - 1]

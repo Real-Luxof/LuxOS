@@ -54,7 +54,7 @@ from threading import Thread
 
 # Import the ceil function from the math module
 print("Importing function: ceil from module: math")
-from math import ceil
+from math import ceil, floor
 
 increment()
 increment()
@@ -296,13 +296,13 @@ increment()
 # Title screen
 print("Making title function..")
 title = [ # Define the title characters and their colors.
-    Back.LIGHTBLACK_EX + "  _  " + Back.RED + "  ___       _  " + Back.GREEN + "  _____________  " + Back.BLUE + "  ________ " + Style.RESET_ALL,
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " |   \     | | " + Back.GREEN + " |_____   _____| " + Back.BLUE + " |  ______|" + Style.RESET_ALL,
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |\ \    | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       " + Style.RESET_ALL,
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | | \ \   | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |______ " + Style.RESET_ALL,
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |  \ \  | | " + Back.GREEN + "       | |       " + Back.BLUE + " |  ______|" + Style.RESET_ALL,
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |   \ \ | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       " + Style.RESET_ALL,
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |    \ \| | " + Back.GREEN + "       | |       " + Back.BLUE + " | |______ " + Style.RESET_ALL,
+    Back.LIGHTBLACK_EX + "  _  " + Back.RED + "  ___       _  " + Back.GREEN + "  _____________  " + Back.BLUE + "  ________ ",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " |   \     | | " + Back.GREEN + " |_____   _____| " + Back.BLUE + " |  ______|",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |\ \    | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       ",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | | \ \   | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |______ ",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |  \ \  | | " + Back.GREEN + "       | |       " + Back.BLUE + " |  ______|",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |   \ \ | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       ",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |    \ \| | " + Back.GREEN + "       | |       " + Back.BLUE + " | |______ ",
     Back.LIGHTBLACK_EX + " |_| " + Back.RED + " |_|     \___| " + Back.GREEN + "       |_|       " + Back.BLUE + " |________|" + Style.RESET_ALL,
     "",
     "        " + Back.RED + "  __________  " + Back.GREEN + "  ________  " + Back.BLUE + "  _ " + Style.RESET_ALL,
@@ -321,9 +321,10 @@ def displaytitle(): # Define a function named displaytitle.
     for row in title: # Check, and
         print(row) # Print out every row in the title variable.
 
+print("Making function Add If Reachable (air)")
 def air(listt, index, index2): # "air" stands for "Add If Reachable"
-    if api.reachableindex(listt, index):
-        if api.reachableindex(listt[index], index2): return listt[index][index2]
+    if api.reachableindex(listt, index) and not index < 0:
+        if api.reachableindex(listt[index], index2) and not index2 < 0: return listt[index][index2]
         else: return "#000000"
     else: return "#000000"
 
@@ -393,15 +394,15 @@ while True:
                     displaytitle()
                     print(Fore.LIGHTBLACK_EX + "           Please select a world size.          ")
                     print("Click the number before the option to select it.\n")
-                    print(Fore.GREEN + "1. Very small - I'm 35 and have an hour for this\ngame.\n")
-                    print("2. Small - I want to play alone.\n")
-                    print(Fore.CYAN + "3. Medium - I have someone to play with or wanna\nplay for a long time.\n")
-                    print("4. Medium Large - There are 3-4 people here.\n")
-                    print(Fore.BLUE + "5. Large - The entire family's playing.\n")
-                    print("6. Very Large - I'm gonna be here for some\nmonths.\n")
-                    print(Fore.YELLOW + "7. Extremely Large - This world will exist for\nyears.\n")
+                    print(Fore.GREEN + "1. Very small - I'm 35 and have two seconds for \nthis game.\n")
+                    print("2. Small - I'm 30 and have about an hour for    \nthis game.\n")
+                    print(Fore.CYAN + "3. Medium - I want to play alone.   \n")
+                    print("4. Medium Large - I want the loading to hurt.   \n")
+                    print(Fore.BLUE + "5. Large - Hurry up, the boys are here.\n")
+                    print("6. Very Large - Yeah, sure, I can wait a century \nor two.\n")
+                    print(Fore.YELLOW + "7. Extremely Large - Is this thing cythonized?  \nOh it isn't? shit.")
                     print("8. Too Large - I just don't ever want to worry\nabout world size.\n")
-                    print(Fore.RED + "9. Never stop playing - I never want to stop\nplaying, and alsowaiting for the world to\ngenerate." + Fore.RESET)
+                    print(Fore.RED + "9. Never stop playing - I never want to stop\nplaying, and also waiting for the world to generate.\n" + Fore.RESET)
                     
                     availableoptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
                     while True:
@@ -414,7 +415,7 @@ while True:
                     world = worlddata[0]
                     worldtype = worlddata[1]
                     api.fullclear()
-                    plr.position[0] = 50 # Set the X Value of the player to be the middle of the screen
+                    plr.position[0] = ceil(worldtype[0] / 2) # Set the X Value of the player to be the middle of the world
                     for Ycoord in world:
                         if Ycoord[plr.position[0]].passable and world[world.index(Ycoord) + 1][plr.position[0]].passable == False:
                             # If the player can pass through the currently selected block and below that is a solid surface,
@@ -434,16 +435,17 @@ while True:
                     break
                 api.initiatewindow()
                 screen = api.setres(800, 600)
+                global quittime
+                quittime = False
                 
                 def displaythread(screen):
-                    while api.isquit() == False:
+                    global quittime
+                    while not quittime:
                         displayoutput = []
                         for n in range(100):
                             displayoutput.append([])
                             for m in range(100):
                                 displayoutput[n].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
-                        for layer in displayoutput:
-                            layer = reversed(layer)
                         api.display(screen, reversed(displayoutput), 8, 6)
                         api.wait(1/60)
                 
@@ -452,37 +454,45 @@ while True:
                 
                 gravtimer = 0
                 gravmltp = 1
+                movedup = False
                 newdata = [world, plr.position[2]]
                 while api.isquit() == False:
                     
                     # Player interaction
                     
-                    if api.ispressed_key("w"):
-                        newdata = plr.move("w", world, plr.position[2])
-                    elif api.ispressed_key("a"):
-                        newdata = plr.move("a", world, plr.position[2])
-                    elif api.ispressed_key("s"):
-                        newdata = plr.move("s", world, plr.position[2])
-                    elif api.ispressed_key("d"):
-                        newdata = plr.move("d", world, plr.position[2])
+                    # Keys
+                    wpressed = api.ispressed_key("w")
+                    apressed = api.ispressed_key("a")
+                    spressed = api.ispressed_key("s")
+                    dpressed = api.ispressed_key("d")
+                    
+                    # Actions
+                    if wpressed: newdata = plr.move("w", newdata[0], newdata[1]); movedup = True
+                    if apressed: newdata = plr.move("d", newdata[0], newdata[1])
+                    if spressed: newdata = plr.move("s", newdata[0], newdata[1])
+                    if dpressed: newdata = plr.move("a", newdata[0], newdata[1])
                     
                     # Apply Gravity
                     
-                    #if world[plr.position[1] + 1][plr.position[0]].passable == True:
-                    #    gravtimer += 1
-                    #else:
-                    #    gravmltp = 0
-                    #    gravtimer = 0
-                    #if gravtimer >= 2:
-                    #    gravmltp += 1
-                    #if gravmltp > 0:
-                    #    newdata = plr.move("s", world, plr.position[2], gravmltp)
+                    if world[plr.position[1] + 1][plr.position[0]].passable:
+                        gravtimer += 1
+                    elif world[plr.position[1] + 1][plr.position[0]].passable and not movedup:
+                        if gravtimer < 25: gravtimer = 25
+                        else: gravtimer += 1
+                    else:
+                        gravmltp = 0
+                        gravtimer = 0
+                    if gravtimer >= 25: gravmltp += 0.3
+                    if not movedup: gravmltp += 1
+                    if gravmltp > 0: newdata = plr.move("s", newdata[0], newdata[1], floor(gravmltp))
                     
                     # Other stuff
                     
                     world = newdata[0] # Update display
                     plr.position[2] = newdata[1] # Update what used to be at a position before the player was.
+                    movedup = False # Tell the game the player has not moved up (this is used for gravity).
                     api.wait(1/20)
+                quittime = True
                 
             elif selectedsave in availabledeletesaveoptions:
                 match int(selectedsave):
