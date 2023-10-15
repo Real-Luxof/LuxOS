@@ -3,13 +3,7 @@ from ... import api
 
 # Actual main function
 print("Making generateworld function..")
-def generateworld(worldtype, width, height):
-    global widdth
-    global heeight
-    global oreconfigabove
-    global oreconfigbelow
-    widdth = width
-    heeight = height
+def generateworld(worldtype):
     world = {}
     match worldtype:
         case 1: newworldtype = [100, 5, 95]

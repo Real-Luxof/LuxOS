@@ -483,7 +483,6 @@ while True:
                         gravmltp = 0
                         gravtimer = 0
                     if gravtimer >= 25: gravmltp += 0.3
-                    if not movedup: gravmltp += 1
                     if gravmltp > 0: newdata = plr.move("s", newdata[0], newdata[1], floor(gravmltp))
                     
                     # Other stuff
