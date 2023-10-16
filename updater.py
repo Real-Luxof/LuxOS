@@ -20,9 +20,9 @@ urllib.request.urlretrieve(site + "LUXOS_MAIN.txt", "main.py") # Download the la
 urllib.request.urlretrieve(site + "LUXOS_INTERFACE.txt", "interface.py") # Download the latest version of interface.py aka the kernel.
 urllib.request.urlretrieve(site + "LUXOS_APIDOCS.txt", "APIDocs.txt") # Download the latest version of APIDocs.txt aka the Engine Manual.
 os.system("mkdir Apps") # Make the directory "Apps"
-os.system("md Apps/gamedata") # Make the directory "gamedata" inside "Apps"
-urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps/api.py") # Download the latest version of API.py aka the Engine to Apps.
-urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps/gamedata/api.py") # Download API.py to Apps/gamedata.
+os.system("md Apps\\gamedata") # Make the directory "gamedata" inside "Apps"
+urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps\\api.py") # Download the latest version of API.py aka the Engine to Apps.
+urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps\\gamedata\\api.py") # Download API.py to Apps/gamedata.
 
 # Announcing that the program has ended.
 print("Aight bro, peace!")

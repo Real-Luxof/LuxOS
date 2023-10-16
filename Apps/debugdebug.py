@@ -1,21 +1,7 @@
-import api
-foo = api.block("foo")
-bar = api.block("bar",True)
-fub = api.player("fub")
-display = [
-    [foo, foo, foo, foo, foo],
-    [bar, bar, bar, bar, bar],
-    [bar, bar, fub, bar, bar],
-    [bar, bar, bar, bar, bar],
-    [foo, foo, foo, foo, foo]
-]
-def finadisplay(display):
-    for i in display:
-        for j in i:
-            print(j, end="")
-        print()
-finadisplay(display)
-newdata = fub.move("a",display,bar)
-display = newdata[0]
-print("Now for moving")
-finadisplay(display)
+class class1():
+    def init(self, attr1, attr2):
+        self.attr1 = attr1
+        self.attr2 = attr2
+
+hi = class1("hi", "hi2")
+def hi.hello(bro):

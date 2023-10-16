@@ -6,7 +6,7 @@ import random
 import multiprocessing
 from sys import exit as theactualsysexit
 try: from playsound import playsound
-except(ModuleNotFoundError): os.system("pip install wheel"); os.system("pip install playsound"); from playsound import playsound
+except(ModuleNotFoundError): os.system("pip install wheel"); os.system("pip install playsound==1.2.2"); from playsound import playsound
 try: import keyboard
 except(ModuleNotFoundError): os.system("pip install keyboard"); import keyboard
 try: import pygame

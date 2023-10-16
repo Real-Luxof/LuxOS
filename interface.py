@@ -108,7 +108,7 @@ def terminal():
                         for i in music:
                             print(str(n) + ". " + i)
                         selection = input("Select your music of choice (with the file extension) > ")
-                        p = api.playaudio(selection)
+                        p = api.playaudio(os.path.dirname(__file__) + "\\" + selection)
                     elif str.lower(musicorno).startswith("n") and p == None:
                         p.terminate()
                         p = None

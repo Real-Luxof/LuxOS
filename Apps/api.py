@@ -128,7 +128,7 @@ def reachableindex(liste, index):
 
 # Playing audio -
 def playaudio(relativepathtofile):
-    path = f"{os.path.dirname(__file__)}{relativepathtofile}"
+    path = f"{os.path.dirname(__file__)}\\{relativepathtofile}"
     p = multiprocessing.Process(target=playsound, args=[path])
     p.start()
     return p
