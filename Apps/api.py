@@ -14,10 +14,15 @@ except(ModuleNotFoundError): os.system("pip install pygame"); import pygame
 
 # - Misceallanous -
 
+# Strip important files
+def stripimportant(downloaded, importantstuff=["api.py","__pycache__","gamedata"]):
+    return downloaded
+
 # Install a module
 
 def install(module):
     os.system("pip install " + module)
+
 # Delete a file
 
 def delete(file):

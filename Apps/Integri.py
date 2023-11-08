@@ -76,30 +76,8 @@ def savegame(savename, world, worldtype, plr, single):
             # Define what will go in there in a variable called "data".
             # plr = the current player character
             # world = the current world
-            data = """
-import os
-import sys
-# Get the absolute path of the current file
-current_file_path = os.path.abspath(__file__)
-
-# Get the parent directory of the current file
-parent_dir = os.path.dirname(current_file_path)
-
-# Get the parent directory of the parent directory
-grandparent_dir = os.path.dirname(parent_dir)
-
-# Get the parent directory of the grandparent directory
-greatgrandparent_dir = os.path.dirname(grandparent_dir)
-
-# Get the parent directory of the greatgrandparent directory
-final_dir = os.path.dirname(greatgrandparent_dir)
-
-# Get the path to final_dir
-final_path = os.path.abspath(final_dir)
-
-sys.path.append(final_path)
-
-import api
+            data = """from blocks import *
+from ... import api
 
 plr = api.player(character=\"""" + plr.character + """\",maxhealth=""" + str(plr.maxhealth) + """,health=""" + str(plr.health) + """,armor=""" + str(plr.armor) + """,attack=""" + str(plr.attack) + """,defense=""" + str(plr.defense) + """,speed=""" + str(plr.speed) + """,position=""" + str(plr.position) + """,inventory=api.inventory(slotnum=""" + str(plr.inventory.slotnum) + """,slotdata=""" + str(plr.inventory.slots) + """,selectedindex=\"""" + plr.inventory.selectedindex + """\"),dead=""" + str(plr.dead) + """,deffactor=""" + str(plr.deffactor) + """,atkfactor=""" + str(plr.atkfactor) + """)
 world = """ + str(world) + """
@@ -296,6 +274,7 @@ increment()
 # Title screen
 print("Making title function..")
 title = [ # Define the title characters and their colors.
+    Style.RESET_ALL,
     Back.LIGHTBLACK_EX + "  _  " + Back.RED + "  ___       _  " + Back.GREEN + "  _____________  " + Back.BLUE + "  ________ ",
     Back.LIGHTBLACK_EX + " | | " + Back.RED + " |   \     | | " + Back.GREEN + " |_____   _____| " + Back.BLUE + " |  ______|",
     Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |\ \    | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       ",
@@ -347,28 +326,29 @@ while True:
     print()
     
     # Decide what to do with the keyboard input.
-    while True: # Until the loop is broken check if..
-        if api.ispressed_key("1"): # The user presses 1.
-            option = 1 # If they do, set option to 1 and
-            break # Break the loop.
-        elif api.ispressed_key("2"): # The user presses 2.
-            option = 2 # If they do, set option to 2 and
-            break # Break the loop.
-        elif api.ispressed_key("3"): # The user presses 3.
-            option = 3 # If they do, set option to 3 and
-            break # Break the loop.
-        elif api.ispressed_key("4"): # The user presses 4.
-            quit() # If they do, close the program.
+    while True:
+        if api.ispressed_key("1"):
+            option = 1
+            break
+        elif api.ispressed_key("2"):
+            option = 2
+            break
+        elif api.ispressed_key("3"):
+            option = 3
+            break
+        elif api.ispressed_key("4"):
+            quit()
     
     # Decide what to do with the variable option's value.
-    if option == 1: # If it's 1,
-        displaytitle() # Clear the screen and display the title.
+    if option == 1:
+        displaytitle()
         
         # Initialize the save options
         availablesaveoptions = ["1", "2", "3", "4"]
         availabledeletesaveoptions = ["5", "6", "7", "8"]
 
         while True:
+            api.wait(0.1) # Delay so the user doesn't accidentally delete the wrong saves.
             Saves = checksaves()
             displaytitle()
             print(Fore.LIGHTBLACK_EX + "            Please select an option.            ")
@@ -381,7 +361,7 @@ while True:
             print("                6. Delete " + Saves[1])
             print("                7. Delete " + Saves[2])
             print("                8. Delete " + Saves[3])
-            selectedsave = api.wait_any()
+            selectedsave = api.wait_any() # await a key press
             if selectedsave in availablesaveoptions:
                 if Saves[int(selectedsave) - 1] == "":
                     namepass = False
@@ -410,20 +390,23 @@ while True:
                         if selectedoption in availableoptions:
                             worldtype = int(selectedoption)
                             break
+                    
                     api.fullclear()
-                    worlddata = generateworld(worldtype)
-                    world = worlddata[0]
+                    
+                    worlddata = generateworld(worldtype) # Create the world
+                    world = worlddata[0] # Initialize a few variables
                     worldtype = worlddata[1]
-                    api.fullclear()
+                    
                     plr.position[0] = ceil(worldtype[0] / 2) # Set the X Value of the player to be the middle of the world
+                    
                     for Ycoord in world:
                         if Ycoord[plr.position[0]].passable and world[world.index(Ycoord) + 1][plr.position[0]].passable == False:
                             # If the player can pass through the currently selected block and below that is a solid surface,
                             plr.position.append(Ycoord[plr.position[0]]) # Add the element to plr.position.
                             Ycoord[plr.position[0]] = plr # Spawn the player there.
                             plr.position[1] = world.index(Ycoord) # Also adjust the Y value of the player to be accurate.
-                            if plr.position[1] != world.index(Ycoord):
-                                plr.position[1] = world.index(Ycoord)
+                            if plr.position[1] != world.index(Ycoord): # If the Y value is not adjusted,
+                                plr.position[1] = world.index(Ycoord) # Adjust it again.
                             break
                     savegame(savename=savename,world=world,worldtype=worldtype,single=True,plr=plr)
                     # Save the game
@@ -447,12 +430,12 @@ while True:
                             for m in range(100):
                                 displayoutput[n].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
                         api.display(screen, reversed(displayoutput), 8, 6)
-                        api.wait(1/60)
+                        api.wait(1/60) # "60 fps"
                 
                 displayfunc = Thread(target=displaythread,args=[screen],daemon=True)
                 displayfunc.start()
                 
-                gravtimer = 0
+                gravtimer = 0 # Initialize a few variables
                 gravmltp = 1
                 movedup = False
                 newdata = [world, plr.position[2]]
@@ -474,10 +457,10 @@ while True:
                     
                     # Apply Gravity
                     
-                    if world[plr.position[1] + 1][plr.position[0]].passable:
-                        gravtimer += 1
-                    elif world[plr.position[1] + 1][plr.position[0]].passable and not movedup:
-                        if gravtimer < 25: gravtimer = 25
+                    if world[plr.position[1] + 1][plr.position[0]].passable and movedup: # If the block below the player can be fallen through and the player is holding down W
+                        gravtimer += 1 # then (self-explanatory code)
+                    elif world[plr.position[1] + 1][plr.position[0]].passable and not movedup: # If the block below the player can be fallen through but the player isn't holding down W
+                        if gravtimer < 25: gravtimer = 25 # then (self-explanatory code)
                         else: gravtimer += 1
                     else:
                         gravmltp = 0
@@ -489,8 +472,8 @@ while True:
                     
                     world = newdata[0] # Update display
                     plr.position[2] = newdata[1] # Update what used to be at a position before the player was.
-                    movedup = False # Tell the game the player has not moved up (this is used for gravity).
-                    api.wait(1/20)
+                    movedup = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
+                    api.wait(1/20) # "20 tps/ups"
                 quittime = True
                 
             elif selectedsave in availabledeletesaveoptions:

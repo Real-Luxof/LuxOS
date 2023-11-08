@@ -1,5 +1,5 @@
-dict = {
-    1: "foo",
-    2: "bar"
-}
-print(dict[1] + dict[2])
+foo = ["foo","foo","bar"]
+for i in foo:
+    print(i)
+    del foo[foo.index(i)]
+print(foo)
