@@ -271,9 +271,49 @@ class inventory:
     def __str__(self):
         return self.slots
 
-# Player
-class player:
-    def __init__(self, character='Plr', maxhealth=100, health=100, armor=0, attack=5, defense=5, speed=1, position=[2,2], inventory=inventory(), dead=False, deffactor=0.5, atkfactor=0.5):
+# Block
+class block:
+    def __init__(self, image='#000000', passable: bool=False, breakablebytool: bool=True, droptoolvalue: int=2, drop='Stone', falling: bool=False):
+        """Exactly what the name says. You can also call it a tile.
+
+            image: what the display() function will use. Is usually a hex code.
+
+            passable: Can it be passed through by entities?
+
+            breakablebytool: Can it be broken by an entity weilding a tool?
+
+            droptoolvalue: What level does that tool have to be?
+
+            drop: What does the entity gain in its inventory upon breaking the block?
+
+            falling: Is the block not immune to gravity? Use this so you can just do this and it will move if this value is set to True:
+                for block in world: block.move(arguments)
+        """
+        self.image = image
+        self.passable = passable
+        self.breakablebytool = breakablebytool
+        self.droptoolvalue = droptoolvalue
+        self.drop = drop
+        self.falling = falling
+        self.type = "block"
+    
+    def __str__(self):
+        return self.image
+    
+    def __repr__(self):
+        return self.image
+#        return f"api.block(image=\"{self.image}\",passable={str(self.passable)},breakablebytool={str(self.breakablebytool)},droptoolvalue={str(self.droptoolvalue)},drop={str(self.drop)},falling={str(self.falling)})"
+
+# Entity
+class entity:
+    def __init__(self, character='Plr', maxhealth: int=100, health: int=100, armor: int=0, attack: int=5, defense: int=5, speed: int=1, position: list=[2,2], inventory: inventory=inventory(), dead: bool=False, deffactor: float=0.5, atkfactor: float=0.5):
+        """Exactly what the name is. Can be used to make a player character.
+        Methods:
+            move()
+            hurt()
+            heal()
+        Hover over them for a description of what they do and their inputs.
+        """
         self.character = character
         self.maxhealth = maxhealth
         self.health = health
@@ -286,11 +326,22 @@ class player:
         self.dead = dead
         self.deffactor = deffactor
         self.atkfactor = atkfactor
-        self.type = "player"
+        self.type = "entity"
         self.passable = False
 
-    # Move the player
-    def move(self, direction, data, replace, speed=None):
+    # Move the entity
+    def move(self, direction: str, data: list, replace: block, speed: int=None):
+        """Move the entity. What did you think? Also great for gravity.
+
+        Args:
+            direction (str): Can be "w", "a", "s", or "d".
+            data (2D Array): The world around the entity.
+            replace (block class): What will be left in the space the entity once was.
+            speed (int, optional): How many blocks forward should the entity go? Defaults to the speed of the entity.
+
+        Returns:
+            2D Array: The world after the entity has moved.
+        """
         
         # Load -
         
@@ -301,6 +352,9 @@ class player:
         
         # Main -
         
+        # dw about this hunk of junk below
+        # unless there's a problem with it
+        # then deal with it yourself or contact Luxof (hopefully he's not dead)
         for i in range(usespeed):
             if direction == "w" and reachableindex(data, self.position[1] - 1) and not self.position[1] - 1 < 0:
                 if data[self.position[1] - 1][self.position[0]].passable:
@@ -331,16 +385,18 @@ class player:
         
         return [data, final2]
     
-    # Hurt the player
-    def hurt(self, amount):
-        self.health -= (amount - (self.defense / self.deffactor) - (self.armor / self.armfactor))
+    # Hurt the entity
+    def hurt(self, amount: int):
+        """Subtract a specific amount of health from the entity. Takes defense and armor into account."""
+        self.health -= (amount - (self.defense * self.deffactor) - self.armor)
         if self.health <= 0:
             self.death = True
             return self.death
         else: return self.death
     
-    # Heal the player
-    def heal(self, amount):
+    # Heal the entity
+    def heal(self, amount: int):
+        """Add a specific amount of health to the entity."""
         self.health += amount
         if self.health > self.maxhealth:
             while self.health > self.maxhealth:
@@ -352,30 +408,29 @@ class player:
     def __repr__(self):
         return self.character
 
-# Block
-class block:
-    def __init__(self, image='  ', passable=False, breakablebytool=True, droptoolvalue=2, drop='Stone', falling=False):
-        self.image = image
-        self.passable = passable
-        self.breakablebytool = breakablebytool
-        self.droptoolvalue = droptoolvalue
-        self.drop = drop
-        self.falling = falling
-        self.type = "block"
-    
-    def __str__(self):
-        return self.image
-    
-    def __repr__(self):
-        return self.image
-#        return f"api.block(image=\"{self.image}\",passable={str(self.passable)},breakablebytool={str(self.breakablebytool)},droptoolvalue={str(self.droptoolvalue)},drop={str(self.drop)},falling={str(self.falling)})"
-
 # World Generation -
 
 def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",limit=None,oreconfig=None,originalYY=None,oreeverywhere=False):
+    """Summary:
+
+    Args:
+        width (int, optional): The width of the world. Defaults to 30.
+        height (int, optional): The weight of the world. Defaults to 20.
+        biomes (_type_, optional): Biomes. Define minimum size and maximum size with the first and second indexes. Randomly chosen. Example: [[10, 30, Grs, Grs, Drt, Drt],[10, 30, Snd, Snd, Snd, Sndst]] Defaults to None.
+        Air (str, optional): The thing that permeates open spaces. Defaults to "Air".
+        Stn (str, optional): The thing that permeates everything below the ground. Defaults to "Stn".
+        Bedrock (str, optional): Seperates all entities from the endless void below. Defaults to "Bdr".
+        limit (_type_, optional): Prevents world generation indexes above the first index of this list and below the second index of this list. Keep in mind that Y levels are reversed, so being very high up = being at a very low Y level, and being deep underground = being at a high Y level. Defaults to None.
+        oreconfig (_type_, optional): {"iron": 50, 10, 40, IronOre}: in this configuration, the block known as "IronOre" has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block. Defaults to None.
+        originalYY (_type_, optional): Where is the original top solid block? Excellent for chunk building, allows for chunks connecting. Defaults to None.
+        oreeverywhere (bool, optional): Should ore be placed regardless of the top solid block? Excellent for making Underground chunks. Defaults to False.
+
+    Returns:
+        A 2D Array. This is your 2D world.
+    """
     # Air = literally the air, the thing that permeates open spaces.
     # Stn = the thing that permeates closed spaces underground.
-    # Bedrock = the bottom layer of the world that separates the player from the void.
+    # Bedrock = the bottom layer of the world that separates all entities from the void.
     # biomes = biomes, the first index should be the minimum size of the biome and the second should be the maximum size of the biome. For example:
     # biomes = [
     #    [10, 30, Grs, Grs, Drt, Drt],
@@ -393,7 +448,7 @@ def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
             else: # If it is at bedrock level,
                 space["y" + str(ylevel + 1)].append(Bedrock) # Put Bedrock there.
 
-    # - Add blocks (finally use biomes) -
+    # - Add blocks (finally use biomes) -   
     
     # Check limit
     if limit == None:
