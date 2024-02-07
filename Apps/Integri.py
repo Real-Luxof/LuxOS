@@ -7,19 +7,17 @@ import os
 l = "Loading." # Set l to "Loading."
 bar = "|          |" # Set bar to "|          |"
 print(l + "\n" + bar) # Display the loading bar
-def increment(num=1): # Fill the loading bar a bit num many times and then print it
-    global l # Globalize the variable l
-    global bar # Globalize the variable bar
-    api.clear() # Clear the screen with the LuxOS logo
-    for n in range(num): # For every number in num..
-        match l: # Check l, the rest is self-explanatory.
-            # If you really wanna know, it adds a dot to the end of the variable,
-            # and if the variable has 3 dots at the end, it resets it to 1.
+def increment(num=1):
+    """Fill the loading bar a bit num many times, and then print it."""
+    global l
+    global bar
+    api.clear() # Clear the screen and put the LuxOS logo there
+    for times in range(num):
+        match l:
             case "Loading.": l = "Loading.."
             case "Loading..": l = "Loading..."
             case "Loading...": l = "Loading."
-        match bar: # Check bar, The rest is self-explanatory.
-            # If you really wanna know, it fills the bar up a bit.
+        match bar:
             case "|          |": bar = "|█         |"
             case "|█         |": bar = "|██        |"
             case "|██        |": bar = "|███       |"

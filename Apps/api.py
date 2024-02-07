@@ -166,9 +166,8 @@ def display(screen, newscreen, widthofeachblock, heightofeachblock):
     Y = 0
     for Ycoord in newscreen: # Selects a list from newscreen.
         X = 0 # Set X to 0 for use in a new Y axis.
-        for block in Ycoord: # Selects a block in said list.
-            # Draws the block on screen,
-            # with it's color being what comes from its __repr__ function,
+        for block in Ycoord: # Selects a block in said list,
+            # Then it draws the block on screen with it's color being what comes from its __repr__ function.
             # the rest is self-explanatory.
             block = str(block) # Turn it into <type 'str'> instead of <class 'api.block'> or smth
             pygame.draw.rect(screen, pygame.Color(block), (X, Y, widthofeachblock, heightofeachblock))
@@ -542,32 +541,32 @@ def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
     # Ore -
     if oreconfig != None:
         if oreeverywhere == False:
-            for n in toplayer:
-                for i in list(oreconfig.values()):
+            for topblock in toplayer:
+                for ore in list(oreconfig.values()):
             
-                    spawnchance = random.randint(1, i[0])
+                    spawnchance = random.randint(1, ore[0])
 
-                    if spawnchance == 1 and reachableindex(space,"y" + str(n[0] + i[1])):
-                        area = random.randint(i[1], i[2])
-                        carea = n[0] + area
-                        if carea >= height:
-                            while carea >= height: carea -= 1
-                        if reachableindex(list(oreconfig.values()), i):
-                            space["y" + str(carea)][n[1]] = list(oreconfig.values())[list(oreconfig.values()).index(i)][3]
+                    if spawnchance == 1 and reachableindex(space,"y" + str(topblock[0] + ore[1])):
+                        area = random.randint(ore[1], ore[2])
+                        spawnlocation = topblock[0] + area
+                        if spawnlocation >= height:
+                            while spawnlocation >= height: spawnlocation -= 1
+                        if reachableindex(list(oreconfig.values()), ore):
+                            space["y" + str(spawnlocation)][topblock[1]] = list(oreconfig.values())[list(oreconfig.values()).index(ore)][3]
         elif oreeverywhere == True:
-            spacevalues = list(space.values())
-            for x in spacevalues:
-                for n in x:
-                    for i in list(oreconfig.values()):
-                        spawnchance = random.randint(1, i[0])
+            data = list(space.values())
+            for ylevel in data:
+                for xlevel in ylevel:
+                    for ore in list(oreconfig.values()):
+                        spawnchance = random.randint(1, ore[0])
 
                         if spawnchance == 1:
-                            area = random.randint(i[1], i[2])
+                            area = random.randint(ore[1], ore[2])
                             if reachableindex(space,"y" + str(area)):
                                 if area >= height:
-                                    while area >= height: carea -= 1
-                                if reachableindex(x, n):
-                                    space["y" + str(area)][x.index(n)] = list(oreconfig.values())[list(oreconfig.values()).index(i)][3]
+                                    while area >= height: spawnlocation -= 1
+                                if reachableindex(ylevel, xlevel):
+                                    space["y" + str(area)][ylevel.index(xlevel)] = list(oreconfig.values())[list(oreconfig.values()).index(ore)][3]
     
     # FINALLY return the world.
     
