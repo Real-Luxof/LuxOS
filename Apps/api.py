@@ -409,19 +409,25 @@ class entity:
 
 # World Generation -
 
-def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",limit=None,oreconfig=None,originalYY=None,oreeverywhere=False):
-    """Summary:
+def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FFFFFF',passable=True,breakablebytool=False,droptoolvalue=0,drop='Air',falling=False),Stn: block=block(image="#888888"),Bedrock: block=block(image="#111111"),limit: list=(2,18),oreconfig: dict={},originalYY: int=None,oreeverywhere: bool=False):
+    """Here it is. The absolute MAX I can go to. THE EPITOME OF MY LABOUR!!
+    
+    this took hours of my life.
+    i'm doing this for free.
+    i could've done other things with my time.
+    
+    Summary:
 
     Args:
         width (int, optional): The width of the world. Defaults to 30.
         height (int, optional): The weight of the world. Defaults to 20.
-        biomes (_type_, optional): Biomes. Define minimum size and maximum size with the first and second indexes. Randomly chosen. Example: [[10, 30, Grs, Grs, Drt, Drt],[10, 30, Snd, Snd, Snd, Sndst]] Defaults to None.
-        Air (str, optional): The thing that permeates open spaces. Defaults to "Air".
-        Stn (str, optional): The thing that permeates everything below the ground. Defaults to "Stn".
-        Bedrock (str, optional): Seperates all entities from the endless void below. Defaults to "Bdr".
-        limit (_type_, optional): Prevents world generation indexes above the first index of this list and below the second index of this list. Keep in mind that Y levels are reversed, so being very high up = being at a very low Y level, and being deep underground = being at a high Y level. Defaults to None.
-        oreconfig (_type_, optional): {"iron": 50, 10, 40, IronOre}: in this configuration, the block known as "IronOre" has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block. Defaults to None.
-        originalYY (_type_, optional): Where is the original top solid block? Excellent for chunk building, allows for chunks connecting. Defaults to None.
+        biomes (list, NOT optional): Biomes. Define minimum size and maximum size with the first and second indexes. Randomly chosen. Example: [[10, 30, Grs, Grs, Drt, Drt],[10, 30, Snd, Snd, Snd, Sndst]] Defaults to None.
+        Air (block, optional): The thing that permeates open spaces. Defaults to "Air".
+        Stn (block, optional): The thing that permeates everything below the ground. Defaults to "Stn".
+        Bedrock (block, optional): Seperates all entities from the endless void below. Defaults to "Bdr".
+        limit (tuple, optional): Prevents world generation indexes above the first index of this list and below the second index of this list. Keep in mind that Y levels are reversed, so being very high up = being at a very low Y level, and being deep underground = being at a high Y level. Defaults to None.
+        oreconfig (list, optional): {"iron": 50, 10, 40, IronOre}: in this configuration, the block known as "IronOre" has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block. If left alone it will default to None and the generator will pick a top solid block for you.
+        originalYY (int, optional): Where is the original top solid block? Excellent for chunk building, allows for chunks connecting. Defaults to None.
         oreeverywhere (bool, optional): Should ore be placed regardless of the top solid block? Excellent for making Underground chunks. Defaults to False.
 
     Returns:
@@ -469,6 +475,7 @@ def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
     toplayer = []
     toplayer.append([originalY, X])
     # Select the first biome
+    if biomes == []: print("HEY! YOU FORGOT TO GIVE ME ACTUAL BIOMES!!\n[BIOMES] IS LITERALLY JUST A BLANK LIST!"); AttributeError()
     uncbiome = random.choice(biomes)
     biome = []
     for i in uncbiome:
@@ -539,7 +546,7 @@ def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
     # Ore and Structure Generation
 
     # Ore -
-    if oreconfig != None:
+    if oreconfig != {}:
         if oreeverywhere == False:
             for topblock in toplayer:
                 for ore in list(oreconfig.values()):

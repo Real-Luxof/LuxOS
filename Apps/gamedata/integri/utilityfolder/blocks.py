@@ -22,19 +22,19 @@ print("Loading ore configuration..")
 
 global oreconfig # Declare oreconfig a global variable.
 oreconfig = { # oreconfigabove is used to define ore rarity and placement near the surface.
-    "Ironore": [50, 10, 40, Iro],
+    "Ironore": (50, 10, 40, Iro),
     # Iron ore has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block.
     # Its block is Iro.
-    "Coalore": [50, 20, 30, Col],
+    "Coalore": (50, 20, 30, Col),
     # Coal ore has a 1/50th (2%) chance of spawning between 20 and 30 blocks below the top solid block.
     # Its block is Col.
     
     # Switching to deeper blocks.
     
-    "Ironore1": [45, 40, 60, Iro],
+    "Ironore1": (45, 40, 60, Iro),
     # Iron ore has a 1/45th (2.2%) chance of spawning between 40 and 70 blocks below the top solid block.
     # Its block is Iro.
-    "Coalore1": [45, 30, 50, Col],
+    "Coalore1": (45, 30, 50, Col),
     # Coal ore has a 1/45th (2.2%) chance of spawning between 30 and 70 blocks below the top solid block.
     # Its block is Col.
     
@@ -43,20 +43,20 @@ oreconfig = { # oreconfigabove is used to define ore rarity and placement near t
     # Its block is [index3]."
     # I don't wanna continue commenting.
     
-    "Ironore2": [35, 70, 100, Iro],
-    "Coalore2": [35, 70, 100, Col],
+    "Ironore2": (35, 70, 100, Iro),
+    "Coalore2": (35, 70, 100, Col),
     
-    "Ironore2": [30, 100, 200, Iro],
-    "Coalore2": [30, 100, 200, Col],
+    "Ironore2": (30, 100, 200, Iro),
+    "Coalore2": (30, 100, 200, Col),
     
-    "Ironore2": [20, 200, 350, Iro],
-    "Coalore2": [20, 200, 350, Col],
+    "Ironore2": (20, 200, 350, Iro),
+    "Coalore2": (20, 200, 350, Col),
     
-    "Ironore2": [15, 350, 450, Iro],
-    "Coalore2": [15, 350, 450, Col],
+    "Ironore2": (15, 350, 450, Iro),
+    "Coalore2": (15, 350, 450, Col),
     
-    "Ironore2": [10, 450, 99999999999999, Iro],
-    "Coalore2": [10, 450, 99999999999999, Col],
+    "Ironore2": (10, 450, 99999999999999, Iro),
+    "Coalore2": (10, 450, 99999999999999, Col),
 }
 
 # Biome layers

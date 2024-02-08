@@ -54,12 +54,12 @@ def fullclear():
 def clear():
     os.system("cls")
     print("  _          _    _     _      _  ")
-    print(" | |        | |  | |    \ \   / / ")
-    print(" | |        | |  | |     \ \ / /  ")
-    print(" | |        | |  | |      \   /   ")
-    print(" | |        | |  | |      /   \   ")
-    print(" | |___     | |__| |     / / \ \  ")
-    print(" |_____|    |______|    /_/   \_\ ")
+    print(" | |        | |  | |    \\ \\   / / ")
+    print(" | |        | |  | |     \\ \\ / /  ")
+    print(" | |        | |  | |      \\   /   ")
+    print(" | |        | |  | |      /   \\   ")
+    print(" | |___     | |__| |     / / \\ \\  ")
+    print(" |_____|    |______|    /_/   \\_\\ ")
     print("    _______           ________    ")
     print("   |  ___  |         |   _____|   ")
     print("   | |   | |         |  |_____    ")
@@ -166,9 +166,8 @@ def display(screen, newscreen, widthofeachblock, heightofeachblock):
     Y = 0
     for Ycoord in newscreen: # Selects a list from newscreen.
         X = 0 # Set X to 0 for use in a new Y axis.
-        for block in Ycoord: # Selects a block in said list.
-            # Draws the block on screen,
-            # with it's color being what comes from its __repr__ function,
+        for block in Ycoord: # Selects a block in said list,
+            # Then it draws the block on screen with it's color being what comes from its __repr__ function.
             # the rest is self-explanatory.
             block = str(block) # Turn it into <type 'str'> instead of <class 'api.block'> or smth
             pygame.draw.rect(screen, pygame.Color(block), (X, Y, widthofeachblock, heightofeachblock))
@@ -410,19 +409,25 @@ class entity:
 
 # World Generation -
 
-def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",limit=None,oreconfig=None,originalYY=None,oreeverywhere=False):
-    """Summary:
+def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FFFFFF',passable=True,breakablebytool=False,droptoolvalue=0,drop='Air',falling=False),Stn: block=block(image="#888888"),Bedrock: block=block(image="#111111"),limit: list=(2,18),oreconfig: dict={},originalYY: int=None,oreeverywhere: bool=False):
+    """Here it is. The absolute MAX I can go to. THE EPITOME OF MY LABOUR!!
+    
+    this took hours of my life.
+    i'm doing this for free.
+    i could've done other things with my time.
+    
+    Summary:
 
     Args:
         width (int, optional): The width of the world. Defaults to 30.
         height (int, optional): The weight of the world. Defaults to 20.
-        biomes (_type_, optional): Biomes. Define minimum size and maximum size with the first and second indexes. Randomly chosen. Example: [[10, 30, Grs, Grs, Drt, Drt],[10, 30, Snd, Snd, Snd, Sndst]] Defaults to None.
-        Air (str, optional): The thing that permeates open spaces. Defaults to "Air".
-        Stn (str, optional): The thing that permeates everything below the ground. Defaults to "Stn".
-        Bedrock (str, optional): Seperates all entities from the endless void below. Defaults to "Bdr".
-        limit (_type_, optional): Prevents world generation indexes above the first index of this list and below the second index of this list. Keep in mind that Y levels are reversed, so being very high up = being at a very low Y level, and being deep underground = being at a high Y level. Defaults to None.
-        oreconfig (_type_, optional): {"iron": 50, 10, 40, IronOre}: in this configuration, the block known as "IronOre" has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block. Defaults to None.
-        originalYY (_type_, optional): Where is the original top solid block? Excellent for chunk building, allows for chunks connecting. Defaults to None.
+        biomes (list, NOT optional): Biomes. Define minimum size and maximum size with the first and second indexes. Randomly chosen. Example: [[10, 30, Grs, Grs, Drt, Drt],[10, 30, Snd, Snd, Snd, Sndst]] Defaults to None.
+        Air (block, optional): The thing that permeates open spaces. Defaults to "Air".
+        Stn (block, optional): The thing that permeates everything below the ground. Defaults to "Stn".
+        Bedrock (block, optional): Seperates all entities from the endless void below. Defaults to "Bdr".
+        limit (tuple, optional): Prevents world generation indexes above the first index of this list and below the second index of this list. Keep in mind that Y levels are reversed, so being very high up = being at a very low Y level, and being deep underground = being at a high Y level. Defaults to None.
+        oreconfig (list, optional): {"iron": 50, 10, 40, IronOre}: in this configuration, the block known as "IronOre" has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block. If left alone it will default to None and the generator will pick a top solid block for you.
+        originalYY (int, optional): Where is the original top solid block? Excellent for chunk building, allows for chunks connecting. Defaults to None.
         oreeverywhere (bool, optional): Should ore be placed regardless of the top solid block? Excellent for making Underground chunks. Defaults to False.
 
     Returns:
@@ -470,6 +475,7 @@ def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
     toplayer = []
     toplayer.append([originalY, X])
     # Select the first biome
+    if biomes == []: print("HEY! YOU FORGOT TO GIVE ME ACTUAL BIOMES!!\n[BIOMES] IS LITERALLY JUST A BLANK LIST!"); AttributeError()
     uncbiome = random.choice(biomes)
     biome = []
     for i in uncbiome:
@@ -540,34 +546,34 @@ def generate(width=30,height=20,biomes=None,Air="Air",Stn="Stn",Bedrock="Bdr",li
     # Ore and Structure Generation
 
     # Ore -
-    if oreconfig != None:
+    if oreconfig != {}:
         if oreeverywhere == False:
-            for n in toplayer:
-                for i in list(oreconfig.values()):
+            for topblock in toplayer:
+                for ore in list(oreconfig.values()):
             
-                    spawnchance = random.randint(1, i[0])
+                    spawnchance = random.randint(1, ore[0])
 
-                    if spawnchance == 1 and reachableindex(space,"y" + str(n[0] + i[1])):
-                        area = random.randint(i[1], i[2])
-                        carea = n[0] + area
-                        if carea >= height:
-                            while carea >= height: carea -= 1
-                        if reachableindex(list(oreconfig.values()), i):
-                            space["y" + str(carea)][n[1]] = list(oreconfig.values())[list(oreconfig.values()).index(i)][3]
+                    if spawnchance == 1 and reachableindex(space,"y" + str(topblock[0] + ore[1])):
+                        area = random.randint(ore[1], ore[2])
+                        spawnlocation = topblock[0] + area
+                        if spawnlocation >= height:
+                            while spawnlocation >= height: spawnlocation -= 1
+                        if reachableindex(list(oreconfig.values()), ore):
+                            space["y" + str(spawnlocation)][topblock[1]] = list(oreconfig.values())[list(oreconfig.values()).index(ore)][3]
         elif oreeverywhere == True:
-            spacevalues = list(space.values())
-            for x in spacevalues:
-                for n in x:
-                    for i in list(oreconfig.values()):
-                        spawnchance = random.randint(1, i[0])
+            data = list(space.values())
+            for ylevel in data:
+                for xlevel in ylevel:
+                    for ore in list(oreconfig.values()):
+                        spawnchance = random.randint(1, ore[0])
 
                         if spawnchance == 1:
-                            area = random.randint(i[1], i[2])
+                            area = random.randint(ore[1], ore[2])
                             if reachableindex(space,"y" + str(area)):
                                 if area >= height:
-                                    while area >= height: carea -= 1
-                                if reachableindex(x, n):
-                                    space["y" + str(area)][x.index(n)] = list(oreconfig.values())[list(oreconfig.values()).index(i)][3]
+                                    while area >= height: spawnlocation -= 1
+                                if reachableindex(ylevel, xlevel):
+                                    space["y" + str(area)][ylevel.index(xlevel)] = list(oreconfig.values())[list(oreconfig.values()).index(ore)][3]
     
     # FINALLY return the world.
     

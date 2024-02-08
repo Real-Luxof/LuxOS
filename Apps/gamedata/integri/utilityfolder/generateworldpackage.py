@@ -15,5 +15,5 @@ def generateworld(worldtype):
         case 7: newworldtype = [2000, 100, 1900]
         case 8: newworldtype = [3000, 150, 2850]
         case 9: newworldtype = [10000, 500, 9500]
-    world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,[newworldtype[1],newworldtype[2]],oreconfig,)
+    world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,)
     return [world, newworldtype]
