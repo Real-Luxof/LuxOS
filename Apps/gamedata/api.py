@@ -5,6 +5,8 @@ import os
 import random
 import multiprocessing
 from sys import exit as theactualsysexit
+try: import stubs
+except(ModuleNotFoundError): os.system("pip install stubs"); import stubs
 try: from playsound import playsound
 except(ModuleNotFoundError): os.system("pip install wheel"); os.system("pip install playsound"); from playsound import playsound
 try: import keyboard
@@ -329,11 +331,11 @@ class entity:
         self.passable = False
 
     # Move the entity
-    def move(self, direction: str, data: list, replace: block, speed: int=None):
+    def move(self, direction: str, data: list, replace: block, speed: int=0):
         """Move the entity. What did you think? Also great for gravity.
 
         Args:
-            direction (str): Can be "w", "a", "s", or "d".
+            direction (str): Can be "w", "a", "s", or "d". If you don't know what either of those options do, stop living under the mariana trench.
             data (2D Array): The world around the entity.
             replace (block class): What will be left in the space the entity once was.
             speed (int, optional): How many blocks forward should the entity go? Defaults to the speed of the entity.
@@ -345,39 +347,72 @@ class entity:
         # Load -
         
         direction = str.lower(direction)
-        final2 = replace
-        if speed != None: usespeed = speed
+        final2 = replace # lol i don't know why, this is a pretty old line of code
+        if speed != 0: usespeed = speed
         else: usespeed = self.speed
         
         # Main -
         
         # dw about this hunk of junk below
         # unless there's a problem with it
-        # then deal with it yourself or contact Luxof (hopefully he's not dead)
+        # then deal with it yourself or contact Luxof (that's me) (hopefully he's not dead)
+        
+        # what a way to start off some of the ugliest code my past self has ever written
+        # oh well time to comment it all
+        # [i] doesn't matter here, we're just tryna do stuff multiple times
+        # oh, you wanna teleport? just do entity.position[newX, newY] or something ffs
         for i in range(usespeed):
-            if direction == "w" and reachableindex(data, self.position[1] - 1) and not self.position[1] - 1 < 0:
+            # If we need to go up and the coordinate above the entity isn't out of bounds or a negative number:
+            if direction == "w" and reachableindex(data, self.position[1] - 1) and self.position[1] - 1 > -1:
+                # Then if the block above the entity is passable:
                 if data[self.position[1] - 1][self.position[0]].passable:
+                    # Set the block at the entity's current position to [replace].
                     data[self.position[1]][self.position[0]] = replace
+                    # Set [final2] to the entity's final position.
+                    # (Name left over from an era where final existed)
                     final2 = data[self.position[1] - 1][self.position[0]]
+                    # Then actually put the entity at its final position.
                     data[self.position[1] - 1][self.position[0]] = self
+                    # Change the entity's Y coordinate.
                     self.position[1] -= 1
-            elif direction == "a" and reachableindex(data[self.position[1]], self.position[0] - 1) and not self.position[0] - 1 < 0:
+            # If we need to left and the coordinate to the left of the entity isn't out of bounds or a negative number:
+            elif direction == "a" and reachableindex(data[self.position[1]], self.position[0] - 1) and self.position[0] - 1 > -1:
+                # Then if the block to the left of the entity is passable:
                 if data[self.position[1]][self.position[0] - 1].passable:
+                    # Set the block at the entity's current position to [replace].
                     data[self.position[1]][self.position[0]] = replace
+                    # Set [final2] to the entity's final position.
+                    # (Name left over from an era where final existed)
                     final2 = data[self.position[1]][self.position[0] - 1]
+                    # Then actually put the entity at its final position.
                     data[self.position[1]][self.position[0] - 1] = self
+                    # Change the entity's X coordinate.
                     self.position[0] -= 1
+            # If we need to go down and the coordinate below the entity isn't out of bounds:
             elif direction == "s" and reachableindex(data, self.position[1] + 1):
+                # Then if the block below the entity is passable:
                 if data[self.position[1] + 1][self.position[0]].passable:
+                    # Set the block at the entity's current position to [replace].
                     data[self.position[1]][self.position[0]] = replace
+                    # Set [final2] to the entity's final position.
+                    # (Name left over from an era where final existed)
                     final2 = data[self.position[1] + 1][self.position[0]]
+                    # Then actually put the entity at its final position.
                     data[self.position[1] + 1][self.position[0]] = self
+                    # Change the entity's Y coordinate.
                     self.position[1] += 1
+            # If we need to go right and the coordinate to the left of the entity isn't out of bounds:
             elif direction == "d" and reachableindex(data[self.position[1]], self.position[0] + 1):
+                # Then if the block to the right of the entity is passable:
                 if data[self.position[1]][self.position[0] + 1].passable:
+                    # Set the block at the entity's current position to [replace].
                     data[self.position[1]][self.position[0]] = replace
+                    # Set [final2] to the entity's final position.
+                    # (Name left over from an era where final existed)
                     final2 = data[self.position[1]][self.position[0] + 1]
+                    # Then actually put the entity at its final position.
                     data[self.position[1]][self.position[0] + 1] = self
+                    # Change the entity's X coordinate.
                     self.position[0] += 1
             
         # Return -
