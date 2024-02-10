@@ -405,13 +405,14 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
     
     this took hours of my life.
     i'm doing this for free.
+    nobody will ever see this.
     i could've done other things with my time.
     
     Summary:
 
     Args:
         width (int, optional): The width of the world. Defaults to 30.
-        height (int, optional): The weight of the world. Defaults to 20.
+        height (int, optional): The height of the world. Defaults to 20.
         biomes (list, NOT optional): Biomes. Define minimum size and maximum size with the first and second indexes. Randomly chosen. Example: [[10, 30, Grs, Grs, Drt, Drt],[10, 30, Snd, Snd, Snd, Sndst]] Defaults to None.
         Air (block, optional): The thing that permeates open spaces. Defaults to "Air".
         Stn (block, optional): The thing that permeates everything below the ground. Defaults to "Stn".
@@ -458,11 +459,11 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
             originalY = random.randint(limit[0],limit[1])
     else:
         originalY = originalYY
-    # Y is used for biomes, to generate things belwo the top layer.
+    # Y is used for biomes, to generate things below the top layer.
     Y = originalY
-    # X is used for.. Well, X.
     X = 0
-    # Used later for structure and ore generation
+    # Used later for structure and ore generation.
+    # It means "Top layer", not "To player".
     toplayer = []
     toplayer.append([originalY, X])
     # Select the first biome
@@ -471,25 +472,26 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
     biome = []
     for i in uncbiome:
         biome.append(i)
-    minim = biome[0] # Set the minimum biome size
-    maxim = biome[1] # Set the maximum biome size
+    minim = biome[0]
+    maxim = biome[1]
     del biome[0] # Delete the minimum biome size FROM THE BIOME VARIABLE
     del biome[0] # Delete the maximum biome size FROM THE BIOME VARIABLE
-    biomelength = 1 # Set the initial biome length to 1
+    biomelength = 1
     internalmaximum = random.randint(minim, maxim) # Set a random internal maximum biome size FOR THIS BIOME ONLY. Allows for varying biome sizes.
+    heightlimit = 0
     # First initial layer
     space["y" + str(Y)][X] = biome[0]
 
     for i in range(width): # Width has been chosen for 3. (1)
 
-        for i in range(height): # Height has been chosen to use Y.
-            if Y == 0: Y += 1 # If Y is somehow higher than the height limit, increase it.
-            elif Y < 0: Y = abs(Y); Y += 1 # If Y is somehow even HIGHER than the height limit, convert it to a positive or at least 1.
+        for i in range(height):
+            if Y == heightlimit: Y += 1
+            elif heightlimit > Y: Y = abs(Y); Y += 1
             elif Y >= height:
                 while Y >= height: Y-= 1 # If Y is somehow lower than or at the Bedrock layer, decrease it.
-            if (i - 1) >= 0 and space["y" + str(Y)][X] != Bedrock: # If Y is not 0 and the currently selected Block isn't Bedrock.
-                if reachableindex(biome, i - 1): space["y" + str(Y)][X] = biome[i - 1] # If the biome hasn't ran out, apply the latest layer.
-                elif reachableindex(biome, i - 1) == False: space["y" + str(Y)][X] = Stn # Otherwise, may the block be Stone.
+            if (i - 1) >= 0 and space["y" + str(Y)][X] != Bedrock: # If Y is higher than or equal to 0 and the currently selected Block isn't Bedrock.
+                if reachableindex(biome, i - 1): space["y" + str(Y)][X] = biome[i - 1] # If [biome] hasn't ran out, apply the latest layer.
+                elif reachableindex(biome, i - 1) == False: space["y" + str(Y)][X] = Stn # Otherwise, make the block Stone.
                 if Y < height: Y += 1 # If Y is not at the Bedrock layer, increase it.
         # nextplace can be one of three values chosen randomly: 1, 2, and 3.
         # No matter what value nextplace is, X will always increase as long as it doesn't surpass width while doing so.
