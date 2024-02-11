@@ -401,7 +401,7 @@ class entity:
 
 # World Generation -
 
-def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#FFFFFF',passable=True,breakablebytool=False,droptoolvalue=0,drop='Air',falling=False),Stn: block=block(image="#888888"),Bedrock: block=block(image="#111111"),limit: list=(2,98),oreconfig: dict={},originalYY: int=None,oreeverywhere: bool=False,mountainlikelihood: int=7,averagesteepness: int=40,averagelength: int=20,canyonlikelihood: int=4,averagesteepnessofcanyon: int=30,averagelengthofcanyon: int=20):
+def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#FFFFFF',passable=True,breakablebytool=False,droptoolvalue=0,drop='Air',falling=False),Stn: block=block(image="#888888"),Bedrock: block=block(image="#111111"),limit: list=(2,98),oreconfig: dict={},originalYY: int=None,oreeverywhere: bool=False,mountainlikelihood: int=7,averagesteepness: int=40,averagelength: int=20,canyonlikelihood: int=4,averagesteepnessofcanyon: int=30,averagelengthofcanyon: int=20,logging: bool=True):
     """Here it is. The absolute MAX I can go to. THE EPITOME OF MY LABOUR!!
     
     this took hours of my life.
@@ -428,6 +428,7 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
         canyonlikelihood (int, optional): mountainlikelihood but for canyons. Defaults to 4%.
         averagesteepnessofcanyon (int, optional): averagesteepness but for canyons. Defaults to 30%.
         averagelengthofcanyon (int, optional): averagelength but for canyons. Defaults to 20.
+        logging (bool, optional): Log whatever it's generating right now? gives the player something to look at while waiting for the world to load.
 
     Returns:
         A 2D Array. This is your 2D world.
@@ -443,6 +444,8 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
     
     # - Variable Checking -
     
+    if logging: print("Checkin' Variables.")
+    
     # Select the first biome
     if biomes == []: print("HEY! YOU FORGOT TO GIVE ME ACTUAL BIOMES!!\n[BIOMES] IS LITERALLY JUST A BLANK LIST!"); ValueError()
     uncbiome = random.choice(biomes)
@@ -450,22 +453,29 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
     
     # - Create the initial space -
     
+    if logging: print("Initial Space time!")
     space = {} # Create the empty world
     for ylevel in range(height): # For every number in height,
         space["y" + str(ylevel + 1)] = [] # Add a new Ylevel in "space",
+        if logging: print("Oooo, that's nice, a new Y level.")
         for xlevel in range(width): # And then for every number in width,
             if ylevel != range(height)[-1]: # If it's not at bedrock,
                 space["y" + str(ylevel + 1)].append(Air) # Then put Air there.
             else: # If it is at bedrock level,
                 space["y" + str(ylevel + 1)].append(Bedrock) # Put Bedrock there.
+    if logging: print("Initial space time over.")
 
     # - Add blocks (finally use biomes) - 
     
     # Initalize some variables  
     
+    if logging: print("Just initializing variables now!")
+    
     # Check limit
     if limit == None:
         limit = [5, height + 1]
+
+    if logging: print("Wow, limit check done.")
     
     # The top solid layer of the world
     if originalYY == None:
@@ -475,6 +485,8 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
             originalY = random.randint(limit[0],limit[1])
     else:
         originalY = originalYY
+    
+    if logging: print("Original Ys are done!")
     
     # [Y] is used for biomes, to generate things below the top layer.
     Y = originalY
@@ -496,6 +508,8 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
     # First initial layer
     space["y" + str(Y)][X] = biome[0]
     
+    if logging: print("Lots of variable initalization is done!")
+    
     mountaindrive = False
     canyondrive = False
     totallength = 0
@@ -503,6 +517,8 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
     length = random.randint(averagelength - floor(averagelength / 2 / 2), averagelength + floor(averagelength / 2 / 2))
     lengthofcanyon = random.randint(averagelengthofcanyon - floor(averagelengthofcanyon / 2 / 2), averagelengthofcanyon + floor(averagelengthofcanyon / 2 / 2))
 
+    if logging: print("Mountains and Canyons: Loaded!"); print("Now it's time for actual biome generation.")
+    
     for i in range(width):
 
         for i in range(height):
@@ -515,41 +531,67 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
             # After that, let's say [biome] is ["Dirt", "Dirt", "Dirtier Dirt"].
             # This means that every generated [Y] level while that [biome] is active will look like [Dirt] on top, [Dirt] at the second layer, then [Dirtier Dirt] at the third.
             # After that, it's all [Stn] and maybe some ores until the [Bedrock] layer.
-            if Y == heightlimit: Y += 1
-            elif heightlimit > Y: Y = abs(Y); Y += 1
+            if Y == heightlimit:
+                Y += 1
+            elif heightlimit > Y:
+                Y = abs(Y)
+                Y += 1
             elif Y >= height:
-                while Y >= height: Y-= 1 # If Y is somehow lower than or at the Bedrock layer, decrease it.
+                while Y >= height:
+                    Y-= 1 # If Y is somehow lower than or at the Bedrock layer, decrease it.
+            if logging: print("Y problems sorted.")
             if (i - 1) >= 0 and space["y" + str(Y)][X] != Bedrock: # If Y is higher than or equal to 0 and the currently selected Block isn't Bedrock.
-                if reachableindex(biome, i - 1): space["y" + str(Y)][X] = biome[i - 1] # If [biome] hasn't ran out, apply the latest layer.
-                elif reachableindex(biome, i - 1) == False: space["y" + str(Y)][X] = Stn # Otherwise, make the block Stone.
+                if reachableindex(biome, i - 1):
+                    if logging: print("Ooo, proper biome generation!")
+                    space["y" + str(Y)][X] = biome[i - 1] # If [biome] hasn't ran out, apply the latest layer.
+                elif reachableindex(biome, i - 1) == False:
+                    if logging: print("Addin' stone.")
+                    space["y" + str(Y)][X] = Stn # Otherwise, make the block Stone.
                 if Y < height: Y += 1 # If Y is not at the Bedrock layer, increase it.
         # nextplace can be one of three values chosen randomly: 1, 2, and 3.
         # No matter what value nextplace is, X will always increase as long as it doesn't surpass width while doing so.
         # Also do  stuff with mountains and canyons.
+        if logging: print("More variables! Yay!")
         above = 1
         below = 3
-        if random.randint(1, 100) <= mountainlikelihood and canyondrive != True: mountaindrive = True
-        if random.randint(1, 100) <= canyonlikelihood and mountaindrive != True: canyondrive = True
+        if logging: print("Entering the territory of mountains and canyons..")
+        if random.randint(1, 100) <= mountainlikelihood and canyondrive != True:
+            mountaindrive = True
+            if logging: print("MOUNTAIN.. DRIVE!!")
+        if random.randint(1, 100) <= canyonlikelihood and mountaindrive != True:
+            canyondrive = True
+            if logging: print("CANYON.. DRIVE!!")
         if mountaindrive == True:
+            if logging: print(f"Total length of the current mountain? oh, that's {totallength}")
             if random.randint(1, 100) <= averagesteepness: 
-                if totallength < floor(length / 2): below = 2
-                else: above = 2
+                if totallength < floor(length / 2): below -= 1
+                else: above += 1
+                if totallength >= length:
+                    if logging: print("Mountain Drive.. Off!")
+                    mountaindrive = False
             totallength += 1
         elif canyondrive == True:
+            if logging: print(f"Yo, want the total length of the current canyon? No? screw you, it's {totallengthofcanyon}")
             if random.randint(1, 100) <= averagesteepnessofcanyon:
-                if totallengthofcanyon < floor(lengthofcanyon / 2): above = 2
-                else: below = 2
+                if totallengthofcanyon < floor(lengthofcanyon / 2): above += 1
+                else: below -= 1
+                if totallengthofcanyon >= lengthofcanyon:
+                    if logging: print("Canyon Drive.. Off!")
+                    canyondrive = False
             totallengthofcanyon += 1
         if mountaindrive == False and totallength != 0: totallength = 0
         elif canyondrive == False and totallengthofcanyon != 0: totallengthofcanyon = 0
         if originalY + 1 < limit[0] or originalY + 1 < 1:
-            above = 2
+            if logging: print("Whoops, hit the height limit.")
+            above += 1
         if originalY - 1 > limit[1] or originalY - 1 > (height - 1):
-            below = 2
+            if logging: print("Oh no, that's too low.")
+            below -= 1
         
         try: nextplace = random.randint(above,below)
         except(ValueError): nextplace = 2
         
+        if logging: print("Mountain'n'Canyon work done. Moving on to next place work.")
         if X < width - 1:
             if nextplace == 1: # If nextplace is equal to 1, the block placed in the next X coord's Y coord will be higher than the last X coord block's Y coord.
                 originalY -= 1
@@ -566,7 +608,9 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
                 # Otherwise select a different value for nextplace.
                 # Then start generating blocks from the top to the bottom."
         toplayer.append([originalY, X])
+        if logging: print("Added to top layer.")
         biomelength += 1
+        if logging: print("Added to biome length.")
         # Determine if it's time to switch up the biome
         if biomelength > internalmaximum:
             # If so, set some variables to some stuff and pick a new biome
@@ -580,14 +624,21 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
             del biome[0]
             biomelength = 1
             internalmaximum = random.randint(minim, maxim)
+            if logging: print("Did some weird shit with biome variables.")
+    
+    if logging: print("Wow, all that done. Now for Ores..")
     
     # Ore and Structure Generation
 
     # Ore -
     if oreconfig != {}:
+        if logging: print("Looks like they gave us Ores.")
         if oreeverywhere == False:
+            if logging: print("Below top block!")
             for topblock in toplayer:
+                if logging: print("Next topblock!")
                 for ore in list(oreconfig.values()):
+                    if logging: print("Next ore, bruh.")
             
                     spawnchance = random.randint(1, ore[0])
 
@@ -598,11 +649,18 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
                             while spawnlocation >= height: spawnlocation -= 1
                         if reachableindex(list(oreconfig.values()), ore):
                             space["y" + str(spawnlocation)][topblock[1]] = list(oreconfig.values())[list(oreconfig.values()).index(ore)][3]
+                            if logging: print("Yay, we added an ore!")
+                    else:
+                        if logging: print("Oh no, no ore!")
         elif oreeverywhere == True:
+            if logging: print("We don't care where top block is now, time for ores.")
             data = list(space.values())
             for ylevel in data:
+                if logging: print("Next ylevel!")
                 for xlevel in ylevel:
+                    if logging: print("Next xlevel!")
                     for ore in list(oreconfig.values()):
+                        if logging: print("Next ore!")
                         spawnchance = random.randint(1, ore[0])
 
                         if spawnchance == 1:
@@ -612,9 +670,12 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
                                     while area >= height: spawnlocation -= 1
                                 if reachableindex(ylevel, xlevel):
                                     space["y" + str(area)][ylevel.index(xlevel)] = list(oreconfig.values())[list(oreconfig.values()).index(ore)][3]
+                                    if logging: print("Yay, ore added!")
+                        else:
+                            if logging: print("Oh no, no ore added!")
     
     # FINALLY return the world.
-    
+    if logging: print("Alright, time to give you this world. Enjoy.")
     return list(space.values())
 
 # Initiate an actual window to display stuff.
