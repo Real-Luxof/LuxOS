@@ -641,10 +641,15 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
                     spawnchance = random.randint(1, ore[0])
 
                     if spawnchance == 1 and reachableindex(space,"y" + str(topblock[0] + ore[1])):
-                        area = random.randint(ore[1], ore[2])
+                        if ore[2] < height: area = random.randint(ore[1], ore[2])
+                        elif ore[2] >= height:
+                            if ore[1] < height: area = random.randint(ore[1], height - 1)
+                            elif ore[1] >= height: pass
                         spawnlocation = topblock[0] + area
                         if spawnlocation >= height:
-                            while spawnlocation >= height: spawnlocation -= 1
+                            while spawnlocation >= height:
+                                spawnlocation -= 1
+                                if logging: print(f"Kind of encountered a stop here.. Gotta fix the spawn location since it's below or at the Bedrock level, which is at {height} while the spawn location is at {spawnlocation}")
                         if reachableindex(list(oreconfig.values()), ore):
                             space["y" + str(spawnlocation)][topblock[1]] = list(oreconfig.values())[list(oreconfig.values()).index(ore)][3]
                             if logging: print("Yay, we added an ore!")
