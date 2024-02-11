@@ -13,6 +13,7 @@ try: import keyboard
 except(ModuleNotFoundError): os.system("pip install keyboard"); import keyboard
 try: import pygame
 except(ModuleNotFoundError): os.system("pip install pygame"); import pygame
+from math import floor
 
 # - Misceallanous -
 
@@ -400,7 +401,7 @@ class entity:
 
 # World Generation -
 
-def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FFFFFF',passable=True,breakablebytool=False,droptoolvalue=0,drop='Air',falling=False),Stn: block=block(image="#888888"),Bedrock: block=block(image="#111111"),limit: list=(2,18),oreconfig: dict={},originalYY: int=None,oreeverywhere: bool=False):
+def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#FFFFFF',passable=True,breakablebytool=False,droptoolvalue=0,drop='Air',falling=False),Stn: block=block(image="#888888"),Bedrock: block=block(image="#111111"),limit: list=(2,98),oreconfig: dict={},originalYY: int=None,oreeverywhere: bool=False,mountainlikelihood: int=7,averagesteepness: int=40,averagelength: int=20,canyonlikelihood: int=4,averagesteepnessofcanyon: int=30,averagelengthofcanyon: int=20):
     """Here it is. The absolute MAX I can go to. THE EPITOME OF MY LABOUR!!
     
     this took hours of my life.
@@ -411,8 +412,8 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
     Summary:
 
     Args:
-        width (int, optional): The width of the world. Defaults to 30.
-        height (int, optional): The height of the world. Defaults to 20.
+        width (int, optional): The width of the world. Defaults to 400.
+        height (int, optional): The height of the world. Defaults to 100.
         biomes (list, NOT optional): Biomes. Define minimum size and maximum size with the first and second indexes. Randomly chosen. Example: [[10, 30, Grs, Grs, Drt, Drt],[10, 30, Snd, Snd, Snd, Sndst]] Defaults to None.
         Air (block, optional): The thing that permeates open spaces. Defaults to "Air".
         Stn (block, optional): The thing that permeates everything below the ground. Defaults to "Stn".
@@ -421,6 +422,12 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
         oreconfig (list, optional): {"iron": 50, 10, 40, IronOre}: in this configuration, the block known as "IronOre" has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block. If left alone it will default to None and the generator will pick a top solid block for you.
         originalYY (int, optional): Where is the original top solid block? Excellent for chunk building, allows for chunks connecting. Defaults to None.
         oreeverywhere (bool, optional): Should ore be placed regardless of the top solid block? Excellent for making Underground chunks. Defaults to False.
+        mountainlikelihood (int, optional): How likely are mountains to spawn? calculates as "if random.randint(1, 100) <= mountainlikelihood" and if that results in True, turns on Mountain generation. Should NOT be over 100. Defaults to 7%.
+        averagesteepness (int, optional): When mountain drive is on, how likely should it be that the next block is above the previous block? Defaults to 40%.
+        averagelength (int, optional): How long should a mountain drive last? Defaults to 20.
+        canyonlikelihood (int, optional): mountainlikelihood but for canyons. Defaults to 4%.
+        averagesteepnessofcanyon (int, optional): averagesteepness but for canyons. Defaults to 30%.
+        averagelengthofcanyon (int, optional): averagelength but for canyons. Defaults to 20.
 
     Returns:
         A 2D Array. This is your 2D world.
@@ -434,6 +441,13 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
     #    [10, 30, Snd, Snd, Snd, Sndst]
     #]
     
+    # - Variable Checking -
+    
+    # Select the first biome
+    if biomes == []: print("HEY! YOU FORGOT TO GIVE ME ACTUAL BIOMES!!\n[BIOMES] IS LITERALLY JUST A BLANK LIST!"); ValueError()
+    uncbiome = random.choice(biomes)
+    if mountainlikelihood >= 100: print("HEY! MOUNTAINLIKELIHOOD SHOULD NOT BE OVER 100!!"); ValueError()
+    
     # - Create the initial space -
     
     space = {} # Create the empty world
@@ -445,7 +459,9 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
             else: # If it is at bedrock level,
                 space["y" + str(ylevel + 1)].append(Bedrock) # Put Bedrock there.
 
-    # - Add blocks (finally use biomes) -   
+    # - Add blocks (finally use biomes) - 
+    
+    # Initalize some variables  
     
     # Check limit
     if limit == None:
@@ -459,32 +475,46 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
             originalY = random.randint(limit[0],limit[1])
     else:
         originalY = originalYY
-    # Y is used for biomes, to generate things below the top layer.
+    
+    # [Y] is used for biomes, to generate things below the top layer.
     Y = originalY
     X = 0
     # Used later for structure and ore generation.
     # It means "Top layer", not "To player".
     toplayer = []
     toplayer.append([originalY, X])
-    # Select the first biome
-    if biomes == []: print("HEY! YOU FORGOT TO GIVE ME ACTUAL BIOMES!!\n[BIOMES] IS LITERALLY JUST A BLANK LIST!"); AttributeError()
-    uncbiome = random.choice(biomes)
     biome = []
     for i in uncbiome:
         biome.append(i)
     minim = biome[0]
     maxim = biome[1]
-    del biome[0] # Delete the minimum biome size FROM THE BIOME VARIABLE
-    del biome[0] # Delete the maximum biome size FROM THE BIOME VARIABLE
+    del biome[0] # Delete the minimum biome size FROM [BIOME]
+    del biome[0] # Delete the maximum biome size FROM [BIOME]
     biomelength = 1
     internalmaximum = random.randint(minim, maxim) # Set a random internal maximum biome size FOR THIS BIOME ONLY. Allows for varying biome sizes.
     heightlimit = 0
     # First initial layer
     space["y" + str(Y)][X] = biome[0]
+    
+    mountaindrive = False
+    canyondrive = False
+    totallength = 0
+    totallengthofcanyon = 0
+    length = random.randint(averagelength - floor(averagelength / 2 / 2), averagelength + floor(averagelength / 2 / 2))
+    lengthofcanyon = random.randint(averagelengthofcanyon - floor(averagelengthofcanyon / 2 / 2), averagelengthofcanyon + floor(averagelengthofcanyon / 2 / 2))
 
-    for i in range(width): # Width has been chosen for 3. (1)
+    for i in range(width):
 
         for i in range(height):
+            # This comment wall was just a discord message simplifying this code for some other guy, who then suggested I add it to the actual code.
+            # I added so many checks for [Y], the [heightlimit], and the [Bedrock] level because it somehow kept being there which is weird ash.
+            # Also, no, it's not for figuring out where [Bedrock] is depending on the [biome],
+            # it's for generating layers depending on the [biome].
+            # The [Bedrock] layer is always at the bottom of the [space].
+            # [biomes] is a list that contains lists which are the actual biomes. [biome] is randomly picked and a random number is chosen between its max length and minimum length.
+            # After that, let's say [biome] is ["Dirt", "Dirt", "Dirtier Dirt"].
+            # This means that every generated [Y] level while that [biome] is active will look like [Dirt] on top, [Dirt] at the second layer, then [Dirtier Dirt] at the third.
+            # After that, it's all [Stn] and maybe some ores until the [Bedrock] layer.
             if Y == heightlimit: Y += 1
             elif heightlimit > Y: Y = abs(Y); Y += 1
             elif Y >= height:
@@ -495,8 +525,23 @@ def generate(width: int=30,height=20,biomes: list=[],Air: block=block(image='#FF
                 if Y < height: Y += 1 # If Y is not at the Bedrock layer, increase it.
         # nextplace can be one of three values chosen randomly: 1, 2, and 3.
         # No matter what value nextplace is, X will always increase as long as it doesn't surpass width while doing so.
+        # Also do  stuff with mountains and canyons.
         above = 1
         below = 3
+        if random.randint(1, 100) <= mountainlikelihood and canyondrive != True: mountaindrive = True
+        if random.randint(1, 100) <= canyonlikelihood and mountaindrive != True: canyondrive = True
+        if mountaindrive == True:
+            if random.randint(1, 100) <= averagesteepness: 
+                if totallength < floor(length / 2): below = 2
+                else: above = 2
+            totallength += 1
+        elif canyondrive == True:
+            if random.randint(1, 100) <= averagesteepnessofcanyon:
+                if totallengthofcanyon < floor(lengthofcanyon / 2): above = 2
+                else: below = 2
+            totallengthofcanyon += 1
+        if mountaindrive == False and totallength != 0: totallength = 0
+        elif canyondrive == False and totallengthofcanyon != 0: totallengthofcanyon = 0
         if originalY + 1 < limit[0] or originalY + 1 < 1:
             above = 2
         if originalY - 1 > limit[1] or originalY - 1 > (height - 1):
