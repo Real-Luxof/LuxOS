@@ -539,15 +539,13 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
             elif Y >= height:
                 while Y >= height:
                     Y-= 1 # If Y is somehow lower than or at the Bedrock layer, decrease it.
-            if logging: print("Y problems sorted.")
             if (i - 1) >= 0 and space["y" + str(Y)][X] != Bedrock: # If Y is higher than or equal to 0 and the currently selected Block isn't Bedrock.
                 if reachableindex(biome, i - 1):
-                    if logging: print("Ooo, proper biome generation!")
                     space["y" + str(Y)][X] = biome[i - 1] # If [biome] hasn't ran out, apply the latest layer.
                 elif reachableindex(biome, i - 1) == False:
-                    if logging: print("Addin' stone.")
                     space["y" + str(Y)][X] = Stn # Otherwise, make the block Stone.
                 if Y < height: Y += 1 # If Y is not at the Bedrock layer, increase it.
+        if logging: print("Y problems sorted.")
         # nextplace can be one of three values chosen randomly: 1, 2, and 3.
         # No matter what value nextplace is, X will always increase as long as it doesn't surpass width while doing so.
         # Also do  stuff with mountains and canyons.
