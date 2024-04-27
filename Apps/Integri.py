@@ -316,29 +316,18 @@ while True:
     option = None # Set the currently selected option (variable name option's value) to None.
     displaytitle() # Display the title.
     # Present the options and how to select one of them.
-    print(Fore.LIGHTBLACK_EX + "Click the number before the option to select it.")
+    print(Fore.LIGHTBLACK_EX + "Press the number before the option to select it.")
     print(Fore.GREEN +         "                1. Singleplayer                 ")
     print(Fore.BLUE +          "                2. Multiplayer                  ")
     print(Fore.YELLOW +        "                3. Options                      ")
     print(Fore.RED +           "                4. Quit                         ")
     print()
     
-    # Decide what to do with the keyboard input.
-    while True:
-        if api.ispressed_key("1"):
-            option = 1
-            break
-        elif api.ispressed_key("2"):
-            option = 2
-            break
-        elif api.ispressed_key("3"):
-            option = 3
-            break
-        elif api.ispressed_key("4"):
-            quit()
+    # Take keybaord input.
+    option = api.wait_any()
     
-    # Decide what to do with the variable option's value.
-    if option == 1:
+    # Decide what to do with the keyboard input.
+    if option == "1":
         displaytitle()
         
         # Initialize the save options
@@ -350,7 +339,7 @@ while True:
             Saves = checksaves()
             displaytitle()
             print(Fore.LIGHTBLACK_EX + "            Please select an option.            ")
-            print("Click the number before the option to select it.")
+            print("Press the number before the option to select it.")
             print(Fore.GREEN + "                1. " + Saves[0])
             print("                2. " + Saves[1])
             print("                3. " + Saves[2])
@@ -371,16 +360,17 @@ while True:
                             break
                     displaytitle()
                     print(Fore.LIGHTBLACK_EX + "           Please select a world size.          ")
-                    print("Click the number before the option to select it.\n")
-                    print(Fore.GREEN + "1. Very small - I'm 35 and have two seconds for \nthis game.\n")
-                    print("2. Small - I'm 30 and have about an hour for\nthis game.\n")
-                    print(Fore.CYAN + "3. Medium - I want to play alone.\n")
-                    print("4. Medium Large - I want the loading to hurt.\n")
-                    print(Fore.BLUE + "5. Large - Hurry up, the boys are here.\n")
-                    print("6. Very Large - Yeah, sure, I can wait a century \nor two.\n")
-                    print(Fore.YELLOW + "7. Extremely Large - Is this thing cythonized?\nOh it isn't? crap.\n")
-                    print("8. Too Large - I just don't ever want to worry\nabout world size.\n")
-                    print(Fore.RED + "9. Never stop playing - I never want to stop\nplaying, and also waiting for the world to generate.\n")
+                    print(                     "Press the number before the option to select it.\nPress the number before the option to select it.\nPress the number before the option to select it.\n")
+                    print(Fore.GREEN +         "1. Very, very small - I'm just checking the game\nout for two seconds.\n")
+                    print(                     "2. Very small - I'm 35 and have an hour for this\ngame.\n")
+                    print(Fore.CYAN +          "3. Small - I have two hours to mess around.\n")
+                    print(                     "4. Medium - I'm new and want to check out a smal\nl world size before moving on to something bigge\nr.\n")
+                    print(Fore.BLUE +          "5. Medium Large - I'm not gonna start this game \nup again for at least 2 months after about 2 day\ns.\n")
+                    print(                     "6. Large - I want a reasonable world to play alo\nne.\n")
+                    print(Fore.YELLOW +        "7. A bit Larger - I'm not messing around, think \nthis game is fun, and wanna play it for a lil' w\nhile\n")
+                    print(                     "8. Very Large - I don't mind waiting 30 seconds \nfor the world to generate.\n")
+                    print(Fore.RED +           "9. MAXIMUM - 800 MB save file size is a reasonab\nle price to pay for a big world. Every other opt\nion is pathetic, weak, and not enough for me.\n")
+                    print(Fore.LIGHTBLACK_EX + "0. Back to Menu.")
                     
                     availableoptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
                     while True:
@@ -482,6 +472,7 @@ while True:
                     movedup = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
                     api.wait(1/20) # "20 tps/ups"
                 quittime = True
+                pygame.exit()
                 
                 print("Saving..")
                 world = newdata[0] # Quickly update the world
