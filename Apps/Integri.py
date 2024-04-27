@@ -412,7 +412,8 @@ while True:
                     print("Success. We will get to work now.")
                 else:
                     print("Loading..")
-                    save = import_module("gamedata.integri.saves." + str(Saves[int(selectedsave) - 1]))
+                    savename = str(Saves[int(selectedsave) - 1])
+                    save = import_module("gamedata.integri.saves." + savename)
                     plr = save.plr
                     world = save.world
                     worldtype = save.worldtype
