@@ -59,7 +59,9 @@ def scale_2dlist(data: list, extendby: int=2) -> list:
             # weird method of adding new lists cuz python stores it weird if i don't do this
     return result
 
-# Internal Function
+# Internal Functions
+
+# Add "api." if true
 def addapiiftrue(addapi: bool) -> str:
     """DISCLAIMER: This is an internal function. It returns "api." if addapi is true, and returns "" if not.
 
@@ -71,6 +73,45 @@ def addapiiftrue(addapi: bool) -> str:
     """
     if addapi: return "api."
     else: return ""
+
+# Get inventory with strings around slots
+def putstringsaroundslots(inventory):
+    """DISCLAIMER: This is an internal function. It returns inventory.slots but with double quotes around the slots.
+
+    Args:
+        inventory (inventory class): Used to pull slots from.
+
+    Raises:
+        ValueError: _description_
+        TypeError: _description_
+
+    Returns:
+        str: A dict inside a string.
+    """
+    # Initialize variables.
+    slots = inventory.slots
+    returner = '{'
+    returningkeys = slots.keys()
+    returningvalues = slots.values()
+    
+    # Do the main processing part.
+    for slotkeyindex in len(returningkeys) - 1:
+        if returningvalues[slotkeyindex] == "":
+            # Put empty double quotes if the value is also an empty string.
+            # This is done so there isn't a key with no value.
+            returner += f'"{returningkeys[slotkeyindex]}": "",'
+        elif returningvalues[slotkeyindex].startswith("#"):
+            # Put double quotes around the value if it starts with a hashtag.
+            # This is done a line isn't commented out.
+            returner += f'"{returningkeys[slotkeyindex]}": "{returningvalues(slotkeyindex)}",'
+        else:
+            # Just put the value there if it makes through none of the checks above.
+            returner += f'"{returningkeys[slotkeyindex]}": {returningvalues(slotkeyindex)},'
+    
+    # Return an ouput.
+    returner = returner.removesuffix(",")
+    returner += '}'
+    return returner
 
 # Install a module
 
@@ -799,7 +840,7 @@ def turntoblock(block: block=block(), addapi: bool=True) -> str:
     if block.type == "block":
         return f'{addapiiftrue(addapi=addapi)}block(varname={block.varname},image={block.image},passable={block.passable},breakablebytool={block.breakablebytool},droptoolvalue={block.droptoolvalue},drop={block.drop},falling={block.falling})'
     elif block.type == "entity":
-        return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},character={block.character},maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={block.inventory.slots},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
+        return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},character={block.character},maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory.slots)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
 
 def turnarraytoblocks(arrayofblocks: list=[[block()], [block()]]) -> list:
     """turntoblock() but applies to entire 2D Arrays.
