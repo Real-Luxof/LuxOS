@@ -1,5 +1,5 @@
 from ...integri.utilityfolder.blocks import *
-from ... import api
+import api
 
 # Actual main function
 print("Making generateworld function..")

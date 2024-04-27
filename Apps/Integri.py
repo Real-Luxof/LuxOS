@@ -70,18 +70,19 @@ increment()
 print("Making savegame function..")
 def savegame(savename, world, worldtype, plr, single):
     if single == True: # If single is equal to True,
-        with open(integrisaves + "\\" + savename + ".py", "w") as f: # Open the save from the saves folder in the integri game files folder and call it "f".
-            # Define what will go in there in a variable called "data".
+        with open(integrisaves + "\\" + savename + ".py", "w+") as f: # Open the save from the saves folder in the integri game files folder and call it "f".
+            # Define what will go in there in a variable called "data", then write it to the file.
             # plr = the current player character
             # world = the current world
-            data = """from blocks import *
-from ... import api
+            # api.player(character=\"{plr.character}\",maxhealth=""" + str(plr.maxhealth) + """,health=""" + str(plr.health) + """,armor=""" + str(plr.armor) + """,attack=""" + str(plr.attack) + """,defense=""" + str(plr.defense) + """,speed=""" + str(plr.speed) + f""",position=[{plr.position[0]}, {plr.position[1]}],replace=api.{api.turntoblock(plr.replace)}]""" + """,inventory=api.inventory(slotnum=""" + str(plr.inventory.slotnum) + """,slotdata=""" + str(plr.inventory.slots) + """,selectedindex=\"""" + plr.inventory.selectedindex + """\"),dead=""" + str(plr.dead) + """,deffactor=""" + str(plr.deffactor) + """,atkfactor=""" + str(plr.atkfactor) + """)
+            data = f"""from ..utilityfolder.blocks import *
+import api
 
-plr = api.player(character=\"""" + plr.character + """\",maxhealth=""" + str(plr.maxhealth) + """,health=""" + str(plr.health) + """,armor=""" + str(plr.armor) + """,attack=""" + str(plr.attack) + """,defense=""" + str(plr.defense) + """,speed=""" + str(plr.speed) + """,position=""" + str(plr.position) + """,inventory=api.inventory(slotnum=""" + str(plr.inventory.slotnum) + """,slotdata=""" + str(plr.inventory.slots) + """,selectedindex=\"""" + plr.inventory.selectedindex + """\"),dead=""" + str(plr.dead) + """,deffactor=""" + str(plr.deffactor) + """,atkfactor=""" + str(plr.atkfactor) + """)
-world = """ + str(world) + """
-worldtype = """ + str(worldtype) + """
-"""
-            f.write(data) # Write the contents of "data" into the file.
+plr = {api.turntoblock(block=plr)}
+world = {api.turnarraytoblocks(arrayofblocks=world)}
+worldtype = {worldtype}"""
+
+            f.write(data.replace("'", ""))
 
 increment()
 
@@ -151,7 +152,7 @@ if os.path.exists(integrifiles + "\\utilityfolder\\") == False:
 # Check the blocks file.
 print("Checking blocks file..")
 with open(integrifiles + "\\utilityfolder\\blocks.py", "w+") as f:
-    data = """from ... import api
+    data = """import api
 
 # - Variables -
 print("Loading Variables..")
@@ -159,16 +160,16 @@ print("Loading Variables..")
 # Blocks
 print("Loading blocks..")
 
-Air = api.block(image="#00AAFF",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Air. 
-Grs = api.block(image="#00FF00",passable=False,breakablebytool=True,droptoolvalue=1,drop="Dirt",falling=False) # Define Grass.
-Drt = api.block(image="#945035",passable=False,breakablebytool=True,droptoolvalue=2,drop=None,falling=False) # Define Dirt.
-Stn = api.block(image="#606060",passable=False,breakablebytool=True,droptoolvalue=3,drop="Stone",falling=False) # Define Stone.
-Snd = api.block(image="#DDDD55",passable=False,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Sand.
-Bdr = api.block(image="#000000",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Bedrock.
-plr = api.entity(character="#000000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],inventory=api.inventory(slotnum=20),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
-Iro = api.block(image="#797979",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron ore",falling=False) # Define Iron ore.
-Col = api.block(image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
-Irn = api.block(image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
+Air = api.block(varname="Air",image="#00AAFF",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Air. 
+Grs = api.block(varname="Grs",image="#00FF00",passable=False,breakablebytool=True,droptoolvalue=1,drop="Dirt",falling=False) # Define Grass.
+Drt = api.block(varname="Drt",image="#945035",passable=False,breakablebytool=True,droptoolvalue=2,drop=None,falling=False) # Define Dirt.
+Stn = api.block(varname="Stn",image="#606060",passable=False,breakablebytool=True,droptoolvalue=3,drop="Stone",falling=False) # Define Stone.
+Snd = api.block(varname="Snd",image="#DDDD55",passable=False,breakablebytool=True,droptoolvalue=1,drop=None,falling=False) # Define Sand.
+Bdr = api.block(varname="Bdr",image="#000000",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Bedrock.
+plr = api.entity(varname="plr",character="#000000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=20),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
+Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron ore",falling=False) # Define Iron ore.
+Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
+Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
 # Oreconfig
 print("Loading ore configuration..")
@@ -236,7 +237,7 @@ biomes = [desert1,plains1,desert2,plains2,desert3,plains3,desert4,plains4,desert
 print("Checking generateworldpackage..")
 with open(integrifiles + "\\utilityfolder\\generateworldpackage.py", "w+") as f:
     data = """from ...integri.utilityfolder.blocks import *
-from ... import api
+import api
 
 # Actual main function
 print("Making generateworld function..")
@@ -379,7 +380,7 @@ while True:
                     print("6. Very Large - Yeah, sure, I can wait a century \nor two.\n")
                     print(Fore.YELLOW + "7. Extremely Large - Is this thing cythonized?\nOh it isn't? crap.\n")
                     print("8. Too Large - I just don't ever want to worry\nabout world size.\n")
-                    print(Fore.RED + "9. Never stop playing - I never want to stop\nplaying, and also waiting for the world to generate.\n" + Fore.RESET)
+                    print(Fore.RED + "9. Never stop playing - I never want to stop\nplaying, and also waiting for the world to generate.\n")
                     
                     availableoptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
                     while True:
@@ -399,20 +400,23 @@ while True:
                     for Ycoord in world:
                         if Ycoord[plr.position[0]].passable and world[world.index(Ycoord) + 1][plr.position[0]].passable == False:
                             # If the player can pass through the currently selected block and below that is a solid surface,
-                            plr.position.append(Ycoord[plr.position[0]]) # Add the element to plr.position.
+                            plr.replace = Ycoord[plr.position[0]] # Add the element to plr.position.
                             Ycoord[plr.position[0]] = plr # Spawn the player there.
                             plr.position[1] = world.index(Ycoord) # Also adjust the Y value of the player to be accurate.
                             if plr.position[1] != world.index(Ycoord): # If the Y value is not adjusted,
                                 plr.position[1] = world.index(Ycoord) # Adjust it again.
                             break
+                    print("Saving the world..")
                     savegame(savename=savename,world=world,worldtype=worldtype,single=True,plr=plr)
                     # Save the game
+                    print("Success. We will get to work now.")
                 else:
+                    print("Loading..")
                     save = import_module("gamedata.integri.saves." + str(Saves[int(selectedsave) - 1]))
                     plr = save.plr
                     world = save.world
                     worldtype = save.worldtype
-                    break
+                    print("Success. We will get to work now.")
                 api.initiatewindow()
                 screen = api.setres(800, 600)
                 global quittime
@@ -435,7 +439,7 @@ while True:
                 gravtimer = 0 # Initialize a few variables
                 gravmltp = 1
                 movedup = False
-                newdata = [world, plr.position[2]]
+                newdata = [world, plr.replace]
                 while api.isquit() == False:
                     
                     # Player interaction
@@ -445,12 +449,17 @@ while True:
                     apressed = api.ispressed_key("a")
                     spressed = api.ispressed_key("s")
                     dpressed = api.ispressed_key("d")
+                    breakmode = api.ispressed_key("shift")
                     
                     # Actions
-                    if wpressed: newdata = plr.move("w", newdata[0], newdata[1]); movedup = True
-                    if apressed: newdata = plr.move("d", newdata[0], newdata[1])
-                    if spressed: newdata = plr.move("s", newdata[0], newdata[1])
-                    if dpressed: newdata = plr.move("a", newdata[0], newdata[1])
+                    if wpressed and not breakmode: newdata = plr.move("w", newdata[0], newdata[1]); movedup = True
+                    if dpressed and not breakmode: newdata = plr.move("a", newdata[0], newdata[1])
+                    if spressed and not breakmode: newdata = plr.move("s", newdata[0], newdata[1])
+                    if apressed and not breakmode: newdata = plr.move("d", newdata[0], newdata[1])
+                    if wpressed and breakmode: newdata[0] = plr.breakblock("w", newdata[0], newdata[1])
+                    if dpressed and breakmode: newdata[0] = plr.breakblock("a", newdata[0], newdata[1])
+                    if spressed and breakmode: newdata[0] = plr.breakblock("s", newdata[0], newdata[1])
+                    if apressed and breakmode: newdata[0] = plr.breakblock("d", newdata[0], newdata[1])
                     
                     # Apply Gravity
                     
@@ -468,10 +477,17 @@ while True:
                     # Other stuff
                     
                     world = newdata[0] # Update display
-                    plr.position[2] = newdata[1] # Update what used to be at a position before the player was.
+                    plr.replace = newdata[1] # Update what used to be at a position before the player was.
                     movedup = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
                     api.wait(1/20) # "20 tps/ups"
                 quittime = True
+                
+                print("Saving..")
+                world = newdata[0] # Quickly update the world
+                plr.replace = newdata[1] # Then update replace
+                # May not be 100% accurate as in might be 1 frame behind but that is acceptable
+                savegame(savename=savename,world=world,worldtype=worldtype,plr=plr,single=True)
+                print("Saved.")
                 
             elif selectedsave in availabledeletesaveoptions:
                 match int(selectedsave):

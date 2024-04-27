@@ -180,7 +180,7 @@ def terminal():
             
             else: input("I don't think that's a command.\nLost? try typing \"help\".")
         
-            # What if it's nothing at all?
+        # What if it's nothing at all?
         
         else: input("Didn't type anything?\nLost? try typing \"help\".")
     

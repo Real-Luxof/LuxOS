@@ -18,8 +18,59 @@ from math import floor
 # - Misceallanous -
 
 # Strip important files
-def stripimportant(downloaded, importantstuff=["api.py","__pycache__","gamedata"]):
+def stripimportant(downloaded: list[str], importantstuff: list[str]=["api.py","__pycache__","gamedata"]) -> list:
+    """Strips stuff out of a list."""
+    for i in importantstuff:
+        while i in downloaded: downloaded.remove(i)
     return downloaded
+
+# Scale a 2D Array
+def scale_2dlist(data: list, extendby: int=2) -> list:
+    """Lmao bing chat wrote 99.8% of this
+    this function just turns up the resolution of a 2D array
+    example:
+    data = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ]
+    if [extendby] is set to 2, that will become
+    data = [
+        [1, 1, 2, 2, 3, 3],
+        [1, 1, 2, 2, 3, 3],
+        [4, 4, 5, 5, 6, 6],
+        [4, 4, 5, 5, 6, 6],
+        [7, 7, 8, 8, 9, 9],
+        [7, 7, 8, 8, 9, 9]
+    ]
+
+    Args:
+        data (list): 2D Array.
+        extendby (int, optional): . Defaults to 1.
+
+    Returns:
+        list: the resulting 2D Array. if [extendby] is set to 1, it somehow returns nothing.
+    """
+    result = []
+    for row in data:
+        for _ in range(extendby):
+            new_row = [item for item in row for _ in range(extendby)]  # Duplicate each item in the row
+            result.append(new_row)  # Duplicate each row
+            # weird method of adding new lists cuz python stores it weird if i don't do this
+    return result
+
+# Internal Function
+def addapiiftrue(addapi: bool) -> str:
+    """DISCLAIMER: This is an internal function. It returns "api." if addapi is true, and returns "" if not.
+
+    Args:
+        addapi (bool): Should it return "api." or ""?
+
+    Returns:
+        str: Either "api." or "".
+    """
+    if addapi: return "api."
+    else: return ""
 
 # Install a module
 
@@ -228,7 +279,7 @@ class inventory:
                 slots = {}
                 if slotdata != None:
                     for i in slotdata:
-                        slots["slot" + str(list(slotdata.values()).index(i))] = slotdata[i]
+                        slots["slot" + str(list(slotdata.keys()).index(i))] = slotdata[i]
                 for i in range(slotnum):
                     if ismore(slots, "slot" + str(i + 1)) == False:
                         slots["slot" + str(i + 1)] = None
@@ -275,10 +326,12 @@ class inventory:
 
 # Block
 class block:
-    def __init__(self, image='#000000', passable: bool=False, breakablebytool: bool=True, droptoolvalue: int=2, drop='Stone', falling: bool=False):
+    def __init__(self, varname: str="Stn", image: str='#000000', passable: bool=False, breakablebytool: bool=True, droptoolvalue: int=2, drop='Stone', falling: bool=False):
         """Exactly what the name says. You can also call it a tile.
 
-            image: what the display() function will use. Is usually a hex code.
+            varname: What variable is this block called? Used for turntoblock() and turnarraytoblocks().
+
+            image: What the display() function will use. Is usually a hex code.
 
             passable: Can it be passed through by entities?
 
@@ -291,6 +344,7 @@ class block:
             falling: Is the block not immune to gravity? Use this so you can just do this and it will move if this value is set to True:
                 for block in world: block.move(arguments)
         """
+        self.varname = varname
         self.image = image
         self.passable = passable
         self.breakablebytool = breakablebytool
@@ -308,14 +362,16 @@ class block:
 
 # Entity
 class entity:
-    def __init__(self, character='Plr', maxhealth: int=100, health: int=100, armor: int=0, attack: int=5, defense: int=5, speed: int=1, position: list=[2,2], inventory: inventory=inventory(), dead: bool=False, deffactor: float=0.5, atkfactor: float=0.5):
+    def __init__(self, varname="plr", character="#000000", maxhealth: int=100, health: int=100, armor: int=0, attack: int=5, defense: int=5, speed: int=1, position: list=[2,2], replace: block=block(), inventory: inventory=inventory(), dead: bool=False, deffactor: float=0.5, atkfactor: float=0.5, reach: int=1, handvalue: int=1):
         """Exactly what the name is. Can be used to make a player character.
         Methods:
+            breakblock()
             move()
             hurt()
             heal()
-        Hover over them for a description of what they do and their inputs.
+        Hover over them after typing them out for a description of what they do and their inputs.
         """
+        self.varname = varname
         self.character = character
         self.maxhealth = maxhealth
         self.health = health
@@ -325,14 +381,65 @@ class entity:
         self.speed = speed
         self.inventory = inventory
         self.position = position
+        self.replace = replace
         self.dead = dead
         self.deffactor = deffactor
         self.atkfactor = atkfactor
         self.type = "entity"
         self.passable = False
+        self.reach = reach
+        self.handvalue = handvalue
+
+    # Break a block
+    def breakblock(self, direction: str, data:list, replace: block, distance: int=0) -> list:
+        """Break a block a certain distance away from the entity. Will not break passable blocks, blocks which have "breakablebytool" set to False, or blocks when there is no free slot in the inventory.
+
+        Args:
+            direction (str): What direction the entity is attempting to break a block in. Can be "w", "a", "s", or "d". If you don't know what either of those options do, that's enough grass touching for you.
+            data (list): The world around the entity.
+            replace (block class): What will be left in the space the entity once was.
+            distance (int, optional): How far away the block it is attempting to break is. Defaults to the reach of the entity.
+
+        Returns:
+            2D Array: The world after the entity has broken that block in front of it.
+        """
+        
+        # Load -
+        
+        direction = str.lower(direction)
+        dx, dy = 0, 0
+        if distance != 0: usedistance = distance
+        else: usedistance = self.reach
+        match direction:
+            case "w": dy -= usedistance
+            case "a": dx -= usedistance
+            case "s": dy += usedistance
+            case "d": dx += usedistance
+        
+        # Main -
+        
+        print("main!")
+        if data[self.position[1] + dy][self.position[0] + dx].passable == False:
+            print("made it")
+            if self.handvalue <= data[self.position[1] + dy][self.position[0] + dx].droptoolvalue:
+                if self.inventory.selected == None:
+                    self.inventory.slots[self.inventory.selectedindex] = data[self.position[1] + dy][self.position[0] + dx]
+                    print("succ!")
+                    data[self.position[1] + dy][self.position[0] + dx] = replace
+                else:
+                    for i in range(self.inventory.slotnum):
+                        print("i in range")
+                        if self.inventory.slots["slot" + str(i + 1)] == None:
+                            self.inventory.slots["slot" + str(i + 1)] = data[self.position[1] + dy][self.position[0] + dx]
+                            data[self.position[1] + dy][self.position[0] + dx] = replace
+                            break
+
+        # Return -
+        
+        return data
 
     # Move the entity
-    def move(self, direction: str, data: list, replace: block, speed: int=0):
+    def move(self, direction: str, data: list, replace: block, speed: int=0) -> list:
         """Move the entity. What did you think? Also great for gravity.
 
         Args:
@@ -342,7 +449,7 @@ class entity:
             speed (int, optional): How many blocks forward should the entity go? Defaults to the speed of the entity.
 
         Returns:
-            2D Array: The world after the entity has moved.
+            list: [0] is the world after the entity has moved, and [1] is the block before the entity moved to it.
         """
         
         # Load -
@@ -377,8 +484,8 @@ class entity:
         return [data, final2]
     
     # Hurt the entity
-    def hurt(self, amount: int):
-        """Subtract a specific amount of health from the entity. Takes defense and armor into account."""
+    def hurt(self, amount: int) -> bool:
+        """Subtract a specific amount of health from the entity. Takes defense and armor into account. Also declares the entity dead if health is 0. Returns a bool for if the entity is dead or not."""
         self.health -= (amount - (self.defense * self.deffactor) - self.armor)
         if self.health <= 0:
             self.death = True
@@ -386,12 +493,14 @@ class entity:
         else: return self.death
     
     # Heal the entity
-    def heal(self, amount: int):
-        """Add a specific amount of health to the entity."""
+    def heal(self, amount: int) -> bool:
+        """Add a specific amount of health to the entity. Also declares the entity not dead anymore if health is above 0. Returns a bool for if the entity is dead or not."""
         self.health += amount
         if self.health > self.maxhealth:
             while self.health > self.maxhealth:
                 self.health -= 1
+        if self.health > 0: self.dead = False
+        return self.dead
     
     def __str__(self):
         return self.character
@@ -536,9 +645,7 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
             elif heightlimit > Y:
                 Y = abs(Y)
                 Y += 1
-            elif Y >= height:
-                while Y >= height:
-                    Y-= 1 # If Y is somehow lower than or at the Bedrock layer, decrease it.
+            elif Y >= height: Y = height - 1
             if (i - 1) >= 0 and space["y" + str(Y)][X] != Bedrock: # If Y is higher than or equal to 0 and the currently selected Block isn't Bedrock.
                 if reachableindex(biome, i - 1):
                     space["y" + str(Y)][X] = biome[i - 1] # If [biome] hasn't ran out, apply the latest layer.
@@ -646,10 +753,7 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
                             if ore[1] < height: area = random.randint(ore[1], height - 1)
                             elif ore[1] >= height: pass
                         spawnlocation = topblock[0] + area
-                        if spawnlocation >= height:
-                            while spawnlocation >= height:
-                                spawnlocation -= 1
-                                if logging: print(f"Kind of encountered a stop here.. Gotta fix the spawn location since it's below or at the Bedrock level, which is at {height} while the spawn location is at {spawnlocation}")
+                        if spawnlocation >= height: spawnlocation = height - 1
                         if reachableindex(list(oreconfig.values()), ore):
                             space["y" + str(spawnlocation)][topblock[1]] = list(oreconfig.values())[list(oreconfig.values()).index(ore)][3]
                             if logging: print("Yay, we added an ore!")
@@ -680,6 +784,39 @@ def generate(width: int=400,height=100,biomes: list=[],Air: block=block(image='#
     # FINALLY return the world.
     if logging: print("Alright, time to give you this world. Enjoy.")
     return list(space.values())
+
+# Saving -
+def turntoblock(block: block=block(), addapi: bool=True) -> str:
+    """Do you also hate that you can't just put "world = {world}" to save because it creates those pesky hashtags? here's a fix. It's useful for saving entities as they were in the world.
+
+    Args:
+        block (block, optional): Toss in a block. Defaults to block().
+        addapi (bool, optional): Adds "api." before any function used in the api if true. Defaults to True.
+
+    Returns:
+        str: Out comes something like "api.block(image=)" or "api.entity(character=)".
+    """
+    if block.type == "block":
+        return f'{addapiiftrue(addapi=addapi)}block(varname={block.varname},image={block.image},passable={block.passable},breakablebytool={block.breakablebytool},droptoolvalue={block.droptoolvalue},drop={block.drop},falling={block.falling})'
+    elif block.type == "entity":
+        return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},character={block.character},maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={block.inventory.slots},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
+
+def turnarraytoblocks(arrayofblocks: list=[[block()], [block()]]) -> list:
+    """turntoblock() but applies to entire 2D Arrays.
+
+    Args:
+        listofblocks (list, optional): Toss in a 2D Array full of blocks. Defaults to [[block()], [block()]].
+
+    Returns:
+        list: Transforms every block in the list to its varname variable.
+    """
+    returning = []
+    returner = []
+    for YLevel in arrayofblocks:
+        for block in YLevel: returner.append(block.varname)
+        returning.append(returner)
+        returner = []
+    return returning
 
 # Initiate an actual window to display stuff.
 def initiatewindow():

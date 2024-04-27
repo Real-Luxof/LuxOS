@@ -1,7 +1,19 @@
-class class1():
-    def init(self, attr1, attr2):
-        self.attr1 = attr1
-        self.attr2 = attr2
+def scale_2dlist(data, extendby):
+    result = []
+    for row in data:
+        for _ in range(extendby):
+            new_row = [item for item in row for _ in range(extendby)]  # Duplicate each item in the row
+            result.append(new_row)  # Duplicate each row
+            # weird method of adding new lists cuz python stores it weird if i don't do this
+    return result
 
-hi = class1("hi", "hi2")
-def hi.hello(bro):
+# Test the function with your data
+data = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+]
+
+new = transform_list(data, 3)
+new[5][5] = 100
+for i in new: print(i)
