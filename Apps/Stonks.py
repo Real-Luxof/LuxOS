@@ -3,31 +3,18 @@
 # Import os. It is needed to check for and create folders, as well as to install modules.
 import os
 
-# Loading Bar
-l = "Loading." # Set l to "Loading."
-bar = "|          |" # Set bar to "|          |"
+# Loading thingy
+bar1 = "   \n| |\n___"
+
 print(l + "\n" + bar) # Display the loading bar
 def increment(num=1):
-    """Fill the loading bar a bit num many times, and then print it."""
+    """Make the loading bar progress ahead."""
     global l
     global bar
     api.clear() # Clear the screen and put the LuxOS logo there
     for times in range(num):
-        match l:
-            case "Loading.": l = "Loading.."
-            case "Loading..": l = "Loading..."
-            case "Loading...": l = "Loading."
-        match bar:
-            case "|          |": bar = "|█         |"
-            case "|█         |": bar = "|██        |"
-            case "|██        |": bar = "|███       |"
-            case "|███       |": bar = "|████      |"
-            case "|████      |": bar = "|█████     |"
-            case "|█████     |": bar = "|██████    |"
-            case "|██████    |": bar = "|███████   |"
-            case "|███████   |": bar = "|████████  |"
-            case "|████████  |": bar = "|█████████ |"
-            case "|█████████ |": bar = "|██████████|"
+        match bar2:
+            case "| ": bar2 = "  "; bar1 = "_ "
     print(l + "\n" + bar)
 
 # Initialize the Game Engine
@@ -46,7 +33,8 @@ increment()
 
 print("Loading path variables..")
 files = "gamedata\\stonks" # Variable for main game files
-save = "gamedata\\stonks\\save.py" # Variable for the saves folder.
+save = "gamedata\\stonks\\save.py" # Variable for the save.
+                                   # Yeah, I'm too lazy to do save management. So what?
 st = "gamedata\\stonks\\soundtrack" # Variable for the soundtrack folder.
 
 increment()

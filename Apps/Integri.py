@@ -333,6 +333,7 @@ while True:
         # Initialize the save options
         availablesaveoptions = ["1", "2", "3", "4"]
         availabledeletesaveoptions = ["5", "6", "7", "8"]
+        backtomenu = False
 
         while True:
             api.wait(0.1) # Delay so the user doesn't accidentally delete the wrong saves.
@@ -360,15 +361,15 @@ while True:
                             break
                     displaytitle()
                     print(Fore.LIGHTBLACK_EX + "           Please select a world size.          ")
-                    print(                     "Press the number before the option to select it.\nPress the number before the option to select it.\nPress the number before the option to select it.\n")
+                    print(                     "Press the number before the option to select it.\n")
                     print(Fore.GREEN +         "1. Very, very small - I'm just checking the game\nout for two seconds.\n")
                     print(                     "2. Very small - I'm 35 and have an hour for this\ngame.\n")
                     print(Fore.CYAN +          "3. Small - I have two hours to mess around.\n")
-                    print(                     "4. Medium - I'm new and want to check out a smal\nl world size before moving on to something bigge\nr.\n")
-                    print(Fore.BLUE +          "5. Medium Large - I'm not gonna start this game \nup again for at least 2 months after about 2 day\ns.\n")
+                    print(                     "4. Medium - I'm checking out this size before so\nmething bigger.\n")
+                    print(Fore.BLUE +          "5. Medium Large - I'm only playing for a short w\nhile.")
                     print(                     "6. Large - I want a reasonable world to play alo\nne.\n")
-                    print(Fore.YELLOW +        "7. A bit Larger - I'm not messing around, think \nthis game is fun, and wanna play it for a lil' w\nhile\n")
-                    print(                     "8. Very Large - I don't mind waiting 30 seconds \nfor the world to generate.\n")
+                    print(Fore.YELLOW +        "7. A bit Larger - I want a tad a bigger world.\n")
+                    print(                     "8. Very Large - I don't mind waiting.\n")
                     print(Fore.RED +           "9. MAXIMUM - 800 MB save file size is a reasonab\nle price to pay for a big world. Every other opt\nion is pathetic, weak, and not enough for me.\n")
                     print(Fore.LIGHTBLACK_EX + "0. Back to Menu.")
                     
@@ -378,6 +379,11 @@ while True:
                         if selectedoption in availableoptions:
                             worldtype = int(selectedoption)
                             break
+                        elif selectedoption == "0":
+                            backtomenu = True
+                            break
+
+                    if backtomenu == True: break
                     
                     api.fullclear()
                     
@@ -405,16 +411,27 @@ while True:
                     savename = str(Saves[int(selectedsave) - 1])
                     save = import_module("gamedata.integri.saves." + savename)
                     plr = save.plr
+                    input(plr.varname)
                     world = save.world
                     worldtype = save.worldtype
                     print("Success. We will get to work now.")
                 api.initiatewindow()
                 screen = api.setres(800, 600)
                 global quittime
+                global frames
                 quittime = False
+                frames = 0
+
+                def framecounter():
+                    global frames
+                    while not quittime:
+                        api.wait(1)
+                        print(f"fps: {frames}")
+                        frames = 0
                 
                 def displaythread(screen):
                     global quittime
+                    global frames
                     while not quittime:
                         displayoutput = []
                         for n in range(100):
@@ -422,14 +439,19 @@ while True:
                             for m in range(100):
                                 displayoutput[n].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
                         api.display(screen, reversed(displayoutput), 8, 6)
+                        frames += 1
                         api.wait(1/60) # "60 fps"
+                        # How does this work again
+                        # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*
                 
                 displayfunc = Thread(target=displaythread,args=[screen],daemon=True)
                 displayfunc.start()
+                framecounterfunc = Thread(target=framecounter)
+                framecounterfunc.start()
                 
                 gravtimer = 0 # Initialize a few variables
                 gravmltp = 1
-                movedup = False
+                holdingW = False
                 newdata = [world, plr.replace]
                 while api.isquit() == False:
                     
@@ -443,7 +465,7 @@ while True:
                     breakmode = api.ispressed_key("shift")
                     
                     # Actions
-                    if wpressed and not breakmode: newdata = plr.move("w", newdata[0], newdata[1]); movedup = True
+                    if wpressed and not breakmode: newdata = plr.move("w", newdata[0], newdata[1]); holdingW = True
                     if dpressed and not breakmode: newdata = plr.move("a", newdata[0], newdata[1])
                     if spressed and not breakmode: newdata = plr.move("s", newdata[0], newdata[1])
                     if apressed and not breakmode: newdata = plr.move("d", newdata[0], newdata[1])
@@ -454,9 +476,9 @@ while True:
                     
                     # Apply Gravity
                     
-                    if world[plr.position[1] + 1][plr.position[0]].passable and movedup: # If the block below the player can be fallen through and the player is holding down W
+                    if world[plr.position[1] + 1][plr.position[0]].passable and holdingW: # If the block below the player can be fallen through and the player is holding down W
                         gravtimer += 1 # then (self-explanatory code)
-                    elif world[plr.position[1] + 1][plr.position[0]].passable and not movedup: # If the block below the player can be fallen through but the player isn't holding down W
+                    elif world[plr.position[1] + 1][plr.position[0]].passable and not holdingW: # If the block below the player can be fallen through but the player isn't holding down W
                         if gravtimer < 25: gravtimer = 25 # then (self-explanatory code)
                         else: gravtimer += 1
                     else:
@@ -469,10 +491,10 @@ while True:
                     
                     world = newdata[0] # Update display
                     plr.replace = newdata[1] # Update what used to be at a position before the player was.
-                    movedup = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
+                    holdingW = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
                     api.wait(1/20) # "20 tps/ups"
                 quittime = True
-                pygame.exit()
+                api.closewindow()
                 
                 print("Saving..")
                 world = newdata[0] # Quickly update the world

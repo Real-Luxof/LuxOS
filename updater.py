@@ -25,4 +25,4 @@ urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps\\api.py") # Download th
 urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps\\gamedata\\api.py") # Download API.py to Apps/gamedata.
 
 # Announcing that the program has ended.
-print("Aight bro, peace!")
+input("Aight bro, peace!\m")

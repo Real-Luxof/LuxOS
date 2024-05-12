@@ -6,89 +6,109 @@ except(ModuleNotFoundError): api.install("Flask"); from flask import *
 from threading import Thread
 
 global game
+global activeplayer
 game = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']]
-
-def calculatechoice(choice, drop, gamen):
-    if choice < 10 and choice > 0:
-        if choice == 1 and gamen[0][0] == ' ':
-            gamen[0][0] = drop
-            return gamen
-        elif choice == 2 and gamen[0][1] == ' ':
-            gamen[0][1] = drop
-            return gamen
-        elif choice == 3 and gamen[0][2] == ' ':
-            gamen[0][1] = drop
-            return gamen
-        elif choice == 4 and gamen[1][0] == ' ':
-            gamen[0][1] = drop
-            return gamen
-        elif choice == 5 and gamen[1][1] == ' ':
-            gamen[0][1] = drop
-            return gamen
-        elif choice == 6 and gamen[1][2] == ' ':
-            gamen[0][1] = drop
-            return gamen
-        elif choice == 7 and gamen[2][0] == ' ':
-            gamen[0][1] = drop
-            return gamen
-        elif choice == 8 and gamen[2][1] == ' ':
-            gamen[0][1] = drop
-            return gamen
-        elif choice == 9 and gamen[2][2] == ' ':
-            gamen[0][1] = drop
-            return gamen
-        else:
-            return False
-    else:
-        return False
+activeplayer = 'X'
 
 def host(port):
     global game
     app = Flask(__name__)
     
     @app.route('/',methods=['GET'])
-    def establishconnection():
-        args = request.args
-        args = args.to_dict()
-        dataadd = args["dataadd"]
-        if dataadd != False:
-            game = dataadd
+    def checkstate():
         return game
+    
+    @app.route('/turn',methods=['POST'])
+    def doaturn():
+        # Get that shit
+        global activeplayer
+        player = request.form['player']
+        gamestate = list(request.form['gamestate']) # put list() around it cuz better safe than sorry
+        
+        # Pass it through the grand filter of if it's not the active player do fuck all
+        if player != activeplayer: return game
+        
+        # If it is the active player actually take it and switch the active player to the next player
+        game = gamestate
+        
+        match activeplayer:
+            case "X": activeplayer = "O"
+            case "O": activeplayer = "X"
+        
     
     app.run(host='127.0.0.1',port=int(port))
 
 while True:
+    
+    # Ask if Host or connect.
     api.clear()
     userinput = str.lower(input("Host or connect? (H/C) > "))
+    
+    # If hosting:
     if userinput.startswith("h"):
+        
+        # Host the server
         server = Thread(target=host,args=[5000])
         server.run()
-        params = {"dataadd": False}
-        r = requests.get("http://127.0.0.1", params=params)
-        r = r.text
-        previousgame = None
+        
         while True:
-            for i in r:
+            # Get the current game state.
+            req = requests.get("http://127.0.0.1:5000/")
+            req = list(req.text)
+            
+            # Print the active player and game's state.
+            print(f"- Active Player: {activeplayer} -")
+            print("- To refresh the board type anything in -") # Too lazy to refresh automatically
+            for boxlayer in req:
                 print("|",end="")
-                for n in i:
-                    print(n,end="|")
-                print()
-            if r != previousgame:
-                choice = input("1-9: you choose > ")
-                game = calculatechoice(choice,"X",game)
+                for box in boxlayer:
+                    print(box,end="|")
+            
+            # Take a choice, then tell the server what player you are.
+            # By default the host goes first and is X.
+            choice = input("Number (1-9) >")
+            
+            # Use the power of MATH and LOGIC to dynamically drop drops on the correct box if it's empty.
+            proposedgame = game
+            choice -= 1
+            if choice >= 0 or choice <= 8:
+                if proposedgame[choice // 3][choice % 3] == ' ':
+                    proposedgame[choice // 3][choice % 3] = "X"
+            params = {'player':'X', 'gamestate':proposedgame}
+            
+            # Ask the server to take our version of the game, and it decides whether it wants to or not.
+            # LMAO dis has no security if u active player then u do anything u want to the board
+            game = requests.post("http://127.0.0.1:5000/turn", params=params).text
+
     elif userinput.startswith("c"):
-        ipinput = str(input("insert server IP > "))
-        params = {"dataadd": False}
-        r = requests.get("http://" + ipinput, params=params)
-        r = r.text
-        previousgame = None
+        
+        ipinput = str(input("insert server IP with port > "))
+        
         while True:
-            api.clear()
-            for i in r:
+            # Get the current game state.
+            req = requests.get("http://" + ipinput + "/")
+            req = list(req.text)
+            
+            # Print the active player and game's state.
+            print(f"- Active Player: {activeplayer} -")
+            print("- To refresh the board type any number in -") # Too lazy to refresh automatically
+            for boxlayer in req:
                 print("|",end="")
-                for n in i:
-                    print(n,end="|")
-                print()
-            if r != [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']] and r != previousgame:
-                choice = input("1-9: you choose > ")
-                game = calculatechoice(choice,"O",game)
+                for box in boxlayer:
+                    print(box,end="|")
+            
+            # Take a choice, then tell the server what player you are.
+            # By default the host goes first and is X.
+            choice = input("Number (1-9) >")
+            
+            # Use the power of MATH and LOGIC to dynamically drop drops on the correct box if it's empty.
+            proposedgame = game
+            choice -= 1
+            if choice >= 0 or choice <= 8:
+                if proposedgame[choice // 3][choice % 3] == ' ':
+                    proposedgame[choice // 3][choice % 3] = "O"
+            params = {'player':'O', 'gamestate':proposedgame}
+            
+            # Ask the server to take our version of the game, and it decides whether it wants to or not.
+            # LMAO dis has no security if u active player then u do anything u want to the board
+            game = requests.post("http://" + ipinput + "/turn", params=params).text
