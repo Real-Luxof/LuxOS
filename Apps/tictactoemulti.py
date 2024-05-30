@@ -5,8 +5,6 @@ try: from flask import *
 except(ModuleNotFoundError): api.install("Flask"); from flask import *
 from threading import Thread
 
-global game
-global activeplayer
 game = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']]
 activeplayer = 'X'
 
@@ -16,11 +14,13 @@ def host(port):
     
     @app.route('/',methods=['GET'])
     def checkstate():
+        global game
         return game
     
     @app.route('/turn',methods=['POST'])
     def doaturn():
         # Get that shit
+        global game
         global activeplayer
         player = request.form['player']
         gamestate = list(request.form['gamestate']) # put list() around it cuz better safe than sorry

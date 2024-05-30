@@ -34,6 +34,18 @@ from math import floor
 
 # - Miscellaneous -
 
+# Abs, but negative.
+def negabs(num: int):
+    """Abs, but converts positive integers to negative.
+
+    Args:
+        num (int): The integer to convert.
+
+    Returns:
+         int: A negative integer.
+    """
+    return 0 - num
+
 # Strip important files
 def stripimportant(
     strip_from: list[str],
@@ -86,9 +98,17 @@ def scale_2dlist(data: list, extendby: int = 2) -> list:
 
 # Check if a file exists. If it doesn't, make it.
 def checkandmake(pathtofile: str) -> bool:
-    """Check if a file exists. If it doesn't, make it and return False."""
+    """Check if a path exists. If it doesn't, make it and return False."""
     if not os.path.exists(pathtofile):
-        os.mkdir(pathtofile)
+        os.system(f"md {pathtofile}")
+        return False
+    else:
+        return True
+
+# Check if a file exists. If it doesn't, return False.
+def checkpath(pathtofile: str) -> bool:
+    """Check if a path exists. If it doesn't, return False."""
+    if not os.path.exists(pathtofile):
         return False
     else:
         return True
@@ -181,6 +201,7 @@ def delete(file):
     os.system("del gamedata\\" + file)
 
 
+# Math shit -
 # Calculate when the operator is a string.
 
 
@@ -199,6 +220,27 @@ def calculate(num1, op, num2):
         return num1 ^ num2
     elif op == "/":
         return num1 / num2
+
+
+# Calculate average.
+def average(iterable: list, return_float: bool=False) -> int:
+    """Calculate the average of some numbers.
+
+    Args:
+        iterable (list): A list with the numbers.
+        return_float (bool): Should it round down the answer or possibly return a float? Defaults to False.
+
+    Returns:
+        (int): The rounded down average of all the numbers in the list. Returned either if the average wasn't a float or
+            if return_float was set to False.
+        (float): The average of all the numbers in the list. Returned if the average was a float.
+    """
+    sigma_iterable = sum(iterable)
+    number_of_elements = len(iterable)
+    if return_float:
+        return sigma_iterable / number_of_elements
+    else:
+        return floor(sigma_iterable / number_of_elements)
 
 
 # Clear Screen.
@@ -359,14 +401,14 @@ def reachableindex(liste, index):
 
 
 # Playing audio -
-def playaudio(relativepathtofile):
+def playaudio(relativepathtofile: str):
     path = f"{os.path.dirname(__file__)}\\{relativepathtofile}"
     p = multiprocessing.Process(target=playsound, args=[path])
     p.start()
     return p
 
 
-def playaudioabs(absolutepathtofile):
+def playaudioabs(absolutepathtofile: str):
     p = multiprocessing.Process(target=playsound, args=[absolutepathtofile])
     p.start()
     return p
@@ -387,8 +429,43 @@ def setres(width=800, height=600, flags=0, depth=0, display=0, vsync=0):
     return screen
 
 
+# Set a block's saturation according to its light level.
+def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> int:
+    """A nearly fully modular function to define the saturation of a block depending on its light level.
+
+    Args:
+        hex_color (str): The hex color.
+        light_level (int): The light level you want the block to have.
+        max_light_level (int): The maximum light level that a block can have.
+
+    Returns:
+        (str): Always returns a hexadecimal which is the block's color after lighting.
+    """
+    # Remove the # from hex_color.
+    hex_color = hex_color.removeprefix("#")
+    # int(hex_color, 16) turns a hexadecimal to decimal.
+    if len(hex_color) == 6:
+        R = int(f"0x{hex_color[0]}{hex_color[1]}", 16)
+        G = int(f"0x{hex_color[2]}{hex_color[3]}", 16)
+        B = int(f"0x{hex_color[4]}{hex_color[5]}", 16)
+    else:
+        R = int(f"0x{hex_color[0]}", 16)
+        G = int(f"0x{hex_color[1]}", 16)
+        B = int(f"0x{hex_color[2]}", 16)
+    # MATH.
+    R = R + floor(0 - ((R / max_light_level) * light_level))
+    G = G + floor(0 - ((R / max_light_level) * light_level))
+    B = B + floor(0 - ((R / max_light_level) * light_level))
+    # Back to hex.
+    R_hex = hex(R).removeprefix("0x")
+    G_hex = hex(G).removeprefix("0x")
+    B_hex = hex(B).removeprefix("0x")
+    # Add it up and re-add the #.
+    hex_color_changed = "#" + R_hex + G_hex + B_hex
+    return hex_color_changed
+
+
 # The Main Function that puts shit on screen.
-# Takes only 8 lines excluding empty lines or lines with only comment in them.
 
 
 def display(
@@ -401,18 +478,30 @@ def display(
     for Ycoord in newscreen:  # Selects a list from newscreen.
         X = 0  # Set X to 0 for use in a new Y axis.
         for block in Ycoord:  # Selects a block in said list,
-            if ishex(str(block)):
-                # Then, if the block is a hex code, it draws the block on screen with it's color
-                # being what comes from its __repr__/__str__ function.
-                # the rest is self-explanatory.
-                block = str(
-                    block
-                )  # Turn it into <type 'str'> instead of <class 'api.block'> or smth
-                pygame.draw.rect(
-                    screen,
-                    pygame.Color(block),
-                    (X, Y, widthofeachblock, heightofeachblock),
-                )
+            #if ishex(str(block)):
+            # Then it draws the block on screen with it's color
+            # being what comes from its __repr__/__str__ function.
+            # the rest is self-explanatory.
+            block = str(
+                block
+            )  # Turn it into <type 'str'> instead of <class 'api.block'> or smth
+
+            # Resolve any conflicts with hex by simply converting it to rgb values
+            block = block.removeprefix("#")
+            if len(block) == 3:
+                R = int("0x" + block[0], 16)
+                G = int("0x" + block[1], 16)
+                B = int("0x" + block[2], 16)
+            else:
+                R = int("0x" + block[0] + block[1], 16)
+                G = int("0x" + block[2] + block[3], 16)
+                B = int("0x" + block[4] + block[5], 16)
+
+            pygame.draw.rect(
+                screen,
+                pygame.Color(R, G, B),
+                (X, Y, widthofeachblock, heightofeachblock),
+            )
             X += widthofeachblock  # Add widthofeachblock to X. Why?
             # or else it would try to overlap all the colors on the same X coordinates.
         Y += heightofeachblock  # Add heightofeachblock to Y. Why?
@@ -575,6 +664,59 @@ class block:
         self.drop = drop
         self.falling = falling
         self.type = "block"
+
+    def move(self, Y: int, X: int, direction: str, data: list, replace: str = "block class", speed: int = 1) -> list:
+        """Move the entity. What did you think? Also great for gravity.
+
+        Args:
+            Y (int): The Y coordinate of the block.
+            X (int): THe X coordinate of the block.
+            direction (str): Can be "w", "a", "s", or "d". If you don't know what either of those options do, stop living under the mariana trench.
+            data (2D Array): The world around the block.
+            replace (block class): What will be left in the space the block once was.
+            speed (int, optional): How many blocks forward should the block go?
+
+        Returns:
+            list: [0] is the world after the block has moved, and [1] is the block before the other block moved to it. [2] is the post-moving X coordinate of the block, and [3] is the post-moving Y coordinate of the block.
+        """
+
+        # Load -
+
+        direction = str.lower(direction)
+        final2 = replace  # lol i don't know why, this is a pretty old line of code
+        dy, dx = 0, 0  # difference Y, difference X
+        match direction:
+            case "w":
+                dy -= 1
+            case "a":
+                dx -= 1
+            case "s":
+                dy += 1
+            case "d":
+                dx += 1
+
+        # Main -
+
+        # [i] doesn't matter here, we're just tryna do stuff multiple times
+        # oh, you wanna teleport? just do block.position[newX, newY] or something ffs
+        for i in range(speed):
+            # Credit to guy on discord for writing this.
+            if (
+                reachableindex(data, Y + dy)
+                and reachableindex(data[Y], X + dx)
+                and Y + dy > -1
+                and X + dx > -1
+            ):
+                if data[Y + dy][X + dx].passable:
+                    data[Y][X] = replace
+                    final2 = data[Y + dy][X + dx]
+                    data[Y + dy][X + dx] = self
+                    Y += dy
+                    X += dx
+
+        # Return -
+
+        return [data, final2, X, Y]
 
     def __str__(self):
         return self.image
@@ -852,9 +994,6 @@ def generate(
 
     # - Variable Checking -
 
-    if logging:
-        print("Checkin' Variables.")
-
     # Select the first biome
     if biomes == []:
         print(
@@ -868,34 +1007,22 @@ def generate(
 
     # - Create the initial space -
 
-    if logging:
-        print("Initial Space time!")
     space = {}  # Create the empty world
     for ylevel in range(height):  # For every number in height,
-        space["y" + str(ylevel + 1)] = []  # Add a new Ylevel in "space",
-        if logging:
-            print("Oooo, that's nice, a new Y level.")
+        space["y" + str(ylevel + 1)] = []  # Add a new Ylevel in "space"
         for xlevel in range(width):  # And then for every number in width,
             if ylevel != range(height)[-1]:  # If it's not at bedrock,
                 space["y" + str(ylevel + 1)].append(Air)  # Then put Air there.
             else:  # If it is at bedrock level,
                 space["y" + str(ylevel + 1)].append(Bedrock)  # Put Bedrock there.
-    if logging:
-        print("Initial space time over.")
 
     # - Add blocks (finally use biomes) -
 
     # Initalize some variables
 
-    if logging:
-        print("Just initializing variables now!")
-
     # Check limit
     if limit == None:
         limit = [5, height + 1]
-
-    if logging:
-        print("Wow, limit check done.")
 
     # The top solid layer of the world
     if originalYY == None:
@@ -905,9 +1032,6 @@ def generate(
             originalY = random.randint(limit[0], limit[1])
     else:
         originalY = originalYY
-
-    if logging:
-        print("Original Ys are done!")
 
     # [Y] is used for biomes, to generate things below the top layer.
     Y = originalY
@@ -931,9 +1055,6 @@ def generate(
     # First initial layer
     space["y" + str(Y)][X] = biome[0]
 
-    if logging:
-        print("Lots of variable initalization is done!")
-
     mountaindrive = False
     canyondrive = False
     totallength = 0
@@ -946,10 +1067,6 @@ def generate(
         averagelengthofcanyon - floor(averagelengthofcanyon / 2 / 2),
         averagelengthofcanyon + floor(averagelengthofcanyon / 2 / 2),
     )
-
-    if logging:
-        print("Mountains and Canyons: Loaded!")
-        print("Now it's time for actual biome generation.")
 
     for i in range(width):
         for i in range(height):
@@ -980,64 +1097,47 @@ def generate(
                     space["y" + str(Y)][X] = Stn  # Otherwise, make the block Stone.
                 if Y < height:
                     Y += 1  # If Y is not at the Bedrock layer, increase it.
-        if logging:
-            print("Y problems sorted.")
+
         # nextplace can be one of three values chosen randomly: 1, 2, and 3.
         # No matter what value nextplace is, X will always increase as long as it doesn't surpass width while doing so.
         # Also do  stuff with mountains and canyons.
-        if logging:
-            print("More variables! Yay!")
         above = 1
         below = 3
-        if logging:
-            print("Entering the territory of mountains and canyons..")
+
         if random.randint(1, 100) <= mountainlikelihood and canyondrive != True:
             mountaindrive = True
-            if logging:
-                print("MOUNTAIN.. DRIVE!!")
+
         if random.randint(1, 100) <= canyonlikelihood and mountaindrive != True:
             canyondrive = True
-            if logging:
-                print("CANYON.. DRIVE!!")
+
         if mountaindrive == True:
-            if logging:
-                print(f"Total length of the current mountain? oh, that's {totallength}")
             if random.randint(1, 100) <= averagesteepness:
                 if totallength < floor(length / 2):
                     below -= 1
                 else:
                     above += 1
                 if totallength >= length:
-                    if logging:
-                        print("Mountain Drive.. Off!")
                     mountaindrive = False
             totallength += 1
         elif canyondrive == True:
-            if logging:
-                print(
-                    f"Yo, want the total length of the current canyon? No? screw you, it's {totallengthofcanyon}"
-                )
             if random.randint(1, 100) <= averagesteepnessofcanyon:
                 if totallengthofcanyon < floor(lengthofcanyon / 2):
                     above += 1
                 else:
                     below -= 1
                 if totallengthofcanyon >= lengthofcanyon:
-                    if logging:
-                        print("Canyon Drive.. Off!")
                     canyondrive = False
             totallengthofcanyon += 1
+
         if mountaindrive == False and totallength != 0:
             totallength = 0
         elif canyondrive == False and totallengthofcanyon != 0:
             totallengthofcanyon = 0
+
         if originalY + 1 < limit[0] or originalY + 1 < 1:
-            if logging:
-                print("Whoops, hit the height limit.")
             above += 1
+
         if originalY - 1 > limit[1] or originalY - 1 > (height - 1):
-            if logging:
-                print("Oh no, that's too low.")
             below -= 1
 
         try:
@@ -1045,8 +1145,6 @@ def generate(
         except ValueError:
             nextplace = 2
 
-        if logging:
-            print("Mountain'n'Canyon work done. Moving on to next place work.")
         if X < width - 1:
             if (
                 nextplace == 1
@@ -1069,11 +1167,7 @@ def generate(
             # Otherwise select a different value for nextplace.
             # Then start generating blocks from the top to the bottom."
         toplayer.append([originalY, X])
-        if logging:
-            print("Added to top layer.")
         biomelength += 1
-        if logging:
-            print("Added to biome length.")
         # Determine if it's time to switch up the biome
         if biomelength > internalmaximum:
             # If so, set some variables to some stuff and pick a new biome
@@ -1087,27 +1181,14 @@ def generate(
             del biome[0]
             biomelength = 1
             internalmaximum = random.randint(minim, maxim)
-            if logging:
-                print("Did some weird shit with biome variables.")
-
-    if logging:
-        print("Wow, all that done. Now for Ores..")
 
     # Ore and Structure Generation
 
     # Ore -
     if oreconfig != {}:
-        if logging:
-            print("Looks like they gave us Ores.")
         if oreeverywhere == False:
-            if logging:
-                print("Below top block!")
             for topblock in toplayer:
-                if logging:
-                    print("Next topblock!")
                 for ore in list(oreconfig.values()):
-                    if logging:
-                        print("Next ore, bruh.")
 
                     spawnchance = random.randint(1, ore[0])
 
@@ -1128,24 +1209,12 @@ def generate(
                             space["y" + str(spawnlocation)][topblock[1]] = list(
                                 oreconfig.values()
                             )[list(oreconfig.values()).index(ore)][3]
-                            if logging:
-                                print("Yay, we added an ore!")
-                    else:
-                        if logging:
-                            print("Oh no, no ore!")
+
         elif oreeverywhere == True:
-            if logging:
-                print("We don't care where top block is now, time for ores.")
             data = list(space.values())
             for ylevel in data:
-                if logging:
-                    print("Next ylevel!")
                 for xlevel in ylevel:
-                    if logging:
-                        print("Next xlevel!")
                     for ore in list(oreconfig.values()):
-                        if logging:
-                            print("Next ore!")
                         spawnchance = random.randint(1, ore[0])
 
                         if spawnchance == 1:
@@ -1156,15 +1225,8 @@ def generate(
                                     space["y" + str(area)][ylevel.index(xlevel)] = list(
                                         oreconfig.values()
                                     )[list(oreconfig.values()).index(ore)][3]
-                                    if logging:
-                                        print("Yay, ore added!")
-                        else:
-                            if logging:
-                                print("Oh no, no ore added!")
 
     # FINALLY return the world.
-    if logging:
-        print("Alright, time to give you this world. Enjoy.")
     return list(space.values())
 
 
@@ -1185,7 +1247,7 @@ def turntoblock(block: block = block(), addapi: bool = True) -> str:
         return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},character="{block.character}",maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
 
 
-def turnarraytoblocks(arrayofblocks: list = [[block()], [block()]]) -> list:
+def turnarraytoblocks(arrayofblocks: list = [[block], [block]]) -> list:
     """turntoblock() but applies to entire 2D Arrays.
 
     Args:
@@ -1224,5 +1286,7 @@ def closewindow():
     """
     pygame.quit()
 
+
+__name__ = "__main__"
 
 multiprocessing.freeze_support()

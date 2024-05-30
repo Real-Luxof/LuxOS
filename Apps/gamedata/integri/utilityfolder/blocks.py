@@ -17,6 +17,17 @@ Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=Tru
 Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
 Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
+setattr(Air, "light_level", 0)
+setattr(Grs, "light_level", 0)
+setattr(Drt, "light_level", 0)
+setattr(Stn, "light_level", 0)
+setattr(Snd, "light_level", 0)
+setattr(Bdr, "light_level", 0)
+setattr(plr, "light_level", 0)
+setattr(Iro, "light_level", 0)
+setattr(Col, "light_level", 0)
+setattr(Irn, "light_level", 0)
+
 # Oreconfig
 print("Loading ore configuration..")
 

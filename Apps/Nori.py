@@ -2,7 +2,8 @@
 import api
 
 # Define variables
-level1exists = api.checkandmake("gamedata\\Nori\\levels\\level1.txt")
+api.checkandmake("gamedata\\Nori\\levels") # Make the levels folder if it doesn't exist.
+level1exists = api.checkpath("gamedata\\Nori\\level1.txt")
 level1default = """35
 26
 W W W W W W W W W W W W W W W W W W W W W W
@@ -37,7 +38,7 @@ player = api.entity(character="", replace=dirt)
 
 # If level1 does not exist, make it.
 if level1exists == False:
-    level1 = open("gamedata\\Nori\\levels\\level1.txt", "w")
+    level1 = open("gamedata\\Nori\\levels\\level1.txt", "w+")
     level1.write(level1default)
 
 # Function to decipher the text files.

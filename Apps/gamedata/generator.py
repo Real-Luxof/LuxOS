@@ -9,13 +9,14 @@ from math import ceil
 # but with severely limited functionality to the point it is designed
 # to sit around doing nothing.
 # A bonus is that it theoretically takes way less memory.
-class blackvoid():
+class blackvoid:
     def __init__(self):
         self.passable = True
     def __repr__(self):
         return "#000000"
     def __str__(self):
         return "#000000"
+
 
 def generate(colors: list, width: int, height: int, chanceofvoid: float) -> list:
     """Generates a big ass list filled with either black or a color/particle.
@@ -25,7 +26,7 @@ def generate(colors: list, width: int, height: int, chanceofvoid: float) -> list
         width (int): The width of the world.
         height (int): The height of the world.
         chanceofvoid (float): What chance is there that there will be black void instead of a particle?
-        
+
         Examples for chanceofvoid:
             idk man just know the probability is calculated like ceil(len(colors) * chanceofvoid)
 
@@ -39,7 +40,7 @@ def generate(colors: list, width: int, height: int, chanceofvoid: float) -> list
         world.append([])
         for timesY in range(height):
             world[-1].append(random.choice(colors))
-    
+
     return world
 
 red = api.block("red","#0000FF",False,False,0,"red",False)

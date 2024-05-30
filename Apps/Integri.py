@@ -60,7 +60,7 @@ increment()
 # Folder variables used for loading
 
 print("Loading path variables..")
-integrifiles = "gamedata\\integri" # Variable for main game files
+integrifiles = "gamedata\\integri" # Variable for main game files.
 integrisaves = "gamedata\\integri\\saves" # Variable for the saves folder.
 integrist = "gamedata\\integri\\soundtrack" # Variable for the soundtrack folder.
 
@@ -91,9 +91,7 @@ increment()
 # Check for and (if it doesn't exist) create a folder to store game data.
 
 print("Checking game data..")
-if os.path.exists(integrifiles) == False: # Check if it exists.
-    print("Installing integri in gamedata..") # If it doesn't, log that the program's creating a new one.
-    os.system("md " + integrifiles) # Create the folder.
+api.checkandmake(integrifiles)
 
 increment()
 
@@ -101,7 +99,7 @@ increment()
 
 print("Making checksaves function and running it to check saves..")
 def checksaves():
-    if os.path.exists(integrisaves): # Check if the Saves folder exists.
+    if api.checkpath(integrisaves): # Check if the Saves folder exists.
         Saves = os.listdir(integrisaves) # If yes, list all the files in there.
         if "__pycache__" in Saves:
             del Saves[Saves.index("__pycache__")]
@@ -126,33 +124,26 @@ increment()
 # Check if the soundtrack folder and its subfolders exist.
 
 # Check the soundtrack folder.
-print("Checking soundtrack..")
-if os.path.exists(integrist) == False: # Check if the Soundtrack folder doesn't exist.
-    print("Installing soundtrack folder..")
-    os.system("md " + integrist) # If it doesn't, make it.
+print("Checking soundtrack and installing if it doesn't exist..")
+api.checkandmake(integrist)
 
 # Check the music subfolder.
-print("Checking music..")
-if os.path.exists(integrist + "\\music") == False: # Check if the music subfolder exists.
-    print("Installing music..")
-    os.system("md " + integrist + "\\music") # If it doesn't, make it.
+print("Checking music and installing if it doesn't exist..")
+api.checkandmake(f"{integrist}\\music")
 
 # Check the sfx subfolder.
-print("Checking sfx..")
-if os.path.exists(integrist + "\\sfx") == False: # Check if the sfx subfolder within the Soundtrack fodler exists.
-    print("Installing sfx..")
-    os.system("md " + integrist + "\\sfx") # If it doesn't, make it.
+print("Checking sfx and installing if it doesn't exist..")
+api.checkandmake(f"{integrist}\\sfx")
 
 # Check utilityfolder.
-print("Checking utilityfolder..")
-if os.path.exists(integrifiles + "\\utilityfolder\\") == False:
-    print("Installing utilityfolder..")
-    os.system("md " + integrifiles + "\\utilityfolder")
+print("Checking utilityfolder and installing if it doesn't exist..")
+api.checkandmake(f"{integrifiles}\\utilityfolder")
 
 # Check the blocks file.
 print("Checking blocks file..")
-with open(integrifiles + "\\utilityfolder\\blocks.py", "w+") as f:
-    data = """import api
+if not api.checkpath(f"{integrifiles}\\utilityfolder\\blocks.py"):
+    with open(f"{integrifiles}\\utilityfolder\\blocks.py", "w+") as f:
+        data = """import api
 
 # - Variables -
 print("Loading Variables..")
@@ -170,6 +161,17 @@ plr = api.entity(varname="plr",character="#000000",maxhealth=100,health=100,armo
 Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron ore",falling=False) # Define Iron ore.
 Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
 Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
+
+setattr(Air, "light_level", 0)
+setattr(Grs, "light_level", 0)
+setattr(Drt, "light_level", 0)
+setattr(Stn, "light_level", 0)
+setattr(Snd, "light_level", 0)
+setattr(Bdr, "light_level", 0)
+setattr(plr, "light_level", 0)
+setattr(Iro, "light_level", 0)
+setattr(Col, "light_level", 0)
+setattr(Irn, "light_level", 0)
 
 # Oreconfig
 print("Loading ore configuration..")
@@ -230,13 +232,14 @@ plains5 = [60,120,Grs,Grs,Grs,Drt,Drt]
 desert6 = [70,200,Snd,Snd,Snd,Snd,Snd,Snd]
 plains6 = [70,200,Grs,Grs,Grs,Drt,Drt]
 biomes = [desert1,plains1,desert2,plains2,desert3,plains3,desert4,plains4,desert5,plains5,desert6,plains6]"""
-    if f.read != data:
-        f.write(data)
+        if f.read != data:
+            f.write(data)
 
 # Check generateworldpackage.
 print("Checking generateworldpackage..")
-with open(integrifiles + "\\utilityfolder\\generateworldpackage.py", "w+") as f:
-    data = """from ...integri.utilityfolder.blocks import *
+if not api.checkpath(f"{integrifiles}\\utilityfolder\\generateworldpackage.py"):
+    with open(integrifiles + "\\utilityfolder\\generateworldpackage.py", "w+") as f:
+        data = """from ...integri.utilityfolder.blocks import *
 import api
 
 # Actual main function
@@ -254,8 +257,8 @@ def generateworld(worldtype):
         case 8: newworldtype = [3000, 150, 2850]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,averagesteepness=50,averagelength=140,averagesteepnessofcanyon=50,averagelengthofcanyon=140)
         case 9: newworldtype = [10000, 500, 9500]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,averagesteepness=60,averagelength=300,averagesteepnessofcanyon=60,averagelengthofcanyon=300)
     return [world, newworldtype]"""
-    if f.read != data:
-        f.write(data)
+        if f.read != data:
+            f.write(data)
 
 increment()
 increment()
@@ -274,23 +277,23 @@ print("Making title function..")
 title = [ # Define the title characters and their colors.
     Style.RESET_ALL,
     Back.LIGHTBLACK_EX + "  _  " + Back.RED + "  ___       _  " + Back.GREEN + "  _____________  " + Back.BLUE + "  ________ ",
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " |   \     | | " + Back.GREEN + " |_____   _____| " + Back.BLUE + " |  ______|",
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |\ \    | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       ",
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | | \ \   | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |______ ",
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |  \ \  | | " + Back.GREEN + "       | |       " + Back.BLUE + " |  ______|",
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |   \ \ | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       ",
-    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |    \ \| | " + Back.GREEN + "       | |       " + Back.BLUE + " | |______ ",
-    Back.LIGHTBLACK_EX + " |_| " + Back.RED + " |_|     \___| " + Back.GREEN + "       |_|       " + Back.BLUE + " |________|" + Style.RESET_ALL,
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " |   \\     | | " + Back.GREEN + " |_____   _____| " + Back.BLUE + " |  ______|",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |\\ \\    | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       ",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | | \\ \\   | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |______ ",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |  \\ \\  | | " + Back.GREEN + "       | |       " + Back.BLUE + " |  ______|",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |   \\ \\ | | " + Back.GREEN + "       | |       " + Back.BLUE + " | |       ",
+    Back.LIGHTBLACK_EX + " | | " + Back.RED + " | |    \\ \\| | " + Back.GREEN + "       | |       " + Back.BLUE + " | |______ ",
+    Back.LIGHTBLACK_EX + " |_| " + Back.RED + " |_|     \\___| " + Back.GREEN + "       |_|       " + Back.BLUE + " |________|" + Style.RESET_ALL,
     "",
     "        " + Back.RED + "  __________  " + Back.GREEN + "  ________  " + Back.BLUE + "  _ " + Style.RESET_ALL,
     "        " + Back.RED + " |  ______  | " + Back.GREEN + " |  _____ | " + Back.BLUE + " | |" + Style.RESET_ALL,
     "        " + Back.RED + " | |      |_| " + Back.GREEN + " | |    | | " + Back.BLUE + " | |" + Style.RESET_ALL,
     "        " + Back.RED + " | |          " + Back.GREEN + " | |____| | " + Back.BLUE + " | |" + Style.RESET_ALL,
     "        " + Back.RED + " | |   _____  " + Back.GREEN + " |    ____| " + Back.BLUE + " | |" + Style.RESET_ALL,
-    "        " + Back.RED + " | |  |___  | " + Back.GREEN + " | | \ \    " + Back.BLUE + " | |" + Style.RESET_ALL,
-    "        " + Back.RED + " | |      | | " + Back.GREEN + " | |  \ \   " + Back.BLUE + " | |" + Style.RESET_ALL,
-    "        " + Back.RED + " | |______| | " + Back.GREEN + " | |   \ \  " + Back.BLUE + " | |" + Style.RESET_ALL,
-    "        " + Back.RED + " |__________| " + Back.GREEN + " |_|    \_\ " + Back.BLUE + " |_|" + Style.RESET_ALL,
+    "        " + Back.RED + " | |  |___  | " + Back.GREEN + " | | \\ \\    " + Back.BLUE + " | |" + Style.RESET_ALL,
+    "        " + Back.RED + " | |      | | " + Back.GREEN + " | |  \\ \\   " + Back.BLUE + " | |" + Style.RESET_ALL,
+    "        " + Back.RED + " | |______| | " + Back.GREEN + " | |   \\ \\  " + Back.BLUE + " | |" + Style.RESET_ALL,
+    "        " + Back.RED + " |__________| " + Back.GREEN + " |_|    \\_\\ " + Back.BLUE + " |_|" + Style.RESET_ALL,
     "\n"
 ]
 def displaytitle(): # Define a function named displaytitle.
@@ -300,10 +303,11 @@ def displaytitle(): # Define a function named displaytitle.
 
 print("Making function Add If Reachable (air)")
 def air(listt, index, index2): # "air" stands for "Add If Reachable"
+    global Bdr
     if api.reachableindex(listt, index) and not index < 0:
         if api.reachableindex(listt[index], index2) and not index2 < 0: return listt[index][index2]
-        else: return "#000000"
-    else: return "#000000"
+        else: return Bdr
+    else: return Bdr
 
 increment()
 
@@ -350,163 +354,223 @@ while True:
             print("                7. Delete " + Saves[2])
             print("                8. Delete " + Saves[3])
             selectedsave = api.wait_any() # await a key press
-            if selectedsave in availablesaveoptions:
-                if Saves[int(selectedsave) - 1] == "":
-                    namepass = False
-                    while True:
-                        savename = input(Fore.LIGHTBLACK_EX + "    Input name: >" + Fore.RESET)
-                        if savename.count(" ") > 0:
-                            input(Fore.LIGHTBLACK_EX + "Invalid name." + Fore.RESET)
-                        else:
-                            break
-                    displaytitle()
-                    print(Fore.LIGHTBLACK_EX + "           Please select a world size.          ")
-                    print(                     "Press the number before the option to select it.\n")
-                    print(Fore.GREEN +         "1. Very, very small - I'm just checking the game\nout for two seconds.\n")
-                    print(                     "2. Very small - I'm 35 and have an hour for this\ngame.\n")
-                    print(Fore.CYAN +          "3. Small - I have two hours to mess around.\n")
-                    print(                     "4. Medium - I'm checking out this size before so\nmething bigger.\n")
-                    print(Fore.BLUE +          "5. Medium Large - I'm only playing for a short w\nhile.")
-                    print(                     "6. Large - I want a reasonable world to play alo\nne.\n")
-                    print(Fore.YELLOW +        "7. A bit Larger - I want a tad a bigger world.\n")
-                    print(                     "8. Very Large - I don't mind waiting.\n")
-                    print(Fore.RED +           "9. MAXIMUM - 800 MB save file size is a reasonab\nle price to pay for a big world. Every other opt\nion is pathetic, weak, and not enough for me.\n")
-                    print(Fore.LIGHTBLACK_EX + "0. Back to Menu.")
-                    
-                    availableoptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-                    while True:
-                        selectedoption = api.wait_any()
-                        if selectedoption in availableoptions:
-                            worldtype = int(selectedoption)
-                            break
-                        elif selectedoption == "0":
-                            backtomenu = True
-                            break
-
-                    if backtomenu == True: break
-                    
-                    api.fullclear()
-                    
-                    worlddata = generateworld(worldtype) # Create the world
-                    world = worlddata[0] # Initialize a few variables
-                    worldtype = worlddata[1]
-                    
-                    plr.position[0] = ceil(worldtype[0] / 2) # Set the X Value of the player to be the middle of the world
-                    
-                    for Ycoord in world:
-                        if Ycoord[plr.position[0]].passable and world[world.index(Ycoord) + 1][plr.position[0]].passable == False:
-                            # If the player can pass through the currently selected block and below that is a solid surface,
-                            plr.replace = Ycoord[plr.position[0]] # Add the element to plr.position.
-                            Ycoord[plr.position[0]] = plr # Spawn the player there.
-                            plr.position[1] = world.index(Ycoord) # Also adjust the Y value of the player to be accurate.
-                            if plr.position[1] != world.index(Ycoord): # If the Y value is not adjusted,
-                                plr.position[1] = world.index(Ycoord) # Adjust it again.
-                            break
-                    print("Saving the world..")
-                    savegame(savename=savename,world=world,worldtype=worldtype,single=True,plr=plr)
-                    # Save the game
-                    print("Success. We will get to work now.")
-                else:
-                    print("Loading..")
-                    savename = str(Saves[int(selectedsave) - 1])
-                    save = import_module("gamedata.integri.saves." + savename)
-                    plr = save.plr
-                    input(plr.varname)
-                    world = save.world
-                    worldtype = save.worldtype
-                    print("Success. We will get to work now.")
-                api.initiatewindow()
-                screen = api.setres(800, 600)
-                global quittime
-                global frames
-                quittime = False
-                frames = 0
-
-                def framecounter():
-                    global frames
-                    while not quittime:
-                        api.wait(1)
-                        print(f"fps: {frames}")
-                        frames = 0
-                
-                def displaythread(screen):
-                    global quittime
-                    global frames
-                    while not quittime:
-                        displayoutput = []
-                        for n in range(100):
-                            displayoutput.append([])
-                            for m in range(100):
-                                displayoutput[n].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
-                        api.display(screen, reversed(displayoutput), 8, 6)
-                        frames += 1
-                        api.wait(1/60) # "60 fps"
-                        # How does this work again
-                        # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*
-                
-                displayfunc = Thread(target=displaythread,args=[screen],daemon=True)
-                displayfunc.start()
-                framecounterfunc = Thread(target=framecounter)
-                framecounterfunc.start()
-                
-                gravtimer = 0 # Initialize a few variables
-                gravmltp = 1
-                holdingW = False
-                newdata = [world, plr.replace]
-                while api.isquit() == False:
-                    
-                    # Player interaction
-                    
-                    # Keys
-                    wpressed = api.ispressed_key("w")
-                    apressed = api.ispressed_key("a")
-                    spressed = api.ispressed_key("s")
-                    dpressed = api.ispressed_key("d")
-                    breakmode = api.ispressed_key("shift")
-                    
-                    # Actions
-                    if wpressed and not breakmode: newdata = plr.move("w", newdata[0], newdata[1]); holdingW = True
-                    if dpressed and not breakmode: newdata = plr.move("a", newdata[0], newdata[1])
-                    if spressed and not breakmode: newdata = plr.move("s", newdata[0], newdata[1])
-                    if apressed and not breakmode: newdata = plr.move("d", newdata[0], newdata[1])
-                    if wpressed and breakmode: newdata[0] = plr.breakblock("w", newdata[0], newdata[1])
-                    if dpressed and breakmode: newdata[0] = plr.breakblock("a", newdata[0], newdata[1])
-                    if spressed and breakmode: newdata[0] = plr.breakblock("s", newdata[0], newdata[1])
-                    if apressed and breakmode: newdata[0] = plr.breakblock("d", newdata[0], newdata[1])
-                    
-                    # Apply Gravity
-                    
-                    if world[plr.position[1] + 1][plr.position[0]].passable and holdingW: # If the block below the player can be fallen through and the player is holding down W
-                        gravtimer += 1 # then (self-explanatory code)
-                    elif world[plr.position[1] + 1][plr.position[0]].passable and not holdingW: # If the block below the player can be fallen through but the player isn't holding down W
-                        if gravtimer < 25: gravtimer = 25 # then (self-explanatory code)
-                        else: gravtimer += 1
-                    else:
-                        gravmltp = 0
-                        gravtimer = 0
-                    if gravtimer >= 25: gravmltp += 0.3
-                    if gravmltp > 0: newdata = plr.move("s", newdata[0], newdata[1], floor(gravmltp))
-                    
-                    # Other stuff
-                    
-                    world = newdata[0] # Update display
-                    plr.replace = newdata[1] # Update what used to be at a position before the player was.
-                    holdingW = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
-                    api.wait(1/20) # "20 tps/ups"
-                quittime = True
-                api.closewindow()
-                
-                print("Saving..")
-                world = newdata[0] # Quickly update the world
-                plr.replace = newdata[1] # Then update replace
-                # May not be 100% accurate as in might be 1 frame behind but that is acceptable
-                savegame(savename=savename,world=world,worldtype=worldtype,plr=plr,single=True)
-                print("Saved.")
-                
-            elif selectedsave in availabledeletesaveoptions:
+            if selectedsave in availabledeletesaveoptions:
                 match int(selectedsave):
                     case 5: api.delete("integri\\saves\\" + Saves[0] + ".py"); del Saves[0]
                     case 6: api.delete("integri\\saves\\" + Saves[1] + ".py"); del Saves[1]
                     case 7: api.delete("integri\\saves\\" + Saves[2] + ".py"); del Saves[2]
                     case 8: api.delete("integri\\saves\\" + Saves[3] + ".py"); del Saves[3]
+                continue
+            elif selectedsave not in availablesaveoptions:
+                continue
+
+            if Saves[int(selectedsave) - 1] == "":
+                namepass = False
+                while True:
+                    savename = input(Fore.LIGHTBLACK_EX + "    Input name: >" + Fore.RESET)
+                    if savename.count(" ") > 0:
+                        input(Fore.LIGHTBLACK_EX + "Invalid name." + Fore.RESET)
+                    else:
+                        break
+                displaytitle()
+                print(Fore.LIGHTBLACK_EX + "           Please select a world size.          ")
+                print(                     "Press the number before the option to select it.\n")
+                print(Fore.GREEN +         "1. Very, very small - I'm just checking the game\nout for two seconds.\n")
+                print(                     "2. Very small - I'm 35 and have an hour for this\ngame.\n")
+                print(Fore.CYAN +          "3. Small - I have two hours to mess around.\n")
+                print(                     "4. Medium - I'm checking out this size before so\nmething bigger.\n")
+                print(Fore.BLUE +          "5. Medium Large - I'm only playing for a short w\nhile.")
+                print(                     "6. Large - I want a reasonable world to play alo\nne.\n")
+                print(Fore.YELLOW +        "7. A bit Larger - I want a tad a bigger world.\n")
+                print(                     "8. Very Large - I don't mind waiting.\n")
+                print(Fore.RED +           "9. MAXIMUM - 800 MB save file size is a reasonab\nle price to pay for a big world. Every other opt\nion is pathetic, weak, and not enough for me.\n")
+                print(Fore.LIGHTBLACK_EX + "0. Back to Menu.")
+
+                availableoptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+                while True:
+                    selectedoption = api.wait_any()
+
+                    if selectedoption in availableoptions:
+                        worldtype = int(selectedoption)
+                        break
+                    elif selectedoption == "0":
+                        backtomenu = True
+                        break
+
+                if backtomenu == True: break
+
+                api.fullclear()
+
+                worlddata = generateworld(worldtype) # Create the world
+                world = worlddata[0] # Initialize a few variables
+                worldtype = worlddata[1]
+
+                plr.position[0] = ceil(worldtype[0] / 2) # Set the X Value of the player to be the middle of the world
+
+                for Ycoord in world:
+                    if Ycoord[plr.position[0]].passable and world[world.index(Ycoord) + 1][plr.position[0]].passable == False:
+                        # If the player can pass through the currently selected block and below that is a solid surface,
+                        plr.replace = Ycoord[plr.position[0]] # Add the element to plr.position.
+                        Ycoord[plr.position[0]] = plr # Spawn the player there.
+                        plr.position[1] = world.index(Ycoord) # Also adjust the Y value of the player to be accurate.
+                        if plr.position[1] != world.index(Ycoord): # If the Y value is not adjusted,
+                            plr.position[1] = world.index(Ycoord) # Adjust it again.
+                        break
+                print("Saving the world..")
+                savegame(savename=savename,world=world,worldtype=worldtype,single=True,plr=plr)
+                # Save the game
+                print("Success. We will get to work now.")
+            else:
+                print("Loading..")
+                savename = str(Saves[int(selectedsave) - 1])
+                save = import_module("gamedata.integri.saves." + savename)
+                plr = save.plr
+                input(plr.varname)
+                world = save.world
+                worldtype = save.worldtype
+                print("Success. We will get to work now.")
+
+            api.initiatewindow()
+            screen = api.setres(800, 600)
+
+            global quittime
+            global frames
+            quittime = False
+            frames = 0
+
+            def framecounter():
+                global quittime
+                global frames
+                while not quittime:
+                    api.wait(1)
+                    print(f"fps: {frames}")
+                    frames = 0
+
+            def applylightingsystem(world):
+                # Set the top of the world's light level to 15.
+                for block in world[0]:
+                    block.light_level = 15
+
+                for timesY in range(2):
+                    # timesY is approximately how many iterations I expect it to take
+                    # to apply the lighting system and leave without any lighting glitches.
+                    for Ylevel_coordinate in range(1, len(world)):
+                        Ylevel = world[Ylevel_coordinate]
+                        # Since the light level of the top blocks is already 15, there is
+                        # no need to apply the lighting system to it.
+                        lightlevelsaroundblock = []
+
+                        for block_coordinate in range(len(Ylevel)):
+                            above_block = world[Ylevel_coordinate - 1][block_coordinate].light_level
+                            try:
+                                left_block = Ylevel[block_coordinate - 1].light_level
+                            except(IndexError):
+                                left_block = 0
+
+                            try:
+                                right_block = Ylevel[block_coordinate + 1].light_level
+                            except(IndexError):
+                                right_block = 0
+
+                            lightlevelsaroundblock.append(above_block)
+                            lightlevelsaroundblock.append(left_block)
+                            lightlevelsaroundblock.append(right_block)
+
+                            block = Ylevel[block_coordinate]
+                            block.light_level = api.average(lightlevelsaroundblock)
+                            block.image = api.color_with_light(block.image, block.light_level, 15)
+
+                return world
+
+            def displaythread(screen):
+                global quittime
+                global frames
+                while not quittime:
+                    # LET HIM COOK :fire:
+                    cookingdisplayoutput = []
+                    displayoutput = []
+
+                    for n in range(worldtype[0]):
+                        cookingdisplayoutput.append([])
+
+                        for m in range(100):
+                            cookingdisplayoutput[n].append(air(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
+
+                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
+
+                    # I came up with a math formula to line up player coordinates
+                    # between cookingdisplayoutput and displayoutput
+                    # coordinate of player in cookingdisplayoutput =
+                    # X - (X - (X_radius_around_player + 1))
+
+                    for n in range(100):
+                        displayoutput.append([])
+
+                        for m in range(100):
+                            displayoutput[n].append(air(cookingdisplayoutput, plr.position[1] - (n - 50), (plr.position[0] - 51) - (m - 50)))
+
+                    api.display(screen, reversed(displayoutput), 8, 6)
+                    frames += 1
+                    api.wait(1/60) # "60 fps"
+                    # How does this work again
+                    # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*
+
+            displayfunc = Thread(target=displaythread,args=[screen],daemon=True)
+            displayfunc.start()
+            framecounterfunc = Thread(target=framecounter)
+            framecounterfunc.start()
+
+            gravtimer = 0 # Initialize a few variables
+            gravmltp = 1
+            holdingW = False
+            newdata = [world, plr.replace]
+            while api.isquit() == False:
+
+                # Player interaction
+
+                # Keys
+                wpressed = api.ispressed_key("w")
+                apressed = api.ispressed_key("a")
+                spressed = api.ispressed_key("s")
+                dpressed = api.ispressed_key("d")
+                breakmode = api.ispressed_key("shift")
+
+                # Actions
+                if wpressed and not breakmode: newdata = plr.move("w", newdata[0], newdata[1]); holdingW = True
+                if dpressed and not breakmode: newdata = plr.move("a", newdata[0], newdata[1])
+                if spressed and not breakmode: newdata = plr.move("s", newdata[0], newdata[1])
+                if apressed and not breakmode: newdata = plr.move("d", newdata[0], newdata[1])
+                if wpressed and breakmode: newdata[0] = plr.breakblock("w", newdata[0], newdata[1])
+                if dpressed and breakmode: newdata[0] = plr.breakblock("a", newdata[0], newdata[1])
+                if spressed and breakmode: newdata[0] = plr.breakblock("s", newdata[0], newdata[1])
+                if apressed and breakmode: newdata[0] = plr.breakblock("d", newdata[0], newdata[1])
+
+                # Apply Gravity
+
+                if world[plr.position[1] + 1][plr.position[0]].passable and holdingW: # If the block below the player can be fallen through and the player is holding down W
+                    gravtimer += 1 # then (self-explanatory code)
+                elif world[plr.position[1] + 1][plr.position[0]].passable and not holdingW: # If the block below the player can be fallen through but the player isn't holding down W
+                    if gravtimer < 25: gravtimer = 25 # then (self-explanatory code)
+                    else: gravtimer += 1
+                else:
+                    gravmltp = 0
+                    gravtimer = 0
+                if gravtimer >= 25: gravmltp += 0.3
+                if gravmltp > 0: newdata = plr.move("s", newdata[0], newdata[1], floor(gravmltp))
+
+                # Other stuff
+
+                world = newdata[0] # Update display
+                plr.replace = newdata[1] # Update what used to be at a position before the player was.
+                holdingW = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
+                api.wait(1/20) # "20 tps/ups"
+            quittime = True
+            api.closewindow()
+
+            print("Saving..")
+            world = newdata[0] # Quickly update the world
+            plr.replace = newdata[1] # Then update replace
+            # May not be 100% accurate as in might be 1 frame behind but that is acceptable
+            savegame(savename=savename,world=world,worldtype=worldtype,plr=plr,single=True)
+            print("Saved.")
         displaytitle()

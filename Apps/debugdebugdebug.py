@@ -1,1 +1,1 @@
-theniwentdiditagainfunnyhowyousayitwastheendandthisoneisforthechampions = 5
+print(__name__)

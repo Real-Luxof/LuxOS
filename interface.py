@@ -1,6 +1,7 @@
 def terminal():
     # Loading
-    
+
+    __name__ = "interface"
     from Apps import api
     def title():
         api.clear()
