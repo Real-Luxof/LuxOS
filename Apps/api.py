@@ -1612,7 +1612,7 @@ def optimized_generate(
         current_biome_length += 1
         current_biome_length += 1
         
-        # If the biome's length if finished, select a different one.
+        # If the biome's length is finished, select a different one.
         if current_biome_length > current_biome_max_length:
                 biome = random.choice(biomes)
 
