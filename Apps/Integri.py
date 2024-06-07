@@ -304,10 +304,10 @@ def displaytitle(): # Define a function named displaytitle.
 print("Making function Add If Reachable (air)")
 def air(listt, index, index2): # "air" stands for "Add If Reachable"
     global Bdr
-    if api.reachableindex(listt, index) and not index < 0:
-        if api.reachableindex(listt[index], index2) and not index2 < 0: return listt[index][index2]
-        else: return Bdr
-    else: return Bdr
+    try:
+        return listt[index][index2]
+    except(IndexError):
+        return Bdr
 
 increment()
 
@@ -374,17 +374,17 @@ while True:
                         break
                 displaytitle()
                 print(Fore.LIGHTBLACK_EX + "           Please select a world size.          ")
-                print(                     "Press the number before the option to select it.\n")
-                print(Fore.GREEN +         "1. Very, very small - I'm just checking the game\nout for two seconds.\n")
-                print(                     "2. Very small - I'm 35 and have an hour for this\ngame.\n")
-                print(Fore.CYAN +          "3. Small - I have two hours to mess around.\n")
-                print(                     "4. Medium - I'm checking out this size before so\nmething bigger.\n")
-                print(Fore.BLUE +          "5. Medium Large - I'm only playing for a short w\nhile.")
-                print(                     "6. Large - I want a reasonable world to play alo\nne.\n")
-                print(Fore.YELLOW +        "7. A bit Larger - I want a tad a bigger world.\n")
-                print(                     "8. Very Large - I don't mind waiting.\n")
-                print(Fore.RED +           "9. MAXIMUM - 800 MB save file size is a reasonab\nle price to pay for a big world. Every other opt\nion is pathetic, weak, and not enough for me.\n")
-                print(Fore.LIGHTBLACK_EX + "0. Back to Menu.")
+                print(                     "Press the number before the option to select it.")
+                print(Fore.GREEN +         "1. Very small - Over quicker than you in bed.")
+                print(                     "2. Small - I'm 35 and have an hour for this.")
+                print(Fore.CYAN +          "3. Medium - For messing around.")
+                print(                     "4. Medium Large - It's ok, the bigger ones hurt.")
+                print(Fore.BLUE +          "5. Large - Not sure what exact size I want.")
+                print(                     "6. Large Large - I have a friend to play with.")
+                print(Fore.YELLOW +        "7. Larger - Hurry up, I can't wait too long.")
+                print(                     "8. Very Large - I don't mind waiting.")
+                print(Fore.RED +           "9. MAXIMUM - Finally, a reasonable world size.")
+                print(Fore.LIGHTBLACK_EX + "0. Back to Menu." + Style.RESET_ALL)
 
                 availableoptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
                 while True:
@@ -487,16 +487,16 @@ while True:
                 global frames
                 while not quittime:
                     # LET HIM COOK :fire:
-                    cookingdisplayoutput = []
+ #                   cookingdisplayoutput = []
                     displayoutput = []
 
-                    for n in range(worldtype[0]):
-                        cookingdisplayoutput.append([])
+#                    for n in range(worldtype[0]):
+#                        cookingdisplayoutput.append([])
+#
+                    #    for m in range(100):
+                    #        cookingdisplayoutput[n].append(air(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
 
-                        for m in range(100):
-                            cookingdisplayoutput[n].append(air(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
-
-                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
+#                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
 
                     # I came up with a math formula to line up player coordinates
                     # between cookingdisplayoutput and displayoutput
@@ -507,13 +507,14 @@ while True:
                         displayoutput.append([])
 
                         for m in range(100):
-                            displayoutput[n].append(air(cookingdisplayoutput, plr.position[1] - (n - 50), (plr.position[0] - 51) - (m - 50)))
+                            displayoutput[-1].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
 
                     api.display(screen, reversed(displayoutput), 8, 6)
                     frames += 1
                     api.wait(1/60) # "60 fps"
                     # How does this work again
                     # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*
+                    # how does this run at ~23 fps
 
             displayfunc = Thread(target=displaythread,args=[screen],daemon=True)
             displayfunc.start()

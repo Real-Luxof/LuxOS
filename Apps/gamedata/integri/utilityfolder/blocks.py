@@ -31,59 +31,218 @@ setattr(Irn, "light_level", 0)
 # Oreconfig
 print("Loading ore configuration..")
 
-global oreconfig # Declare oreconfig a global variable.
-oreconfig = { # oreconfigabove is used to define ore rarity and placement near the surface.
-    "Ironore": (50, 10, 40, Iro),
-    # Iron ore has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block.
-    # Its block is Iro.
-    "Coalore": (50, 20, 30, Col),
-    # Coal ore has a 1/50th (2%) chance of spawning between 20 and 30 blocks below the top solid block.
-    # Its block is Col.
+oreconfig = [
+    {
+        "spawn_chance": 2,
+        "spawn_limit": 1,
+        "upper_limit": 10,
+        "lower_limit": 20,
+        "block": Iro
+    },
     
-    # Switching to deeper blocks.
+    {
+        "spawn_chance": 2,
+        "spawn_limit": 2,
+        "upper_limit": 20,
+        "lower_limit": 40,
+        "block": Col
+    },
     
-    "Ironore1": (45, 40, 60, Iro),
-    # Iron ore has a 1/45th (2.2%) chance of spawning between 40 and 70 blocks below the top solid block.
-    # Its block is Iro.
-    "Coalore1": (45, 30, 50, Col),
-    # Coal ore has a 1/45th (2.2%) chance of spawning between 30 and 70 blocks below the top solid block.
-    # Its block is Col.
+    {
+        "spawn_chance": 5,
+        "spawn_limit": 3,
+        "upper_limit": 30,
+        "lower_limit": 100,
+        "block": Iro
+    },
     
-    # Just imagine this below every entry:
-    # "[x] has a 1/[index0] chance of spawning between [index1] and [index2] blocks below the top solid block.
-    # Its block is [index3]."
-    # I don't wanna continue commenting.
+    {
+        "spawn_chance": 5,
+        "spawn_limit": 3,
+        "upper_limit": 50,
+        "lower_limit": 120,
+        "block": Col
+    },
+    {
+        "spawn_chance": 7,
+        "spawn_limit": 5,
+        "upper_limit": 100,
+        "lower_limit": 200,
+        "block": Iro
+    },
     
-    "Ironore2": (35, 70, 100, Iro),
-    "Coalore2": (35, 70, 100, Col),
+    {
+        "spawn_chance": 15,
+        "spawn_limit": 13,
+        "upper_limit": 120,
+        "lower_limit": 400,
+        "block": Col
+    },
     
-    "Ironore2": (30, 100, 200, Iro),
-    "Coalore2": (30, 100, 200, Col),
+    {
+        "spawn_chance": 15,
+        "spawn_limit": 10,
+        "upper_limit": 180,
+        "lower_limit": 300,
+        "block": Iro
+    },
     
-    "Ironore2": (20, 200, 350, Iro),
-    "Coalore2": (20, 200, 350, Col),
+    {
+        "spawn_chance": 25,
+        "spawn_limit": 17,
+        "upper_limit": 390,
+        "lower_limit": 700,
+        "block": Col
+    },
+    {
+        "spawn_chance": 25,
+        "spawn_limit": 20,
+        "upper_limit": 300,
+        "lower_limit": 700,
+        "block": Iro
+    },
     
-    "Ironore2": (15, 350, 450, Iro),
-    "Coalore2": (15, 350, 450, Col),
+    {
+        "spawn_chance": 30,
+        "spawn_limit": 30,
+        "upper_limit": 700,
+        "lower_limit": 1500,
+        "block": Col
+    },
     
-    "Ironore2": (10, 450, 99999999999999, Iro),
-    "Coalore2": (10, 450, 99999999999999, Col),
-}
+    {
+        "spawn_chance": 30,
+        "spawn_limit": 30,
+        "upper_limit": 700,
+        "lower_limit": 1500,
+        "block": Iro
+    },
+    
+    {
+        "spawn_chance": 35,
+        "spawn_limit": 50,
+        "upper_limit": 1500,
+        "lower_limit": 2500,
+        "block": Col
+    },
+    
+    {
+        "spawn_chance": 35,
+        "spawn_limit": 50,
+        "upper_limit": 1500,
+        "lower_limit": 2500,
+        "block": Iro
+    },
+    
+    {
+        "spawn_chance": 45,
+        "spawn_limit": 60,
+        "upper_limit": 2500,
+        "lower_limit": 4000,
+        "block": Col
+    },
+    
+    {
+        "spawn_chance": 45,
+        "spawn_limit": 60,
+        "upper_limit": 2500,
+        "lower_limit": 4000,
+        "block": Iro
+    },
+    
+    {
+        "spawn_chance": 45,
+        "spawn_limit": 60,
+        "upper_limit": 2500,
+        "lower_limit": 4000,
+        "block": Col
+    },
+    
+    {
+        "spawn_chance": 50,
+        "spawn_limit": 100,
+        "upper_limit": 4000,
+        "lower_limit": 6000,
+        "block": Iro
+    },
+    
+    {
+        "spawn_chance": 50,
+        "spawn_limit": 100,
+        "upper_limit": 4000,
+        "lower_limit": 6000,
+        "block": Col
+    },
+    
+    {
+        "spawn_chance": 60,
+        "spawn_limit": 300,
+        "upper_limit": 6000,
+        "lower_limit": 10000,
+        "block": Iro
+    },
+    
+    {
+        "spawn_chance": 60,
+        "spawn_limit": 300,
+        "upper_limit": 6000,
+        "lower_limit": 10000,
+        "block": Col
+    },
+]
 
-# Biome layers
-print("Loading biome layers..")
+# Biomes
+print("Loading biomes..")
 
 # Gonna do the oreconfig shenanigans with biomes.
-desert1 = [10, 30, Snd,Snd,Snd,Snd,Snd,Snd,Snd] # Biome layers for the Desert biome.
-plains1 = [10, 30, Grs,Grs,Grs,Drt,Drt] # Biome layers for the Plains biome.
-desert2 = [15,50,Snd,Snd,Snd,Snd,Snd,Snd]
-plains2 = [15,50,Grs,Grs,Grs,Drt,Drt]
-desert3 = [25,60,Snd,Snd,Snd,Snd,Snd,Snd]
-plains3 = [25,60,Grs,Grs,Grs,Drt,Drt]
-desert4 = [40,90,Snd,Snd,Snd,Snd,Snd,Snd]
-plains4 = [40,90,Grs,Grs,Grs,Drt,Drt]
-desert5 = [60,120,Snd,Snd,Snd,Snd,Snd,Snd]
-plains5 = [60,120,Grs,Grs,Grs,Drt,Drt]
-desert6 = [70,200,Snd,Snd,Snd,Snd,Snd,Snd]
-plains6 = [70,200,Grs,Grs,Grs,Drt,Drt]
-biomes = [desert1,plains1,desert2,plains2,desert3,plains3,desert4,plains4,desert5,plains5,desert6,plains6]
+biomes = [
+    {
+        "minimum_length": 10,
+        "maximum_length": 50,
+        "layers": [Grs, Grs, Drt, Drt, Drt, Drt]
+    },
+    
+    {
+        "minimum_length": 10,
+        "maximum_length": 50,
+        "layers": [Snd, Snd, Snd]
+    }
+#    
+#    {
+#        "minimum_length": 25,
+#        "maximum_length": 100,
+#        "layers": [Grs, Grs, Grs, Grs, Grs, Drt, Drt, Drt, Drt, Drt, Drt, Drt]
+#    },
+#    
+#    {
+#        "minimum_length": 10,
+#        "maximum_length": 50,
+#        "layers": [Snd, Snd, Snd, Snd, Snd, Snd]
+#    },
+#    
+#    
+#    {
+#        "minimum_length": 50,
+#        "maximum_length": 75,
+#        "layers": [Grs, Drt]
+#    },
+#    
+#    {
+#        "minimum_length": 1,
+#        "maximum_length": 10,
+#        "layers": [Snd]
+#    },
+#    
+#    
+#    {
+#        "minimum_length": 20,
+#        "maximum_length": 20,
+#        "layers": [Grs, Grs, Grs, Drt]
+#    },
+#    
+#    {
+#        "minimum_length": 1,
+#        "maximum_length": 10,
+#        "layers": [Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd]
+#    }
+]

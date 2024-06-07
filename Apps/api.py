@@ -247,10 +247,12 @@ def average(iterable: list, return_float: bool=False) -> int:
 
 
 def fullclear():
+    """Like os.system('cls'), but with no catch."""
     os.system("cls")
 
 
 def clear():
+    """Like os.system('cls'), but adds the LuxOS logo."""
     os.system("cls")
     print("  _          _    _     _      _  ")
     print(" | |        | |  | |    \\ \\   / / ")
@@ -487,19 +489,21 @@ def display(
             )  # Turn it into <type 'str'> instead of <class 'api.block'> or smth
 
             # Resolve any conflicts with hex by simply converting it to rgb values
-            block = block.removeprefix("#")
-            if len(block) == 3:
-                R = int("0x" + block[0], 16)
-                G = int("0x" + block[1], 16)
-                B = int("0x" + block[2], 16)
-            else:
-                R = int("0x" + block[0] + block[1], 16)
-                G = int("0x" + block[2] + block[3], 16)
-                B = int("0x" + block[4] + block[5], 16)
+            #block = block.removeprefix("#")
+            #if len(block) == 3:
+            #    R = int("0x" + block[0], 16)
+            #    G = int("0x" + block[1], 16)
+            #    B = int("0x" + block[2], 16)
+            #else:
+            #    R = int("0x" + block[0] + block[1], 16)
+            #    G = int("0x" + block[2] + block[3], 16)
+            #    B = int("0x" + block[4] + block[5], 16)
 
+            if "S" in block:
+                print(block)
             pygame.draw.rect(
                 screen,
-                pygame.Color(R, G, B),
+                pygame.Color(block),
                 (X, Y, widthofeachblock, heightofeachblock),
             )
             X += widthofeachblock  # Add widthofeachblock to X. Why?
@@ -925,7 +929,141 @@ class entity:
 
 # World Generation -
 
+# Terrain
+class Terrain:
+    """A Terrain type. Used for the new, OPTIMIZED and FASTER (hopefully) optimized_generate!
 
+Args:
+    name (str): The name. Used to tell a programmer what this terrain type is.
+    
+    spawn_chance (int): Whether or not this type will spawn is decided by
+    random.randint(1, 100) <= spawn_chance
+    Imagine this as a percent chance of the terrain type spawning on any block except for those that already have a terrain type.
+    
+    length_range (list[int, int]): The range of length. On the first index is the minimum length and on the last is the maximum length.
+    
+    transform_function (function): Alright, this is gonna require a good explanation.
+Basically, optimized_generate takes a list of all terrain types you want to add.
+Since I wanted the game to be able to define easily what kind of terrain it wants,
+I let you make a custom function for it! How merciful is that? More than the fact
+you're actually coding in this engine.
+
+When optimized_generate calls transform_function, it will give you two arguments:
+The current length of the terrain type that has been generated,
+and the maximum length picked by random.randint(length_range[0], length_range[1]).
+
+After that, you MUST return a list[list[int, int], int].
+The first index specifies a range of how many blocks above or below the previous
+block the next block should be,
+and the second index tells the function what chance there is of that happening.
+
+And by the way, the result of this transform_function bypasses [next_block_limit]
+but not [limit].
+        """
+    def __init__(self, name: str, spawn_chance: int, length_range: list[int, int], transform_function="literally a function"):
+        self.name = name
+        self.spawn_chance = spawn_chance
+        self.length_range = length_range
+        self.transform_function = transform_function
+
+def mountain_transform(current_length: int, max_length: int) -> list[list[int, int], int]:
+    """Hiya there, this a pre-built transform_function for the Terrain class used in a pre-built variable for it known simply as mountain_terrain_type.
+    This tends to generate mountains.
+
+    Args:
+        current_length (int): The first argument optimized_generate gives it.
+        max_length (int): The second argument optimized_generate gives it.
+
+    Returns:
+        list[list[int, int], int]: For an explanation, read the Terrain class' description.
+    """
+    if current_length <= max_length // 2:
+        return [[0, 1], 40]
+    else:
+        return [[-1, 0], 40]
+
+def inverse_mountain_transform(current_length: int, max_length: int) -> list[list[int, int], int]:
+    """Hiya there, this a pre-built transform_function for the Terrain class used in a pre-built variable for it known simply as inverse_mountain_terrain_type.
+    This tends to generate inverted mountains. That actually used to be called "canyons".
+
+    Args:
+        current_length (int): The first argument optimized_generate gives it.
+        max_length (int): The second argument optimized_generate gives it.
+
+    Returns:
+        list[list[int, int], int]: For an explanation, read the Terrain class' description.
+    """
+    if current_length >= max_length // 2:
+        return [[0, 1], 70]
+    else:
+        return [[-1, 0], 70]
+
+def plateau_transform(current_length: int, max_length: int) -> list[list[int, int], int]:
+    """Hiya there, this a pre-built transform_function for the Terrain class used in a pre-built variable for it known simply as plateau_terrain_type.
+    This tends to generate plateau-like terrain.
+
+    Args:
+        current_length (int): The first argument optimized_generate gives it.
+        max_length (int): The second argument optimized_generate gives it.
+
+    Returns:
+        list[list[int, int], int]: For an explanation, read the Terrain class' description.
+    """
+    if current_length <= max_length // 0.25:
+        return [[-1, 0], 70]
+    elif current_length <= max_length // 0.75:
+        return [[0, 0], 70]
+    else:
+        return [[0, 1], 70]
+
+def crater_transform(current_length: int, max_length: int) -> list[list[int, int], int]:
+    """Hiya there, this a pre-built transform_function for the Terrain class used in a pre-built variable for it known simply as crater_terrain_type.
+    This tends to generate crater-like terrain, also known as inverse plateaus.
+
+    Args:
+        current_length (int): The first argument optimized_generate gives it.
+        max_length (int): The second argument optimized_generate gives it.
+
+    Returns:
+        list[list[int, int], int]: For an explanation, read the Terrain class' description.
+    """
+    if current_length <= max_length // 0.25:
+        return [[0, 1], 70]
+    elif current_length <= max_length // 0.75:
+        return [[0, 0], 70]
+    else:
+        return [[-1, 0], 70]
+
+mountain_terrain_type = Terrain(
+    name="mountain",
+    spawn_chance=3,
+    length_range=[50, 200],
+    transform_function=mountain_transform
+)
+
+inverse_mountain_terrain_type = Terrain(
+    name="inverted mountain",
+    spawn_chance=3,
+    length_range=[50, 200],
+    transform_function=inverse_mountain_transform
+)
+
+plateau_terrain_type = Terrain(
+    name="plateau",
+    spawn_chance=3,
+    length_range=[50, 200],
+    transform_function=plateau_transform
+)
+
+crater_terrain_type = Terrain(
+    name="crater",
+    spawn_chance=3,
+    length_range=[50, 200],
+    transform_function=crater_transform
+)
+
+
+# Actually generate a world (LEGACY)
 def generate(
     width: int = 400,
     height=100,
@@ -949,10 +1087,10 @@ def generate(
     averagelength: int = 20,
     canyonlikelihood: int = 4,
     averagesteepnessofcanyon: int = 30,
-    averagelengthofcanyon: int = 20,
-    logging: bool = True,
+    averagelengthofcanyon: int = 20
 ):
-    """Here it is. The absolute MAX I can go to. THE EPITOME OF MY LABOUR!!
+    """LEGACY version! Use optimized_generate instead.
+    Here it is. The absolute MAX I can go to. THE EPITOME OF MY LABOUR!!
 
     this took hours of my life.
     i'm doing this for free.
@@ -1228,6 +1366,295 @@ def generate(
 
     # FINALLY return the world.
     return list(space.values())
+
+
+# Actually generate a world (but faster)
+def optimized_generate(
+    seed: str,
+    width: int,
+    height: int,
+    
+    Air: block,
+    
+    Stone: block,
+    
+    limit: dict = {
+        "upper_limit": 100,
+        "lower_limit": 700
+    },
+    
+    biomes: list = [
+            {
+                "minimum_length": 10,
+                "maximum_length": 50,
+                "layers": ["Grs", "Grs", "Drt", "Drt", "Drt", "Drt"]
+            },
+            
+            {
+                "minimum_length": 10,
+                "maximum_length": 50,
+                "layers": ["Snd", "Snd", "Snd"]
+            }
+        ],
+        
+    ore_config: list = [
+            {
+                "spawn_chance": 5,
+                "spawn_limit": 1,
+                "upper_limit": 10,
+                "lower_limit": 20,
+                "block": "IronOre"
+            },
+            
+            {
+                "spawn_chance": 30,
+                "spawn_limit": 3,
+                "upper_limit": 20,
+                "lower_limit": 40,
+                "block": "CoalOre"
+            },
+            
+            {
+                "spawn_chance": 30,
+                "spawn_limit": 3,
+                "upper_limit": 30,
+                "lower_limit": 100,
+                "block": "IronOre"
+            },
+            
+            {
+                "spawn_chance": 30,
+                "spawn_limit": 10,
+                "upper_limit": 50,
+                "lower_limit": 250,
+                "block": "CoalOre"
+            },
+        ],
+    
+    next_block_limits: dict = {
+        "upper_limit": -1,
+        "lower_limit": 1
+    },
+        
+    starting_Y: int = None, # my reasoning for this is that starting_Y will be randomly chosen if None.
+    terrain_types: list = [mountain_terrain_type, inverse_mountain_terrain_type, plateau_terrain_type]
+):
+    """Time to toss the so-called "epitome of my labor" in the trash and make a better one.
+
+    Summary: it generates a world, but 3x-2.3x faster.
+
+    Args:
+        seed (str): The seed for the world. Leave as None for the engine to pick one for you.
+        width (int): The width of the world.
+        height (int): The height of the world.
+        
+        Air (block): The thing that permeates open spaces.
+        Stone (block): The thing that permeates closed spaces.
+        
+        limit (dict, optional): Prevents world generation indexes above upper_limit and below lower_limit.
+
+        biomes (list, NOT optional): Biomes. Just look at the default to figure out its structure.
+
+        ore_config (list, optional): Look at the default. spawn_limit limits how many of that ore can spawn at a single Y coordinate.
+        
+        next_block_limits (dict, optional): Look at the default. This controls how far up or down a block can be from another block.
+        
+        starting_Y (int, optional): Where to start from? Excellent for chunk building as it allows for chunks connecting. If left as None, the engine will randomly pick one for you.
+        terrain_types (list): What terrain types do you want to be able to be generated? Defaults to the default ones from the Engine.
+
+    Returns:
+        A 2D Array. This is your 2D world.
+    """
+    # - Variable Checking -
+    
+    # Select the first biome.
+    if biomes == []:
+        print("HEY! YOU FORGOT TO GIVE ME ACTUAL BIOMES!!\n[biomes] IS LITERALLY JUST A BLANK LIST!")
+        ValueError()
+    
+    # None is pretty falsy, so I'll just use if not [variable].
+    if not seed:
+        seed = random.randint(0, 1000000000000)
+    else:
+        random.seed(seed)
+    
+    if not starting_Y:
+        starting_Y = random.randint(limit["upper_limit"], limit["lower_limit"])
+    
+    # set seed again cause i'm not sure if random.randint can change random.seed
+    random.seed(seed)
+    # Y is used to generate blocks below the top solid layer.
+    Y = starting_Y
+    X = 0
+    # generating_terrain blocks other terrain types from generating while one is on.
+    generating_terrain = False
+    # current_terrain_type is the currently generating terain type.
+    current_terrain_type = None
+    
+    # - Create the initial space -
+
+    # Pretty self-explanatory if you're not a silly lil dum dum.
+    space = []
+    for ylevel in range(height):
+        space.append([])
+        
+        for xlevel in range(width):
+            space[-1].append(Air)
+
+    # - Add blocks (finally use biomes) -
+
+    # Initalize some variables
+
+    # [Y] is used for biomes, to generate things below the top layer.
+    # Used later for structure and ore generation.
+    top_layers = []
+    top_layers.append([starting_Y, X])
+    
+    biome = random.choice(biomes)
+    
+    current_biome_length = 1
+    current_biome_layers = biome["layers"]
+    current_biome_max_length = random.randint(
+        biome["minimum_length"],
+        biome["maximum_length"]
+    )
+    
+    current_terrain_type_length = 0
+    current_terrain_type_max_length = 0
+
+    for times_X in range(width):
+        # biome_Y is used for biomes, so the original Y is not contaminated.
+        biome_Y = Y
+        for times_Y in range(height):
+            
+            # Actually do the biome work.
+            if not reachableindex(space, biome_Y):
+                break
+            
+            # If you don't know why times_Y is being used for this,
+            # don't worry. I'm not explaining.
+            if reachableindex(current_biome_layers, times_Y):
+                space[biome_Y][X] = current_biome_layers[times_Y]
+            else:
+                space[biome_Y][X] = Stone
+            
+            if biome_Y < height:
+                biome_Y += 1
+        
+        # Out of times_Y, into times_X.
+        
+        # next_place is added to Y to decide how many blocks above or below the previous block the next
+        # block should be.
+        next_place = random.randint(
+            next_block_limits["upper_limit"],
+            next_block_limits["lower_limit"]
+        )
+        
+        # Terrain generation time.
+        if not generating_terrain:
+            for type in terrain_types:
+                if random.randint(1, 100) <= type.spawn_chance:
+                    
+                    generating_terrain = True
+                    current_terrain_type = type
+                    current_terrain_type_length = 0
+                    
+                    current_terrain_type_max_length = random.randint(
+                        type.length_range[0],
+                        type.length_range[1]
+                    )
+                    print(f"type: {type.name}")
+                
+        
+        if generating_terrain:
+            if current_terrain_type_length <= current_terrain_type_max_length:
+        
+                transform_result = current_terrain_type.transform_function(
+                    current_terrain_type_length,
+                    current_terrain_type_max_length
+                )
+        
+                if random.randint(1, 100) <= transform_result[1]:
+        
+                    next_place = random.choice(
+                        transform_result[0]
+                    )
+        
+            else:
+                generating_terrain = False
+        
+        # Now to clean up next_place.
+        while Y + next_place < limit["upper_limit"]:
+            #print("next place must go down")
+            #print(f"next_place going down: {next_place}")
+            next_place += 1
+        
+        while Y + next_place > limit["lower_limit"]:
+            #print("next place must go up")
+            #print(f"next_place going up: {next_place}")
+            #print(f"limit['lower_limit']: {limit['lower_limit']}")
+            #print(f"Y at next_place: {Y}")
+            #print(f"Y + next_place: {Y + next_place}")
+            #print(f"Y + next_place > limit['lower_limit']: {Y + next_place > limit['lower_limit']}")
+            next_place -= 1
+        
+        # The show must go on!
+        top_layers.append([Y, X])
+        if X < width:
+            #print(f"next_place: {next_place}")
+            Y += next_place
+            X += 1
+        current_terrain_type_length += 1
+        #print(f"X: {X}")
+        #print(f"Y: {Y}")
+        
+        # length checking
+        current_biome_length += 1
+        current_biome_length += 1
+        
+        # If the biome's length if finished, select a different one.
+        if current_biome_length > current_biome_max_length:
+                biome = random.choice(biomes)
+
+                current_biome_length = 1
+                current_biome_layers = biome["layers"]
+                current_biome_max_length = random.randint(
+                    biome["minimum_length"],
+                    biome["maximum_length"]
+                )
+        
+        if current_terrain_type_length > current_terrain_type_max_length:
+            generating_terrain = False
+
+    # Ore and structure generation
+
+    # Ore -
+    for top_block in top_layers:
+        for ore in ore_config:
+            
+            for times in range(random.randint(1, ore["spawn_limit"])):
+                # Part of the great de-nesting.
+                if not random.randint(1, 100) <= ore["spawn_chance"] or not reachableindex(
+                    space,
+                    top_block[0] + ore["upper_limit"]
+                ):
+                    continue
+                
+                # Self-explanatory for the most part.
+                spawn_area = random.randint(
+                    ore["upper_limit"],
+                    ore["lower_limit"]
+                ) + top_block[0]
+                
+                # If spawn_area's too far away, just reel it back in.
+                # Yeah this might cause some ores to cluster up at the bottom of the world, so what?
+                if spawn_area >= height:
+                    continue
+                
+                space[spawn_area][top_block[1]] = ore["block"]
+
+    # FINALLY return the world.
+    return space
 
 
 # Saving -
