@@ -34,6 +34,34 @@ from math import floor
 
 # - Miscellaneous -
 
+
+# Apply chaos
+def rand_num(seed: float) -> float:
+    """Generates a random number, but small differences in seed translate to the calculations going completely batshit crazy.
+
+    Args:
+        seed (float or int): The seed to work with. Same seed gives same output.
+
+    Returns:
+        float: A random number.
+    """
+    seed = (seed * 23082) / 293 + 29000 - 111
+    random.seed(seed)
+    nums = []
+    for i in range(1, random.randint(10, 100)):
+        start = random.randint(5908, 29084)
+        random.seed(start)
+        end = random.randint(start, 509123)
+        random.seed(end)
+        random.random
+        nums.append(random.randint(start, end))
+        random.seed(random.randint(start * (i // 2), end * i))
+    seed = seed * random.randint(2, 58982)
+    random.seed(random.randint(int(abs(seed)), int(abs(seed * 29 - (11 * random.randint(50, 2049))))))
+    seed = seed / random.randint(5, 24) + (random.choice(nums) * random.randint(24, 999)) - 290
+    return seed
+
+
 # Abs, but negative.
 def negabs(num: int):
     """Abs, but converts positive integers to negative.
@@ -45,6 +73,7 @@ def negabs(num: int):
          int: A negative integer.
     """
     return 0 - num
+
 
 # Strip important files
 def stripimportant(
@@ -188,23 +217,17 @@ def putstringsaroundslots(inventory):
 
 
 # Install a module
-
-
 def install(module):
     os.system("pip install " + module)
 
 
 # Delete a file
-
-
 def delete(file):
     os.system("del gamedata\\" + file)
 
 
 # Math shit -
 # Calculate when the operator is a string.
-
-
 def calculate(num1, op, num2):
     num1 = int(num1)
     num2 = int(num2)
@@ -244,8 +267,6 @@ def average(iterable: list, return_float: bool=False) -> int:
 
 
 # Clear Screen.
-
-
 def fullclear():
     """Like os.system('cls'), but with no catch."""
     os.system("cls")
@@ -271,8 +292,6 @@ def clear():
 
 
 # Wait.
-
-
 def wait(secs):
     time.sleep(secs)
 
@@ -280,8 +299,6 @@ def wait(secs):
 # - The Checkers -
 
 # Check if one list has an element of the other.
-
-
 def comparelist(list1, list2):
     for i in list1:
         if i in list2:
@@ -290,8 +307,6 @@ def comparelist(list1, list2):
 
 
 # Check for index in list.
-
-
 def ismore(list: list, index: int):
     """Checks if {index} in {list} is reachable. IF not, returns False.
 
@@ -312,8 +327,6 @@ def ismore(list: list, index: int):
 
 
 # Check if the string is a math operator.
-
-
 def isoperator(
     string: str, operators: list[str] = ["+", "-", "*", "x", "%", "/", "//", "^"]
 ) -> bool:
@@ -332,8 +345,6 @@ def isoperator(
 
 
 # Check if the variable is a list.
-
-
 def islist(var):
     if type(var) == list:
         return True
@@ -342,8 +353,6 @@ def islist(var):
 
 
 # Check if the variable is a string.
-
-
 def isstring(var):
     if type(var) == str:
         return True
@@ -352,8 +361,6 @@ def isstring(var):
 
 
 # Check if the string is an integer.
-
-
 def isint(string):
     try:
         int(string)
@@ -365,8 +372,6 @@ def isint(string):
 
 
 # Check if the string is a hex code.
-
-
 def ishex(string):
     try:
         pygame.Color(string)
@@ -376,8 +381,6 @@ def ishex(string):
 
 
 # Check if an index in a list or dictionary exists.
-
-
 def reachableindex(liste, index):
     if type(liste) == list:
         if isint(index):
@@ -467,9 +470,7 @@ def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> 
     return hex_color_changed
 
 
-# The Main Function that puts shit on screen.
-
-
+# The maion function that puts shit on screen.
 def display(
     screen, newscreen: list[list], widthofeachblock: int, heightofeachblock: int
 ):
@@ -631,6 +632,24 @@ class inventory:
 
 # Block
 class block:
+    """Exactly what the name says. You can also call it a tile.
+
+    varname: What variable is this block called? Used for turntoblock() and turnarraytoblocks().
+
+    image: What the display() function will use. Is usually a hex code.
+
+    passable: Can it be passed through by entities?
+
+    breakablebytool: Can it be broken by an entity weilding a tool?
+
+    droptoolvalue: What level does that tool have to be?
+
+    drop: What does the entity gain in its inventory upon breaking the block?
+        An item class doesn't exist, just put an empty string for now.
+
+    falling: Is the block not immune to gravity? Use this so you can just do this and it will move if this value is set to True:
+    for block in world: block.move(arguments)
+    """
     def __init__(
         self,
         varname: str = "Stn",
@@ -641,25 +660,6 @@ class block:
         drop="Stone",
         falling: bool = False,
     ):
-        """"""
-        """Exactly what the name says. You can also call it a tile.
-
-            varname: What variable is this block called? Used for turntoblock() and turnarraytoblocks().
-
-            image: What the display() function will use. Is usually a hex code.
-
-            passable: Can it be passed through by entities?
-
-            breakablebytool: Can it be broken by an entity weilding a tool?
-
-            droptoolvalue: What level does that tool have to be?
-
-            drop: What does the entity gain in its inventory upon breaking the block?
-            An item class doesn't exist, just put an empty string for now.
-
-            falling: Is the block not immune to gravity? Use this so you can just do this and it will move if this value is set to True:
-                for block in world: block.move(arguments)
-        """
         self.varname = varname
         self.image = image
         self.passable = passable
@@ -734,8 +734,17 @@ class block:
 
 # Entity
 class entity:
+    """Exactly what the name is. Can be used to make a player character.
+    Methods:
+        breakblock()
+        move()
+        hurt()
+        heal()
+    Hover over them after typing them out for a description of what they do and their inputs.
+    """
     def __init__(
         self,
+        replace: block,
         varname="plr",
         character="#000000",
         maxhealth: int = 100,
@@ -745,7 +754,6 @@ class entity:
         defense: int = 5,
         speed: int = 1,
         position: list = [2, 2],
-        replace: block = block(),
         inventory: inventory = inventory(),
         dead: bool = False,
         deffactor: float = 0.5,
@@ -753,14 +761,6 @@ class entity:
         reach: int = 1,
         handvalue: int = 1,
     ):
-        """Exactly what the name is. Can be used to make a player character.
-        Methods:
-            breakblock()
-            move()
-            hurt()
-            heal()
-        Hover over them after typing them out for a description of what they do and their inputs.
-        """
         self.varname = varname
         self.character = character
         self.maxhealth = maxhealth
@@ -959,7 +959,7 @@ and the second index tells the function what chance there is of that happening.
 
 And by the way, the result of this transform_function bypasses [next_block_limit]
 but not [limit].
-        """
+"""
     def __init__(self, name: str, spawn_chance: int, length_range: list[int, int], transform_function="literally a function"):
         self.name = name
         self.spawn_chance = spawn_chance
@@ -1563,7 +1563,6 @@ def optimized_generate(
                         type.length_range[0],
                         type.length_range[1]
                     )
-                    print(f"type: {type.name}")
                 
         
         if generating_terrain:
@@ -1669,7 +1668,7 @@ def turntoblock(block: block = block(), addapi: bool = True) -> str:
         str: Out comes something like "api.block(image=)" or "api.entity(character=)".
     """
     if block.type == "block":
-        return f"{addapiiftrue(addapi=addapi)}block(varname={block.varname},image={block.image},passable={block.passable},breakablebytool={block.breakablebytool},droptoolvalue={block.droptoolvalue},drop={block.drop},falling={block.falling})"
+        return f"{addapiiftrue(addapi=addapi)}block(varname=\"{block.varname}\",image={block.image},passable={block.passable},breakablebytool={block.breakablebytool},droptoolvalue={block.droptoolvalue},drop={block.drop},falling={block.falling})"
     elif block.type == "entity":
         return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},character="{block.character}",maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
 

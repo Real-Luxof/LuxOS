@@ -425,9 +425,9 @@ while True:
                 savename = str(Saves[int(selectedsave) - 1])
                 save = import_module("gamedata.integri.saves." + savename)
                 plr = save.plr
-                input(plr.varname)
                 world = save.world
                 worldtype = save.worldtype
+                del save
                 print("Success. We will get to work now.")
 
             api.initiatewindow()
