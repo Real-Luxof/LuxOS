@@ -12,7 +12,7 @@ from api import generate
 from api import average
 from math import floor
 from api import isquit
-from api_cy import optimized_generate
+from api import optimized_generate
 import random
 import time
 import os
@@ -158,6 +158,8 @@ desert6 = [70,200,Snd,Snd,Snd,Snd,Snd,Snd]
 plains6 = [70,200,Grs,Grs,Grs,Drt,Drt]
 unoptimized_biomes = [desert1,plains1,desert2,plains2,desert3,plains3,desert4,plains4,desert5,plains5,desert6,plains6]
 
+
+def optimized_optimized_generate()
 
 
 #average_calculation_repitition = 5

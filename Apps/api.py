@@ -1474,7 +1474,7 @@ def optimized_generate(
     
     # None is pretty falsy, so I'll just use if not [variable].
     if not seed:
-        seed = random.randint(0, 1000000000000)
+        seed = rand_num(random.randint(0, 1000000000000))
     else:
         random.seed(seed)
     
