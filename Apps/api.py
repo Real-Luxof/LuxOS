@@ -1494,12 +1494,7 @@ def optimized_generate(
     # - Create the initial space -
 
     # Pretty self-explanatory if you're not a silly lil dum dum.
-    space = []
-    for ylevel in range(height):
-        space.append([])
-        
-        for xlevel in range(width):
-            space[-1].append(Air)
+    space = [[Air] * width] * height
 
     # - Add blocks (finally use biomes) -
 
