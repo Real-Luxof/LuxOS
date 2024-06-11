@@ -162,76 +162,201 @@ Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=Tru
 Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
 Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
-setattr(Air, "light_level", 0)
-setattr(Grs, "light_level", 0)
-setattr(Drt, "light_level", 0)
-setattr(Stn, "light_level", 0)
-setattr(Snd, "light_level", 0)
-setattr(Bdr, "light_level", 0)
-setattr(plr, "light_level", 0)
-setattr(Iro, "light_level", 0)
-setattr(Col, "light_level", 0)
-setattr(Irn, "light_level", 0)
+Air.light_level = 0
+Grs.light_level = 0
+Drt.light_level = 0
+Stn.light_level = 0
+Snd.light_level = 0
+Bdr.light_level = 0
+plr.light_level = 0
+Iro.light_level = 0
+Col.light_level = 0
+Irn.light_level = 0
 
 # Oreconfig
 print("Loading ore configuration..")
 
-global oreconfig # Declare oreconfig a global variable.
-oreconfig = { # oreconfigabove is used to define ore rarity and placement near the surface.
-    "Ironore": (50, 10, 40, Iro),
-    # Iron ore has a 1/50th (2%) chance of spawning between 10 and 40 blocks below the top solid block.
-    # Its block is Iro.
-    "Coalore": (50, 20, 30, Col),
-    # Coal ore has a 1/50th (2%) chance of spawning between 20 and 30 blocks below the top solid block.
-    # Its block is Col.
+oreconfig = [
+    api.OreConfiguration(
+        2,
+        1,
+        10,
+        20,
+        Iro
+    ),
     
-    # Switching to deeper blocks.
+    api.OreConfiguration(
+        2,
+        2,
+        20,
+        40,
+        Col
+    ),
     
-    "Ironore1": (45, 40, 60, Iro),
-    # Iron ore has a 1/45th (2.2%) chance of spawning between 40 and 70 blocks below the top solid block.
-    # Its block is Iro.
-    "Coalore1": (45, 30, 50, Col),
-    # Coal ore has a 1/45th (2.2%) chance of spawning between 30 and 70 blocks below the top solid block.
-    # Its block is Col.
+    api.OreConfiguration(
+        5,
+        3,
+        30,
+        100,
+        Iro
+    ),
     
-    # Just imagine this below every entry:
-    # "[x] has a 1/[index0] chance of spawning between [index1] and [index2] blocks below the top solid block.
-    # Its block is [index3]."
-    # I don't wanna continue commenting.
+    api.OreConfiguration(
+        5,
+        3,
+        50,
+        120,
+        Col
+    ),
     
-    "Ironore2": (35, 70, 100, Iro),
-    "Coalore2": (35, 70, 100, Col),
+    api.OreConfiguration(
+        7,
+        5,
+        100,
+        200,
+        Iro
+    ),
     
-    "Ironore2": (30, 100, 200, Iro),
-    "Coalore2": (30, 100, 200, Col),
+    api.OreConfiguration(
+        15,
+        13,
+        120,
+        400,
+        Col
+    ),
     
-    "Ironore2": (20, 200, 350, Iro),
-    "Coalore2": (20, 200, 350, Col),
+    api.OreConfiguration(
+        15,
+        10,
+        180,
+        300,
+        Iro
+    ),
     
-    "Ironore2": (15, 350, 450, Iro),
-    "Coalore2": (15, 350, 450, Col),
+    api.OreConfiguration(
+        25,
+        17,
+        390,
+        700,
+        Col
+    ),
     
-    "Ironore2": (10, 450, 99999999999999, Iro),
-    "Coalore2": (10, 450, 99999999999999, Col),
-}
+    api.OreConfiguration(
+        25,
+        20,
+        300,
+        700,
+        Iro
+    ),
+    
+    api.OreConfiguration(
+        30,
+        30,
+        700,
+        1500,
+        Col
+    ),
+    
+    api.OreConfiguration(
+        30,
+        30,
+        700,
+        1500,
+        Iro
+    ),
+    
+    api.OreConfiguration(
+        30,
+        30,
+        700,
+        1500,
+        Iro
+    ),
+    
+    api.OreConfiguration(
+        35,
+        50,
+        1500,
+        2500,
+        Iro
+    ),
+    
+    api.OreConfiguration(
+        45,
+        60,
+        2500,
+        4000,
+        Col
+    ),
+    
+    api.OreConfiguration(
+        45,
+        60,
+        2500,
+        4000,
+        Iro
+    ),
+    
+    api.OreConfiguration(
+        45,
+        60,
+        2500,
+        4000,
+        Col
+    ),
+    
+    api.OreConfiguration(
+        50,
+        100,
+        4000,
+        6000,
+        Iro
+    ),
+    
+    api.OreConfiguration(
+        50,
+        100,
+        4000,
+        6000,
+        Col
+    ),
+    
+    api.OreConfiguration(
+        60,
+        300,
+        6000,
+        10000,
+        Iro
+    ),
+    
+    api.OreConfiguration(
+        60,
+        300,
+        6000,
+        10000,
+        Col
+    )
+]
 
-# Biome layers
-print("Loading biome layers..")
+# Biomes
+print("Loading biomes..")
 
 # Gonna do the oreconfig shenanigans with biomes.
-desert1 = [10, 30, Snd,Snd,Snd,Snd,Snd,Snd,Snd] # Biome layers for the Desert biome.
-plains1 = [10, 30, Grs,Grs,Grs,Drt,Drt] # Biome layers for the Plains biome.
-desert2 = [15,50,Snd,Snd,Snd,Snd,Snd,Snd]
-plains2 = [15,50,Grs,Grs,Grs,Drt,Drt]
-desert3 = [25,60,Snd,Snd,Snd,Snd,Snd,Snd]
-plains3 = [25,60,Grs,Grs,Grs,Drt,Drt]
-desert4 = [40,90,Snd,Snd,Snd,Snd,Snd,Snd]
-plains4 = [40,90,Grs,Grs,Grs,Drt,Drt]
-desert5 = [60,120,Snd,Snd,Snd,Snd,Snd,Snd]
-plains5 = [60,120,Grs,Grs,Grs,Drt,Drt]
-desert6 = [70,200,Snd,Snd,Snd,Snd,Snd,Snd]
-plains6 = [70,200,Grs,Grs,Grs,Drt,Drt]
-biomes = [desert1,plains1,desert2,plains2,desert3,plains3,desert4,plains4,desert5,plains5,desert6,plains6]"""
+biomes = [
+    api.Biome(
+        50,
+        10,
+        50,
+        [Grs, Grs, Drt, Drt, Drt, Drt]
+    ),
+    
+    api.Biome(
+        50,
+        10,
+        50,
+        [Snd, Snd, Snd]
+    )
+]"""
         if f.read != data:
             f.write(data)
 
@@ -245,17 +370,115 @@ import api
 # Actual main function
 print("Making generateworld function..")
 def generateworld(worldtype):
-    world = {}
     match worldtype:
-        case 1: newworldtype = [100, 5, 95]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig)
-        case 2: newworldtype = [200, 10, 190]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig)
-        case 3: newworldtype = [400, 20, 380]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig)
-        case 4: newworldtype = [700, 35, 665]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,averagesteepness=50,averagelength=40,averagesteepnessofcanyon=50,averagelengthofcanyon=40)
-        case 5: newworldtype = [1000, 50, 950]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,averagesteepness=50,averagelength=50,averagesteepnessofcanyon=50,averagelengthofcanyon=50)
-        case 6: newworldtype = [1500, 75, 425]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,averagesteepness=50,averagelength=70,averagesteepnessofcanyon=50,averagelengthofcanyon=70)
-        case 7: newworldtype = [2000, 100, 1900]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,averagesteepness=50,averagelength=100,averagesteepnessofcanyon=50,averagelengthofcanyon=100)
-        case 8: newworldtype = [3000, 150, 2850]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,averagesteepness=50,averagelength=140,averagesteepnessofcanyon=50,averagelengthofcanyon=140)
-        case 9: newworldtype = [10000, 500, 9500]; world = api.generate(newworldtype[0],newworldtype[0],biomes,Air,Stn,Bdr,(newworldtype[1],newworldtype[2]),oreconfig,averagesteepness=60,averagelength=300,averagesteepnessofcanyon=60,averagelengthofcanyon=300)
+        case 1:
+            newworldtype = [500, api.Limit(25, 495)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
+        case 2:
+            newworldtype = [1000, api.Limit(50, 950)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
+        case 3:
+            newworldtype = [1500, api.Limit(100, 1400)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
+        case 4:
+            newworldtype = [2000, api.Limit(100, 1900)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
+        case 5:
+            newworldtype = [3500, api.Limit(200, 3300)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
+        case 6:
+            newworldtype = [5000, api.Limit(500, 4500)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
+        case 7:
+            newworldtype = [7000, api.Limit(500, 6500)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
+        case 8:
+            newworldtype = [8000, api.Limit(500, 7500)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
+        case 9:
+            newworldtype = [10000, api.Limit(1000, 8000)]
+            world = api.optimized_generate(
+                seed=None,
+                width=newworldtype[0],
+                height=newworldtype[0],
+                air=Air,
+                stone=Stn,
+                limit=newworldtype[1],
+                biomes=biomes,
+                ore_config=oreconfig,
+            )
     return [world, newworldtype]"""
         if f.read != data:
             f.write(data)

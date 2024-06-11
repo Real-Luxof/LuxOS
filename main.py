@@ -5,7 +5,7 @@ def bootloader():
     from os import system
     from time import sleep as wait
     import sys
-    __name__ = "bootloader"
+    
     system("title [ LuxOS Bootloader ]")
     def typewriter(string):
         for char in string:

@@ -1,7 +1,6 @@
 def terminal():
     # Loading
 
-    __name__ = "interface"
     from Apps import api
     def title():
         api.clear()
@@ -156,7 +155,7 @@ def terminal():
             
                 elif cinput[0] == listofmodularcommands[1]:
                     downloaded = os.listdir("Apps/")
-                    downloaded = api.stripimportant(downloaded)
+                    api.stripimportant(downloaded)
                     cinput[1] = cinput[1] + ".py"
                     if cinput[1] in downloaded:
                         title()
@@ -169,7 +168,7 @@ def terminal():
             
                 elif cinput[0] == listofmodularcommands[2]:
                     downloaded = os.listdir("Apps/")
-                    downloaded = api.stripimportant(downloaded)
+                    api.stripimportant(downloaded)
                     cinput[1] = cinput[1] + ".py"
                     if cinput[1] in downloaded:
                         os.remove("Apps/" + cinput[1])

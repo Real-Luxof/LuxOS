@@ -13,6 +13,9 @@ from api import average
 from math import floor
 from api import isquit
 from api import optimized_generate
+from api import Limit
+from api import OreConfiguration
+from api import Biome
 import random
 import time
 import os
@@ -33,59 +36,65 @@ Leaf = "Leaf"
 Logg = "Logg"
 
 biomes = [
-    {
-        "minimum_length": 10,
-        "maximum_length": 50,
-        "layers": [Grs, Grs, Drt, Drt, Drt, Drt]
-    },
+    Biome(
+        50,
+        10,
+        50,
+        [Grs, Grs, Drt, Drt, Drt, Drt]
+    ),
     
-    {
-        "minimum_length": 10,
-        "maximum_length": 50,
-        "layers": [Snd, Snd, Snd]
-    }
+    Biome(
+        50,
+        10,
+        50,
+        [Snd, Snd, Snd]
+    )
 ]
 
-limit = {
-    "upper_limit": 200,
-    "lower_limit": 600
-}
+limit = Limit(
+    2,
+    598
+)
 
 oreconfig = [
-    {
-        "spawn_chance": 5,
-        "spawn_limit": 1,
-        "upper_limit": 10,
-        "lower_limit": 20,
-        "block": Iro
-    },
+    OreConfiguration(
+        5,
+        1,
+        10,
+        20,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 30,
-        "spawn_limit": 3,
-        "upper_limit": 20,
-        "lower_limit": 40,
-        "block": Col
-    },
+    OreConfiguration(
+        30,
+        3,
+        20,
+        40,
+        Col
+    ),
     
-    {
-        "spawn_chance": 30,
-        "spawn_limit": 3,
-        "upper_limit": 30,
-        "lower_limit": 100,
-        "block": Iro
-    },
+    OreConfiguration(
+        30,
+        3,
+        30,
+        100,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 30,
-        "spawn_limit": 10,
-        "upper_limit": 50,
-        "lower_limit": 250,
-        "block": Col
-    },
+    OreConfiguration(
+        30,
+        10,
+        50,
+        250,
+        Col
+    )
 ]
 
-next_block_limits = {
+next_block_limits = Limit(
+    -2,
+    2
+)
+{
     "upper_limit": 2,
     "lower_limit": 2
 }
@@ -159,12 +168,12 @@ plains6 = [70,200,Grs,Grs,Grs,Drt,Drt]
 unoptimized_biomes = [desert1,plains1,desert2,plains2,desert3,plains3,desert4,plains4,desert5,plains5,desert6,plains6]
 
 
-def optimized_optimized_generate()
+#def optimized_optimized_generate()
 
 
 #average_calculation_repitition = 5
-#calculation_width = 2000
-#calculation_height = 2000
+#calculation_width = 800
+#calculation_height = 600
 #
 #optimized_times = []
 #optimized_average = 0
@@ -181,8 +190,8 @@ def optimized_optimized_generate()
 #        seed="666",
 #        width=calculation_width,
 #        height=calculation_height,
-#        Air=Air,
-#        Stone=Stn,
+#        air=Air,
+#        stone=Stn,
 #        limit=limit,
 #        biomes=biomes,
 #        ore_config=oreconfig
@@ -225,20 +234,20 @@ def optimized_optimized_generate()
 #unoptimized_average: {unoptimized_average}
 #unoptimized_times: {unoptimized_times}""")
 
-#space = optimized_generate(
-#    seed=None,
-#    width=800,
-#    height=600,
-#   Air=Air,
-#    Stone=Stn,
-#    limit=limit,
-#    biomes=biomes,
-#    ore_config=oreconfig
-#)
-#initiatewindow()
-#screen = setres()
-#display(screen, space, 1, 1)
-#while True:
-#    time.sleep(1/20)
-#    if isquit():
-#        break
+space = optimized_generate(
+    seed=None,
+    width=800,
+    height=600,
+    air=Air,
+    stone=Stn,
+    limit=limit,
+    biomes=biomes,
+    ore_config=oreconfig
+)
+initiatewindow()
+screen = setres()
+display(screen, space, 1, 1)
+while True:
+    time.sleep(1/20)
+    if isquit():
+        break

@@ -17,178 +17,180 @@ Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=Tru
 Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
 Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
-setattr(Air, "light_level", 0)
-setattr(Grs, "light_level", 0)
-setattr(Drt, "light_level", 0)
-setattr(Stn, "light_level", 0)
-setattr(Snd, "light_level", 0)
-setattr(Bdr, "light_level", 0)
-setattr(plr, "light_level", 0)
-setattr(Iro, "light_level", 0)
-setattr(Col, "light_level", 0)
-setattr(Irn, "light_level", 0)
+Air.light_level = 0
+Grs.light_level = 0
+Drt.light_level = 0
+Stn.light_level = 0
+Snd.light_level = 0
+Bdr.light_level = 0
+plr.light_level = 0
+Iro.light_level = 0
+Col.light_level = 0
+Irn.light_level = 0
 
 # Oreconfig
 print("Loading ore configuration..")
 
 oreconfig = [
-    {
-        "spawn_chance": 2,
-        "spawn_limit": 1,
-        "upper_limit": 10,
-        "lower_limit": 20,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        2,
+        1,
+        10,
+        20,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 2,
-        "spawn_limit": 2,
-        "upper_limit": 20,
-        "lower_limit": 40,
-        "block": Col
-    },
+    api.OreConfiguration(
+        2,
+        2,
+        20,
+        40,
+        Col
+    ),
     
-    {
-        "spawn_chance": 5,
-        "spawn_limit": 3,
-        "upper_limit": 30,
-        "lower_limit": 100,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        5,
+        3,
+        30,
+        100,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 5,
-        "spawn_limit": 3,
-        "upper_limit": 50,
-        "lower_limit": 120,
-        "block": Col
-    },
-    {
-        "spawn_chance": 7,
-        "spawn_limit": 5,
-        "upper_limit": 100,
-        "lower_limit": 200,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        5,
+        3,
+        50,
+        120,
+        Col
+    ),
     
-    {
-        "spawn_chance": 15,
-        "spawn_limit": 13,
-        "upper_limit": 120,
-        "lower_limit": 400,
-        "block": Col
-    },
+    api.OreConfiguration(
+        7,
+        5,
+        100,
+        200,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 15,
-        "spawn_limit": 10,
-        "upper_limit": 180,
-        "lower_limit": 300,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        15,
+        13,
+        120,
+        400,
+        Col
+    ),
     
-    {
-        "spawn_chance": 25,
-        "spawn_limit": 17,
-        "upper_limit": 390,
-        "lower_limit": 700,
-        "block": Col
-    },
-    {
-        "spawn_chance": 25,
-        "spawn_limit": 20,
-        "upper_limit": 300,
-        "lower_limit": 700,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        15,
+        10,
+        180,
+        300,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 30,
-        "spawn_limit": 30,
-        "upper_limit": 700,
-        "lower_limit": 1500,
-        "block": Col
-    },
+    api.OreConfiguration(
+        25,
+        17,
+        390,
+        700,
+        Col
+    ),
     
-    {
-        "spawn_chance": 30,
-        "spawn_limit": 30,
-        "upper_limit": 700,
-        "lower_limit": 1500,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        25,
+        20,
+        300,
+        700,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 35,
-        "spawn_limit": 50,
-        "upper_limit": 1500,
-        "lower_limit": 2500,
-        "block": Col
-    },
+    api.OreConfiguration(
+        30,
+        30,
+        700,
+        1500,
+        Col
+    ),
     
-    {
-        "spawn_chance": 35,
-        "spawn_limit": 50,
-        "upper_limit": 1500,
-        "lower_limit": 2500,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        30,
+        30,
+        700,
+        1500,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 45,
-        "spawn_limit": 60,
-        "upper_limit": 2500,
-        "lower_limit": 4000,
-        "block": Col
-    },
+    api.OreConfiguration(
+        30,
+        30,
+        700,
+        1500,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 45,
-        "spawn_limit": 60,
-        "upper_limit": 2500,
-        "lower_limit": 4000,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        35,
+        50,
+        1500,
+        2500,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 45,
-        "spawn_limit": 60,
-        "upper_limit": 2500,
-        "lower_limit": 4000,
-        "block": Col
-    },
+    api.OreConfiguration(
+        45,
+        60,
+        2500,
+        4000,
+        Col
+    ),
     
-    {
-        "spawn_chance": 50,
-        "spawn_limit": 100,
-        "upper_limit": 4000,
-        "lower_limit": 6000,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        45,
+        60,
+        2500,
+        4000,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 50,
-        "spawn_limit": 100,
-        "upper_limit": 4000,
-        "lower_limit": 6000,
-        "block": Col
-    },
+    api.OreConfiguration(
+        45,
+        60,
+        2500,
+        4000,
+        Col
+    ),
     
-    {
-        "spawn_chance": 60,
-        "spawn_limit": 300,
-        "upper_limit": 6000,
-        "lower_limit": 10000,
-        "block": Iro
-    },
+    api.OreConfiguration(
+        50,
+        100,
+        4000,
+        6000,
+        Iro
+    ),
     
-    {
-        "spawn_chance": 60,
-        "spawn_limit": 300,
-        "upper_limit": 6000,
-        "lower_limit": 10000,
-        "block": Col
-    },
+    api.OreConfiguration(
+        50,
+        100,
+        4000,
+        6000,
+        Col
+    ),
+    
+    api.OreConfiguration(
+        60,
+        300,
+        6000,
+        10000,
+        Iro
+    ),
+    
+    api.OreConfiguration(
+        60,
+        300,
+        6000,
+        10000,
+        Col
+    )
 ]
 
 # Biomes
@@ -196,53 +198,17 @@ print("Loading biomes..")
 
 # Gonna do the oreconfig shenanigans with biomes.
 biomes = [
-    {
-        "minimum_length": 10,
-        "maximum_length": 50,
-        "layers": [Grs, Grs, Drt, Drt, Drt, Drt]
-    },
+    api.Biome(
+        50,
+        10,
+        50,
+        [Grs, Grs, Drt, Drt, Drt, Drt]
+    ),
     
-    {
-        "minimum_length": 10,
-        "maximum_length": 50,
-        "layers": [Snd, Snd, Snd]
-    }
-#    
-#    {
-#        "minimum_length": 25,
-#        "maximum_length": 100,
-#        "layers": [Grs, Grs, Grs, Grs, Grs, Drt, Drt, Drt, Drt, Drt, Drt, Drt]
-#    },
-#    
-#    {
-#        "minimum_length": 10,
-#        "maximum_length": 50,
-#        "layers": [Snd, Snd, Snd, Snd, Snd, Snd]
-#    },
-#    
-#    
-#    {
-#        "minimum_length": 50,
-#        "maximum_length": 75,
-#        "layers": [Grs, Drt]
-#    },
-#    
-#    {
-#        "minimum_length": 1,
-#        "maximum_length": 10,
-#        "layers": [Snd]
-#    },
-#    
-#    
-#    {
-#        "minimum_length": 20,
-#        "maximum_length": 20,
-#        "layers": [Grs, Grs, Grs, Drt]
-#    },
-#    
-#    {
-#        "minimum_length": 1,
-#        "maximum_length": 10,
-#        "layers": [Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd, Snd]
-#    }
+    api.Biome(
+        50,
+        10,
+        50,
+        [Snd, Snd, Snd]
+    )
 ]
