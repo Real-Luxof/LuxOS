@@ -17,6 +17,8 @@ class blackvoid:
     def __str__(self):
         return "#000000"
 
+void = blackvoid()
+
 
 def generate(colors: list, width: int, height: int, chanceofvoid: float) -> list:
     """Generates a big ass list filled with either black or a color/particle.
@@ -27,19 +29,18 @@ def generate(colors: list, width: int, height: int, chanceofvoid: float) -> list
         height (int): The height of the world.
         chanceofvoid (float): What chance is there that there will be black void instead of a particle?
 
-        Examples for chanceofvoid:
-            idk man just know the probability is calculated like ceil(len(colors) * chanceofvoid)
-
     Returns:
         list: The entire world that was just generated.
     """
     world = []
-    for color in range(ceil(len(colors) * chanceofvoid)):
-        colors.append(blackvoid())
     for timesX in range(width):
         world.append([])
         for timesY in range(height):
-            world[-1].append(random.choice(colors))
+            if random.randint(1, 100) <= chanceofvoid:
+                world[-1].append(void)
+            else:
+                world[-1].append(random.choice(colors))
+                
 
     return world
 
@@ -48,7 +49,8 @@ green = api.block("green","#00FF00",False,False,0,"green",False)
 blue = api.block("blue","#FF0000",False,False,0,"blue",False)
 allblocks = [red, green, blue]
 
-world = generate(allblocks, 200, 200, 15)
+world = generate(allblocks, 200, 200, 99)
+new_world = world
 
 global frames
 frames = 0
@@ -63,10 +65,14 @@ def framecounter():
 Thread(target=framecounter).start()
 
 api.initiatewindow()
-try:
-    while True:
-        api.display(api.setres(800,600),world,4,4)
-        frames += 1
-        api.wait(1/5)
-except(KeyboardInterrupt):
-    quittime = True
+screen = api.setres(800,600)
+api.display(screen,world,2,2)
+while not quittime:
+    #if world != new_world:
+    #    world = new_world
+    api.display(screen,world,4,3)
+    frames += 1
+    
+    if api.isquit():
+        api.closewindow()
+        quittime = True

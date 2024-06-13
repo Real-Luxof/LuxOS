@@ -29,6 +29,12 @@ except ModuleNotFoundError:
     os.system("pip install pygame")
     import pygame
 
+try:
+    from bresenham import bresenham
+except ModuleNotFoundError:
+    os.system("pip install bresenham")
+    from bresenham import bresenham
+
 from math import floor
 
 # - Miscellaneous -
@@ -429,14 +435,9 @@ def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> 
     # Remove the # from hex_color.
     hex_color = hex_color.removeprefix("#")
     # int(hex_color, 16) turns a hexadecimal to decimal.
-    if len(hex_color) == 6:
-        R = int(f"0x{hex_color[0]}{hex_color[1]}", 16)
-        G = int(f"0x{hex_color[2]}{hex_color[3]}", 16)
-        B = int(f"0x{hex_color[4]}{hex_color[5]}", 16)
-    else:
-        R = int(f"0x{hex_color[0]}", 16)
-        G = int(f"0x{hex_color[1]}", 16)
-        B = int(f"0x{hex_color[2]}", 16)
+    R = int(f"0x{hex_color[0]}{hex_color[1]}", 16)
+    G = int(f"0x{hex_color[2]}{hex_color[3]}", 16)
+    B = int(f"0x{hex_color[4]}{hex_color[5]}", 16)
     # MATH.
     R = R + floor(0 - ((R / max_light_level) * light_level))
     G = G + floor(0 - ((R / max_light_level) * light_level))
@@ -462,26 +463,13 @@ def display(
         X = 0  # Set X to 0 for use in a new Y axis.
         for block in Ycoord:  # Selects a block in said list,
             #if ishex(str(block)):
-            # Then it draws the block on screen with it's color
+            # then it draws the block on screen with it's color
             # being what comes from its __repr__/__str__ function.
             # the rest is self-explanatory.
             block = str(
                 block
             )  # Turn it into <type 'str'> instead of <class 'api.block'> or smth
 
-            # Resolve any conflicts with hex by simply converting it to rgb values
-            #block = block.removeprefix("#")
-            #if len(block) == 3:
-            #    R = int("0x" + block[0], 16)
-            #    G = int("0x" + block[1], 16)
-            #    B = int("0x" + block[2], 16)
-            #else:
-            #    R = int("0x" + block[0] + block[1], 16)
-            #    G = int("0x" + block[2] + block[3], 16)
-            #    B = int("0x" + block[4] + block[5], 16)
-
-            if "S" in block:
-                print(block)
             pygame.draw.rect(
                 screen,
                 pygame.Color(block),
@@ -1491,7 +1479,13 @@ def optimized_generate(
     # - Create the initial space -
 
     # Pretty self-explanatory if you're not a silly lil dum dum.
-    space = [[air] * width] * height
+    #space = []
+    #for i in range(height):
+    #    space.append([])
+    #    for j in range(width):
+    #        space[-1].append(air)
+    #space = [[air] * width] * height
+    space = [[air] * width for y in range(height)]
 
     # - Add blocks (finally use biomes) -
 
@@ -1508,7 +1502,7 @@ def optimized_generate(
             if random.randint(1, 100) <= biome_candidate.chance_of_spawning:
                 biome = biome_candidate
     
-    current_biome_length = 1
+    current_biome_length = 0
     current_biome_layers = biome.layers
     current_biome_max_length = random.randint(
         biome.minimum_length,
@@ -1521,6 +1515,7 @@ def optimized_generate(
     for times_X in range(width):
         # biome_Y is used for biomes, so the original Y is not contaminated.
         biome_Y = Y
+        
         for times_Y in range(height):
             
             # Actually do the biome work.
@@ -1534,8 +1529,7 @@ def optimized_generate(
             else:
                 space[biome_Y][X] = stone
             
-            if biome_Y < height:
-                biome_Y += 1
+            biome_Y += 1
         
         # Out of times_Y, into times_X.
         
@@ -1605,7 +1599,6 @@ def optimized_generate(
         
         # length checking
         current_biome_length += 1
-        current_biome_length += 1
         
         # If the biome's length is finished, select a different one.
         if current_biome_length > current_biome_max_length:
@@ -1616,7 +1609,7 @@ def optimized_generate(
                         biome = biome_candidate
                         break
 
-            current_biome_length = 1
+            current_biome_length = 0
             current_biome_layers = biome.layers
             current_biome_max_length = random.randint(
                 biome.minimum_length,
