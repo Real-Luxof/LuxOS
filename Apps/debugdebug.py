@@ -29,24 +29,32 @@ minus = MinusSign()
 hash = Hash()
 dollar = DollarSign()
 
-height = 200
-width = 200
+height = 300
+width = 300
 
 array = []
 for i in range(height):
     array.append([])
     for j in range(width):
-        array[-1].append(minus)
+        #array[-1].append(minus)
+        if j != 70:
+            array[-1].append(minus)
+        elif 150 > i < 200:
+            array[-1].append(dollar)
+        else:
+            array[-1].append(minus)
 
 stoptime = False
 
 def display():
     global array
     global stoptime
-    screen = api.setres(800, 600)
+    screen = api.setres(600, 600)
 
     while not stoptime:
-        api.display(screen, array, 4, 3)
+        
+        
+        api.display(screen, array, 2, 2)
         if api.isquit():
             break
 
@@ -57,10 +65,12 @@ def raycast(target_X: int, target_Y: int) -> None:
     line = list(bresenham(half_array_size, half_array_size, target_X, target_Y))
 
     for coordinates in line:
+        #print(coordinates)
         if array[coordinates[1]][coordinates[0]].passable:
             array[coordinates[1]][coordinates[0]] = hash
         else:
             break
+    sleep(0.0001)
 
 def raycast_rays():
     global array
@@ -78,9 +88,9 @@ def raycast_rays():
 displaythread = Thread(target=display)
 displaythread.start()
 
-try:
-    raycast_rays()
-except KeyboardInterrupt:
-    stoptime = True
+#try:
+#    raycast_rays()
+#except KeyboardInterrupt:
+#    stoptime = True
 
 displaythread.join()

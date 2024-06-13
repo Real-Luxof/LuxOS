@@ -726,6 +726,7 @@ while True:
                         except AttributeError:
                             casting_world[Y][X].temp_image = casting_world[Y][X].character
 
+
             def raycast_4_rays(length_of_display, i):
                 raycast(i, 0)
                 
@@ -734,7 +735,8 @@ while True:
                 raycast((length_of_display - 1) - i, length_of_display - 1)
                 
                 raycast(0, (length_of_display - 1) - i)
-            
+
+
             def raycast_rays():
                 global casting_world
                 length_of_display = len(casting_world)
@@ -749,11 +751,11 @@ while True:
                     
                     raycast(0, (length_of_display - 1) - i)
 
+
             def displaythread(screen):
                 global casting_world
-                global quittime
                 global frames
-                while not quittime:
+                while not api.isquit():
                     # LET HIM COOK :fire:
  #                   cookingdisplayoutput = []
                     displayoutput = []
@@ -777,8 +779,6 @@ while True:
                         for m in range(100):
                             displayoutput[-1].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
 
-                    displayoutput = list(reversed(displayoutput))
-
                     for y_level in displayoutput:
                         for block in y_level:
                             block.temp_image = "#000000"
@@ -786,13 +786,13 @@ while True:
                     casting_world = displayoutput
                     raycast_rays()
                     displayoutput = casting_world
-                    
+
                     for y_level in displayoutput:
                         for block in y_level:
                             block.image = block.temp_image
-
+                    
                     api.display(screen, displayoutput, 8, 6)
-                    frames += 1
+                    #frames += 1
                     api.wait(1/60) # "60 fps"
                     # How does this work again
                     # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*

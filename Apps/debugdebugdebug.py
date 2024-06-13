@@ -9,7 +9,7 @@ displayoutput = api.optimized_generate(
     height=100,
     air=Air,
     stone=Stn,
-    limit=api.Limit(25, 495),
+    limit=api.Limit(2, 98),
     biomes=biomes,
     ore_config=oreconfig,
 )
@@ -66,7 +66,7 @@ def displaythread(screen):
     global quittime
     global frames
     global displayoutput
-    while not quittime:
+    while not api.isquit():
 
         for y_level in displayoutput:
             for block in y_level:
@@ -80,7 +80,7 @@ def displaythread(screen):
             for block in y_level:
                 block.image = block.temp_image
         
-        api.display(screen, reversed(displayoutput), 8, 6)
+        api.display(screen, displayoutput, 8, 6)
         #frames += 1
         api.wait(1/60) # "60 fps"
         # How does this work again
@@ -88,8 +88,4 @@ def displaythread(screen):
         # how does this run at ~23 fps
 
 screen = api.setres(800, 600)
-displaythreadd = Thread(target=displaythread,args=[screen])
-displaythreadd.start()
-while True:
-    if api.isquit():
-        stoptime = True
+displaythread(screen)
