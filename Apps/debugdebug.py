@@ -39,7 +39,7 @@ for i in range(height):
         #array[-1].append(minus)
         if j != 70:
             array[-1].append(minus)
-        elif 150 > i < 200:
+        elif 150 < i < 200:
             array[-1].append(dollar)
         else:
             array[-1].append(minus)
@@ -72,25 +72,32 @@ def raycast(target_X: int, target_Y: int) -> None:
             break
     sleep(0.0001)
 
-def raycast_rays():
+#def raycast_thread(target_X: int, target_Y: int) -> None:
+#    raycast(target_X, target_Y)
+
+def raycast_rays() -> None:
     global array
     length_of_display = len(array)
     
     for i in range(0, length_of_display - 1):
+        #Thread(target=raycast_thread, args=[i, 0], daemon=True).start()
         raycast(i, 0)
         
+        #Thread(target=raycast_thread, args=[length_of_display - 1, i], daemon=True).start()
         raycast(length_of_display - 1, i)
         
+        #Thread(target=raycast_thread, args=[(length_of_display - 1) - i, length_of_display - 1], daemon=True).start()
         raycast((length_of_display - 1) - i, length_of_display - 1)
         
+        #Thread(target=raycast_thread, args=[0, (length_of_display - 1) - i], daemon=True).start()
         raycast(0, (length_of_display - 1) - i)
 
 displaythread = Thread(target=display)
 displaythread.start()
 
-#try:
-#    raycast_rays()
-#except KeyboardInterrupt:
-#    stoptime = True
+try:
+    raycast_rays()
+except KeyboardInterrupt:
+    stoptime = True
 
 displaythread.join()

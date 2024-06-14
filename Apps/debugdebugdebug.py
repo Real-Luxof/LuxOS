@@ -5,15 +5,26 @@ from threading import Thread
 casting_world = []
 displayoutput = api.optimized_generate(
     seed=None,
-    width=100,
-    height=100,
+    width=500,
+    height=500,
     air=Air,
     stone=Stn,
-    limit=api.Limit(2, 98),
+    limit=api.Limit(252, 298),
     biomes=biomes,
     ore_config=oreconfig,
 )
 quittime = False
+
+
+def air(listt, index, index2): # "air" stands for "Add If Reachable"
+    global Bdr
+    if index >= 0 and index2 >= 0:
+        try:
+            return listt[index][index2]
+        except(IndexError):
+            return Bdr
+    else:
+        return Bdr
 
 
 def raycast(target_X: int, target_Y: int) -> None:
@@ -67,20 +78,27 @@ def displaythread(screen):
     global frames
     global displayoutput
     while not api.isquit():
+        uncdisplayoutput = []
+        half_len = len(displayoutput) // 2
+        for n in range(100):
+            uncdisplayoutput.append([])
 
-        for y_level in displayoutput:
+            for m in range(100):
+                uncdisplayoutput[-1].append(air(displayoutput, half_len - (n - 50), half_len - (m - 50)))
+        
+        for y_level in uncdisplayoutput:
             for block in y_level:
                 block.temp_image = "#000000"
         
-        casting_world = displayoutput
+        casting_world = uncdisplayoutput
         raycast_rays()
-        displayoutput = casting_world
+        uncdisplayoutput = casting_world
 
-        for y_level in displayoutput:
+        for y_level in uncdisplayoutput:
             for block in y_level:
                 block.image = block.temp_image
         
-        api.display(screen, displayoutput, 8, 6)
+        api.display(screen, reversed(uncdisplayoutput), 8, 6)
         #frames += 1
         api.wait(1/60) # "60 fps"
         # How does this work again

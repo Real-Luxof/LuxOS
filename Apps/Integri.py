@@ -527,9 +527,12 @@ def displaytitle(): # Define a function named displaytitle.
 print("Making function Add If Reachable (air)")
 def air(listt, index, index2): # "air" stands for "Add If Reachable"
     global Bdr
-    try:
-        return listt[index][index2]
-    except(IndexError):
+    if index >= 0 and index2 >= 0:
+        try:
+            return listt[index][index2]
+        except(IndexError):
+            return Bdr
+    else:
         return Bdr
 
 increment()
@@ -754,10 +757,12 @@ while True:
 
             def displaythread(screen):
                 global casting_world
+                global quittime
                 global frames
+                global displayoutput
                 while not api.isquit():
                     # LET HIM COOK :fire:
- #                   cookingdisplayoutput = []
+#                   cookingdisplayoutput = []
                     displayoutput = []
 
 #                    for n in range(worldtype[0]):
