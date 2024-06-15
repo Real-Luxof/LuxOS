@@ -3,7 +3,8 @@ from gamedata.integri.utilityfolder.blocks import *
 from threading import Thread
 
 casting_world = []
-displayoutput = api.optimized_generate(
+originals = []
+world = api.optimized_generate(
     seed=None,
     width=500,
     height=500,
@@ -29,22 +30,44 @@ def air(listt, index, index2): # "air" stands for "Add If Reachable"
 
 def raycast(target_X: int, target_Y: int) -> None:
     global casting_world
+    global originals
     half_casting_world_size = len(casting_world) // 2
+    impassable_hits = 0
+    impassable_limit = 3
     
     line = list(api.bresenham(half_casting_world_size, half_casting_world_size, target_X, target_Y))
 
     for coordinates in line:
+        # You will recieve no comment with this code. Fuck you, I'm tired and I want to get this
+        # whole raycasting thing over with.
         Y = coordinates[1]
         X = coordinates[0]
 
-        if casting_world[Y][X].passable:
-            casting_world[Y][X].temp_image = casting_world[Y][X].image
-        else:
-            try:
-                casting_world[Y][X].temp_image = casting_world[Y][X].image
-                break
-            except AttributeError:
-                casting_world[Y][X].temp_image = casting_world[Y][X].character
+        #if originals[Y][X].passable or originals[Y][X].type == "entity" and impassable_hits > 0:
+        #    casting_world[Y][X] = originals[Y][X]
+        #    impassable_hits += 1
+        
+        if originals[Y][X].passable or originals[Y][X].type == "entity":
+            casting_world[Y][X] = originals[Y][X]
+        
+        elif not originals[Y][X].passable and not originals[Y][X].type == "entity" and not impassable_hits >= impassable_limit:
+            casting_world[Y][X] = originals[Y][X]
+            impassable_hits += 1
+        
+        elif not originals[Y][X].passable and not originals[Y][X].type == "entity" and impassable_hits >= impassable_limit:
+            casting_world[Y][X] = originals[Y][X]
+            break
+        #if not casting_world[Y][X].passable and not casting_world[Y][X].type == "entity":
+        #    casting_world[Y][X] = Bdr
+        #    break
+        #if casting_world[Y][X].passable:
+        #    casting_world[Y][X].temp_image = casting_world[Y][X].image
+        #else:
+        #    try:
+        #        casting_world[Y][X].temp_image = casting_world[Y][X].image
+        #        break
+        #    except AttributeError:
+        #        casting_world[Y][X].temp_image = casting_world[Y][X].character
 
 
 def raycast_4_rays(length_of_display, i):
@@ -74,31 +97,54 @@ def raycast_rays():
 
 def displaythread(screen):
     global casting_world
+    global originals
     global quittime
     global frames
-    global displayoutput
+    global world
+    plr.position[1] = len(world) // 2
+    plr.position[0] = len(world[0]) // 2
     while not api.isquit():
-        uncdisplayoutput = []
-        half_len = len(displayoutput) // 2
+        # LET HIM COOK :fire:
+#                   cookingdisplayoutput = []
+        displayoutput = []
+        casting_world = []
+
+#                    for n in range(worldtype[0]):
+#                        cookingdisplayoutput.append([])
+#
+        #    for m in range(100):
+        #        cookingdisplayoutput[n].append(air(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
+
+#                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
+
+        # I came up with a math formula to line up player coordinates
+        # between cookingdisplayoutput and displayoutput
+        # coordinate of player in cookingdisplayoutput =
+        # X - (X - (X_radius_around_player + 1))
+
         for n in range(100):
-            uncdisplayoutput.append([])
+            displayoutput.append([])
 
             for m in range(100):
-                uncdisplayoutput[-1].append(air(displayoutput, half_len - (n - 50), half_len - (m - 50)))
-        
-        for y_level in uncdisplayoutput:
-            for block in y_level:
-                block.temp_image = "#000000"
-        
-        casting_world = uncdisplayoutput
-        raycast_rays()
-        uncdisplayoutput = casting_world
+                displayoutput[-1].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
 
-        for y_level in uncdisplayoutput:
-            for block in y_level:
-                block.image = block.temp_image
+        displayoutput = list(reversed(displayoutput))
         
-        api.display(screen, reversed(uncdisplayoutput), 8, 6)
+        for Y in range(len(displayoutput)):
+            new_row = []
+            for X in range(len(displayoutput)):
+                new_row.append(Bdr)
+            casting_world.append(new_row)
+        
+        originals = displayoutput
+        raycast_rays()
+        displayoutput = casting_world
+
+        #for y_level in displayoutput:
+        #    for block in y_level:
+        #        block.image = block.temp_image
+        
+        api.display(screen, displayoutput, 8, 6)
         #frames += 1
         api.wait(1/60) # "60 fps"
         # How does this work again

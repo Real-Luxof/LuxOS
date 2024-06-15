@@ -786,7 +786,6 @@ class entity:
 
         print("main!")
         if data[self.position[1] + dy][self.position[0] + dx].passable == False:
-            print("made it")
             if (
                 self.handvalue
                 <= data[self.position[1] + dy][self.position[0] + dx].droptoolvalue
@@ -795,11 +794,9 @@ class entity:
                     self.inventory.slots[self.inventory.selectedindex] = data[
                         self.position[1] + dy
                     ][self.position[0] + dx]
-                    print("succ!")
                     data[self.position[1] + dy][self.position[0] + dx] = replace
                 else:
                     for i in range(self.inventory.slotnum):
-                        print("i in range")
                         if self.inventory.slots["slot" + str(i + 1)] == None:
                             self.inventory.slots["slot" + str(i + 1)] = data[
                                 self.position[1] + dy
@@ -1485,7 +1482,13 @@ def optimized_generate(
     #    for j in range(width):
     #        space[-1].append(air)
     #space = [[air] * width] * height
-    space = [[air] * width for y in range(height)]
+    #space = [[air] * width for y in range(height)]
+    space = []
+    for i in range(height):
+        new_row = []
+        for j in range(width):
+            new_row.append(air)
+        space.append(new_row)
 
     # - Add blocks (finally use biomes) -
 

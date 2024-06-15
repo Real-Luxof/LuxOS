@@ -157,7 +157,7 @@ Drt = api.block(varname="Drt",image="#945035",passable=False,breakablebytool=Tru
 Stn = api.block(varname="Stn",image="#606060",passable=False,breakablebytool=True,droptoolvalue=3,drop="Stone",falling=False) # Define Stone.
 Snd = api.block(varname="Snd",image="#DDDD55",passable=False,breakablebytool=True,droptoolvalue=1,drop=None,falling=False) # Define Sand.
 Bdr = api.block(varname="Bdr",image="#000000",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Bedrock.
-plr = api.entity(varname="plr",character="#000000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=20),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
+plr = api.entity(varname="plr",character="#FFC000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=20),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
 Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron ore",falling=False) # Define Iron ore.
 Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
 Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
@@ -709,25 +709,33 @@ while True:
                 return world
 
             casting_world = []
+            originals = []
             
             def raycast(target_X: int, target_Y: int) -> None:
                 global casting_world
+                global originals
                 half_casting_world_size = len(casting_world) // 2
+                impassable_hits = 0
+                impassable_limit = 3
                 
                 line = list(api.bresenham(half_casting_world_size, half_casting_world_size, target_X, target_Y))
 
                 for coordinates in line:
+                    # You will recieve no comment with this code. Fuck you, I'm tired and I want to get this
+                    # whole raycasting thing over with.
                     Y = coordinates[1]
                     X = coordinates[0]
-
-                    if casting_world[Y][X].passable:
-                        casting_world[Y][X].temp_image = casting_world[Y][X].image
-                    else:
-                        try:
-                            casting_world[Y][X].temp_image = casting_world[Y][X].image
-                            break
-                        except AttributeError:
-                            casting_world[Y][X].temp_image = casting_world[Y][X].character
+                    
+                    if originals[Y][X].passable or originals[Y][X].type == "entity":
+                        casting_world[Y][X] = originals[Y][X]
+                    
+                    elif not originals[Y][X].passable and not originals[Y][X].type == "entity" and not impassable_hits >= impassable_limit:
+                        casting_world[Y][X] = originals[Y][X]
+                        impassable_hits += 1
+                    
+                    elif not originals[Y][X].passable and not originals[Y][X].type == "entity" and impassable_hits >= impassable_limit:
+                        casting_world[Y][X] = originals[Y][X]
+                        break
 
 
             def raycast_4_rays(length_of_display, i):
@@ -757,21 +765,25 @@ while True:
 
             def displaythread(screen):
                 global casting_world
+                global originals
                 global quittime
                 global frames
-                global displayoutput
+                global world
+                #plr.position[1] = len(world) // 2
+                #plr.position[0] = len(world[0]) // 2
                 while not api.isquit():
                     # LET HIM COOK :fire:
-#                   cookingdisplayoutput = []
+            #                   cookingdisplayoutput = []
                     displayoutput = []
+                    casting_world = []
 
-#                    for n in range(worldtype[0]):
-#                        cookingdisplayoutput.append([])
-#
+            #                    for n in range(worldtype[0]):
+            #                        cookingdisplayoutput.append([])
+            #
                     #    for m in range(100):
                     #        cookingdisplayoutput[n].append(air(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
 
-#                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
+            #                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
 
                     # I came up with a math formula to line up player coordinates
                     # between cookingdisplayoutput and displayoutput
@@ -784,24 +796,25 @@ while True:
                         for m in range(100):
                             displayoutput[-1].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
 
-                    for y_level in displayoutput:
-                        for block in y_level:
-                            block.temp_image = "#000000"
+                    displayoutput = list(reversed(displayoutput))
                     
-                    casting_world = displayoutput
+                    for Y in range(len(displayoutput)):
+                        new_row = []
+                        for X in range(len(displayoutput)):
+                            new_row.append(Bdr)
+                        casting_world.append(new_row)
+                    
+                    originals = displayoutput
                     raycast_rays()
                     displayoutput = casting_world
-
-                    for y_level in displayoutput:
-                        for block in y_level:
-                            block.image = block.temp_image
                     
                     api.display(screen, displayoutput, 8, 6)
-                    #frames += 1
+                    frames += 1
                     api.wait(1/60) # "60 fps"
                     # How does this work again
                     # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*
                     # how does this run at ~23 fps
+                    # the fact it runs at any fps pat 10 is a miracle
 
             displayfunc = Thread(target=displaythread,args=[screen])
             displayfunc.start()
