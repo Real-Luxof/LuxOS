@@ -657,6 +657,113 @@ def raycast_rays():
         raycast(0, (length_of_display - 1) - i)
 
 
+print("Loading function calc_healh_pixel..")
+def calc_health_pixel(
+    health: int,
+    required_health: int
+):
+    if health >= required_health:
+        return True
+    else:
+        return False
+
+
+#print("Loading function repeat_pixels..")
+#def repeat_pixels(
+#    pixels: list[placeholder_dry],
+#    repetition_times: list[int]
+#):
+#    final_list = []
+#    
+#    for pixel_index in range(len(pixels)):
+#        pixel = pixels[pixel_index]
+#        for repeat in range(repetition_times[pixel_index]):
+#            final_list.append(pixel)
+#    
+#    return final_list
+
+
+print("Loading function calculate_health_bar..")
+def calculate_health_bar(health: int) -> list[list[placeholder_dry]]:
+    """Calculates and gives you a health bar.
+
+    Args:
+        health (int): The health of the player.
+
+    Returns:
+        list[list[placeholder_dry]]: The health bar.
+    """
+    black = placeholder_dry("#10121C")
+    white = placeholder_dry("#FFFFFF")
+    drs = placeholder_dry("#2C1E31") # drs = darker_spot
+    dsp = placeholder_dry("#AC2847") # dsp = dark_spot
+    lsp = placeholder_dry("#EC273F") # lsp = light_spot
+    TXT = placeholder_dry("#FFA2AC") # TXT = text
+    
+    columns = []
+    black_row = []
+    
+    for i in range(20):
+        black_row.append(black)
+    
+    health_bar_full = [
+        [None] + black_row,
+        [black, drs, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
+        [black, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
+        [black, drs, drs, dsp, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, TXT, TXT, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
+        [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
+        [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, lsp, lsp],
+        [None] + black_row
+    ]
+    
+    health_bar_computed = [health_bar_full[0]]
+    
+    for row_index in range(1, len(health_bar_full) - 1):
+        row = health_bar_full[row_index]
+        health_bar_computed.append([])
+        for column_index in range(1, len(row) + 1):
+            column = row[column_index - 1]
+            
+            if calc_health_pixel(health, abs(5 * (column_index - len(row)))):
+                health_bar_computed[-1].append(column)
+            else:
+                health_bar_computed[-1].append(white)
+    
+    health_bar_computed.append(health_bar_full[-1])
+    
+    return health_bar_computed
+
+
+print("Loading function stick_to_display..")
+def stick_to_display(
+    array: list[list[placeholder_dry]],
+    display: list[list],
+    starting_XY: tuple
+) -> list[list]:
+    """Puts an array into a display.
+
+    Args:
+        array (list[list[placeholder_dry]]): The array you want to put.
+        display (list[list]): The display you want to put into.
+        starting_XY (tuple): The X and Y coordinates of the top left pixel of the array.
+
+    Returns:
+        list[list]: The display after putting array into it.
+    """
+    X = starting_XY[0]
+    Y = starting_XY[1]
+    output = display
+    
+    for row_index in range(len(array)):
+        row = array[row_index]
+        for pix_index in range(len(row)):
+            pix = row[pix_index]
+            if pix != None:
+                output[Y + row_index][X + pix_index] = pix
+    
+    return output
+
+
 print("Loading function displaythread..")
 def displaythread(screen):
     global casting_world
@@ -664,6 +771,7 @@ def displaythread(screen):
     global quittime
     global frames
     global world
+    global plr
     #plr.position[1] = len(world) // 2
     #plr.position[0] = len(world[0]) // 2
     while not api.isquit():
@@ -702,6 +810,13 @@ def displaythread(screen):
         originals = displayoutput
         raycast_rays()
         displayoutput = casting_world
+        
+        health_bar = calculate_health_bar(plr.health)
+        displayoutput = stick_to_display(
+            health_bar,
+            displayoutput,
+            (99 - 20, 0)
+        )
         
         api.display(screen, displayoutput, 8, 6)
         api.wait(1/60) # "60 fps"
@@ -851,6 +966,7 @@ while True:
         api.initiatewindow() # Initiate the windwo so that pygame doesn't go crazy.
         
         if meant_to_run:
+            # Initialize a fwe variables
             screen = api.setres(800, 600)
 
             displayfunc = Thread(target=displaythread,args=[screen])
@@ -858,8 +974,7 @@ while True:
             framecounterfunc = Thread(target=framecounter)
             framecounterfunc.start()
 
-            gravtimer = 0 # Initialize a few variables
-            gravmltp = 1
+            gravmltp = 0
             holdingW = False
             newdata = [world, plr.replace]
         while meant_to_run and api.isquit() == False:
@@ -885,16 +1000,15 @@ while True:
 
             # Apply Gravity
 
-            if world[plr.position[1] + 1][plr.position[0]].passable and holdingW: # If the block below the player can be fallen through and the player is holding down W
-                gravtimer += 1 # then (self-explanatory code)
-            elif world[plr.position[1] + 1][plr.position[0]].passable and not holdingW: # If the block below the player can be fallen through but the player isn't holding down W
-                if gravtimer < 25: gravtimer = 25 # then (self-explanatory code)
-                else: gravtimer += 1
+            if world[plr.position[1] + 1][plr.position[0]].passable:
+                gravmltp += 0.05
+                if not holdingW:
+                    gravmltp += 0.3
             else:
                 gravmltp = 0
-                gravtimer = 0
-            if gravtimer >= 25: gravmltp += 0.3
-            if gravmltp > 0: newdata = plr.move("s", newdata[0], newdata[1], floor(gravmltp))
+            
+            for i in range(floor(gravmltp)):
+                newdata = plr.move("s", newdata[0], newdata[1], 1)
 
             # Other stuff
 

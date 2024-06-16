@@ -40,6 +40,18 @@ class placeholder:
     def __repr__(self):
         return self.image
 
+class placeholder_dry:
+    """A block but for display purposes. It only has an image."""
+    
+    def __init__(self, image: str):
+        self.image = image
+    
+    def __str__(self):
+        return self.image
+    
+    def __repr__(self):
+        return self.image
+
 # Oreconfig
 print("Loading ore configuration..")
 
