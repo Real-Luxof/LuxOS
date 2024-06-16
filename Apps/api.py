@@ -460,25 +460,38 @@ def display(
     widthofeachblock and heightofeachblock are self-explanatory."""
     Y = 0
     for Ycoord in newscreen:  # Selects a list from newscreen.
-        X = 0  # Set X to 0 for use in a new Y axis.
-        for block in Ycoord:  # Selects a block in said list,
+        width_is_due = False
+        duewidthofeachblock = widthofeachblock
+        X = 0 
+        for Xcoord in range(len(Ycoord)):  # Selects a block in said list,
+            block = Ycoord[Xcoord]
+            try:
+                next_block = Ycoord[Xcoord + 1]
+            except IndexError:
+                next_block = None
+            
             #if ishex(str(block)):
             # then it draws the block on screen with it's color
             # being what comes from its __repr__/__str__ function.
             # the rest is self-explanatory.
-            block = str(
-                block
-            )  # Turn it into <type 'str'> instead of <class 'api.block'> or smth
-
-            pygame.draw.rect(
-                screen,
-                pygame.Color(block),
-                (X, Y, widthofeachblock, heightofeachblock),
-            )
-            X += widthofeachblock  # Add widthofeachblock to X. Why?
-            # or else it would try to overlap all the colors on the same X coordinates.
-        Y += heightofeachblock  # Add heightofeachblock to Y. Why?
-        # or else it would try to overlap all the colors on the same Y coordinates.
+            block = str(block)  # Turn it into <type 'str'> instead of <class 'api.block'> or smth
+            next_block = str(next_block) # Same to next_block
+            
+            if block != next_block:
+                pygame.draw.rect(
+                    screen,
+                    pygame.Color(block),
+                    (X, Y, duewidthofeachblock, heightofeachblock),
+                )
+                width_is_due = True
+            
+            if width_is_due:
+                X += duewidthofeachblock
+                duewidthofeachblock = 0
+                width_is_due = False
+            
+            duewidthofeachblock += widthofeachblock
+        Y += heightofeachblock
     pygame.display.flip()  # Display the newly drawn screen on the window.
 
 
@@ -593,6 +606,31 @@ class inventory:
             self.slots["slot" + str(current + 1)] = slotdata[i]
             current += 1
             self.slotnum += 1
+    
+    def add_to_inventory(self, items: list):
+        """Adds an item to the inventory and returns whatever couldn't be put in the inventory.
+
+        Args:
+            items (list): A list of items to put in the inventory. Can also be a list with just one element.
+
+        Returns:
+            list: The remaining items which could not be put in the inventory.
+        """
+        remaining_items = []
+        
+        for item in items:
+            item_put = False
+            for slot in self.slots.keys():
+        
+                if self.slots[slot] == None:
+                    self.slots[slot] = item
+                    item_put = True
+                    break
+                
+            if not item_put:
+                remaining_items.append(item)
+        
+        return remaining_items
 
     def __str__(self):
         return self.slots
@@ -714,7 +752,7 @@ class entity:
         self,
         replace: block,
         varname="plr",
-        character="#000000",
+        image="#000000",
         maxhealth: int = 100,
         health: int = 100,
         armor: int = 0,
@@ -730,7 +768,7 @@ class entity:
         handvalue: int = 1,
     ):
         self.varname = varname
-        self.character = character
+        self.image = image
         self.maxhealth = maxhealth
         self.health = health
         self.armor = armor
@@ -750,9 +788,12 @@ class entity:
 
     # Break a block
     def breakblock(
-        self, direction: str, data: list, replace: block, distance: int = 0
+        self, direction: str, data: list, replace: block, distance: int = 0, bypass_inventory: bool = True, still_add_to_inventory: bool = True
     ) -> list:
-        """Break a block a certain distance away from the entity. Will not break passable blocks, blocks which have "breakablebytool" set to False, or blocks when there is no free slot in the inventory.
+        """Break a block a certain distance away from the entity.
+        Will not break passable blocks, blocks which have "breakablebytool" set to False,
+        or blocks when there is no free slot in the inventory unless bypass_inventory is True.
+        Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
 
         Args:
             direction (str): What direction the entity is attempting to break a block in. Can be "w", "a", "s", or "d". If you don't know what either of those options do, that's enough grass touching for you.
@@ -781,28 +822,22 @@ class entity:
                 dy += usedistance
             case "d":
                 dx += usedistance
+        
+        X = self.position[0] + dx
+        Y = self.position[1] + dy
 
         # Main -
 
-        print("main!")
-        if data[self.position[1] + dy][self.position[0] + dx].passable == False:
-            if (
-                self.handvalue
-                <= data[self.position[1] + dy][self.position[0] + dx].droptoolvalue
-            ):
-                if self.inventory.selected == None:
-                    self.inventory.slots[self.inventory.selectedindex] = data[
-                        self.position[1] + dy
-                    ][self.position[0] + dx]
-                    data[self.position[1] + dy][self.position[0] + dx] = replace
-                else:
-                    for i in range(self.inventory.slotnum):
-                        if self.inventory.slots["slot" + str(i + 1)] == None:
-                            self.inventory.slots["slot" + str(i + 1)] = data[
-                                self.position[1] + dy
-                            ][self.position[0] + dx]
-                            data[self.position[1] + dy][self.position[0] + dx] = replace
-                            break
+        # De-nestified a fair bit :D
+        if data[Y][X].passable == False and self.handvalue <= data[Y][X].droptoolvalue:
+            if not bypass_inventory:
+                if not self.inventory.add_to_inventory([data[Y][X]]):
+                    data[Y][X] = replace
+            elif still_add_to_inventory:
+                self.inventory.add_to_inventory([data[Y][X]])
+                data[Y][X] = replace
+            else:
+                data[Y][X] = replace
 
         # Return -
 
@@ -840,6 +875,9 @@ class entity:
                 dy += 1
             case "d":
                 dx += 1
+        
+        X = self.position[0] + dx
+        Y = self.position[1] + dy
 
         # Main -
 
@@ -848,15 +886,15 @@ class entity:
         for i in range(usespeed):
             # Idk how I would even begin to comment this
             if (
-                reachableindex(data, self.position[1] + dy)
-                and reachableindex(data[self.position[1]], self.position[0] + dx)
-                and self.position[1] + dy > -1
-                and self.position[0] + dx > -1
+                reachableindex(data, Y)
+                and reachableindex(data[self.position[1]], X)
+                and Y > -1
+                and X > -1
             ):
-                if data[self.position[1] + dy][self.position[0] + dx].passable:
+                if data[Y][X].passable:
                     data[self.position[1]][self.position[0]] = replace
-                    final2 = data[self.position[1] + dy][self.position[0] + dx]
-                    data[self.position[1] + dy][self.position[0] + dx] = self
+                    final2 = data[Y][X]
+                    data[Y][X] = self
                     self.position[1] += dy
                     self.position[0] += dx
 
@@ -886,10 +924,10 @@ class entity:
         return self.dead
 
     def __str__(self):
-        return self.character
+        return self.image
 
     def __repr__(self):
-        return self.character
+        return self.image
 
 
 # World Generation -
@@ -1662,12 +1700,12 @@ def turntoblock(block: block = block(), addapi: bool = True) -> str:
         addapi (bool, optional): Adds "api." before any function used in the api if true. Defaults to True.
 
     Returns:
-        str: Out comes something like "api.block(image=)" or "api.entity(character=)".
+        str: Out comes something like "api.block(image=)" or "api.entity(image=)".
     """
     if block.type == "block":
         return f"{addapiiftrue(addapi=addapi)}block(varname=\"{block.varname}\",image={block.image},passable={block.passable},breakablebytool={block.breakablebytool},droptoolvalue={block.droptoolvalue},drop={block.drop},falling={block.falling})"
     elif block.type == "entity":
-        return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},character="{block.character}",maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
+        return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},image="{block.image}",maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
 
 
 def turnarraytoblocks(arrayofblocks: list = [[block], [block]]) -> list:

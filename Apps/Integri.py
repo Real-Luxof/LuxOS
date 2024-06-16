@@ -74,7 +74,7 @@ def savegame(savename, world, worldtype, plr, single):
             # Define what will go in there in a variable called "data", then write it to the file.
             # plr = the current player character
             # world = the current world
-            # api.player(character=\"{plr.character}\",maxhealth=""" + str(plr.maxhealth) + """,health=""" + str(plr.health) + """,armor=""" + str(plr.armor) + """,attack=""" + str(plr.attack) + """,defense=""" + str(plr.defense) + """,speed=""" + str(plr.speed) + f""",position=[{plr.position[0]}, {plr.position[1]}],replace=api.{api.turntoblock(plr.replace)}]""" + """,inventory=api.inventory(slotnum=""" + str(plr.inventory.slotnum) + """,slotdata=""" + str(plr.inventory.slots) + """,selectedindex=\"""" + plr.inventory.selectedindex + """\"),dead=""" + str(plr.dead) + """,deffactor=""" + str(plr.deffactor) + """,atkfactor=""" + str(plr.atkfactor) + """)
+            # api.player(image=\"{plr.image}\",maxhealth=""" + str(plr.maxhealth) + """,health=""" + str(plr.health) + """,armor=""" + str(plr.armor) + """,attack=""" + str(plr.attack) + """,defense=""" + str(plr.defense) + """,speed=""" + str(plr.speed) + f""",position=[{plr.position[0]}, {plr.position[1]}],replace=api.{api.turntoblock(plr.replace)}]""" + """,inventory=api.inventory(slotnum=""" + str(plr.inventory.slotnum) + """,slotdata=""" + str(plr.inventory.slots) + """,selectedindex=\"""" + plr.inventory.selectedindex + """\"),dead=""" + str(plr.dead) + """,deffactor=""" + str(plr.deffactor) + """,atkfactor=""" + str(plr.atkfactor) + """)
             data = f"""from ..utilityfolder.blocks import *
 import api
 
@@ -157,21 +157,32 @@ Drt = api.block(varname="Drt",image="#945035",passable=False,breakablebytool=Tru
 Stn = api.block(varname="Stn",image="#606060",passable=False,breakablebytool=True,droptoolvalue=3,drop="Stone",falling=False) # Define Stone.
 Snd = api.block(varname="Snd",image="#DDDD55",passable=False,breakablebytool=True,droptoolvalue=1,drop=None,falling=False) # Define Sand.
 Bdr = api.block(varname="Bdr",image="#000000",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Bedrock.
-plr = api.entity(varname="plr",character="#FFC000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=20),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
+plr = api.entity(varname="plr",image="#FFC000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=20),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
 Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron ore",falling=False) # Define Iron ore.
 Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
 Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
-Air.light_level = 0
-Grs.light_level = 0
-Drt.light_level = 0
-Stn.light_level = 0
-Snd.light_level = 0
-Bdr.light_level = 0
-plr.light_level = 0
-Iro.light_level = 0
-Col.light_level = 0
-Irn.light_level = 0
+# Placeholder
+print("Loading placeholder NamedTuple..")
+class placeholder:
+    \"\"\"A block but for display purposes.\"\"\"
+    def __init__(
+        self,
+        varname: str,
+        image: str,
+        light_level: int,
+        passable: bool
+    ):
+        self.varname = varname
+        self.image = image
+        self.light_level = light_level
+        self.passable = passable
+    
+    def __str__(self):
+        return self.image
+    
+    def __repr__(self):
+        return self.image
 
 # Oreconfig
 print("Loading ore configuration..")
@@ -535,6 +546,171 @@ def air(listt, index, index2): # "air" stands for "Add If Reachable"
     else:
         return Bdr
 
+print("Brace for impact, this last 1% might be long!")
+
+print("Loading quittime, frames, casting_world and originals..")
+quittime = False
+frames = 0
+casting_world = []
+originals = []
+
+
+print("Loading function framecounter..")
+def framecounter():
+    global quittime
+    global frames
+    while not quittime:
+        api.wait(1)
+        print(f"fps: {frames}")
+        frames = 0
+
+
+print("Loading function applylightingsystem..")
+def applylightingsystem(world):
+    # Set the top of the world's light level to 15.
+    for block in world[0]:
+        block.light_level = 15
+
+    for timesY in range(2):
+        # timesY is approximately how many iterations I expect it to take
+        # to apply the lighting system and leave without any lighting glitches.
+        for Ylevel_coordinate in range(1, len(world)):
+            Ylevel = world[Ylevel_coordinate]
+            # Since the light level of the top blocks is already 15, there is
+            # no need to apply the lighting system to it.
+            lightlevelsaroundblock = []
+
+            for block_coordinate in range(len(Ylevel)):
+                above_block = world[Ylevel_coordinate - 1][block_coordinate].light_level
+                try:
+                    left_block = Ylevel[block_coordinate - 1].light_level
+                except(IndexError):
+                    left_block = 0
+
+                try:
+                    right_block = Ylevel[block_coordinate + 1].light_level
+                except(IndexError):
+                    right_block = 0
+
+                lightlevelsaroundblock.append(above_block)
+                lightlevelsaroundblock.append(left_block)
+                lightlevelsaroundblock.append(right_block)
+
+                block = Ylevel[block_coordinate]
+                block.light_level = api.average(lightlevelsaroundblock)
+                block.image = api.color_with_light(block.image, block.light_level, 15)
+
+    return world
+
+
+print("Loading function raycast..")
+def raycast(target_X: int, target_Y: int) -> None:
+    global casting_world
+    global originals
+    half_casting_world_size = len(casting_world) // 2
+    impassable_hits = 0
+    impassable_limit = 3
+    
+    line = list(api.bresenham(half_casting_world_size, half_casting_world_size, target_X, target_Y))
+
+    for coordinates in line:
+        # You will recieve no comment with this code. Fuck you, I'm tired and I want to get this
+        # whole raycasting thing over with.
+        Y = coordinates[1]
+        X = coordinates[0]
+        
+        if originals[Y][X].passable or originals[Y][X].varname == "plr":
+            casting_world[Y][X] = originals[Y][X]
+        
+        elif not originals[Y][X].passable and not originals[Y][X].varname == "plr" and not impassable_hits >= impassable_limit:
+            casting_world[Y][X] = originals[Y][X]
+            impassable_hits += 1
+        
+        elif not originals[Y][X].passable and not originals[Y][X].varname == "plr" and impassable_hits >= impassable_limit:
+            casting_world[Y][X] = originals[Y][X]
+            break
+
+
+#def raycast_4_rays(length_of_display, i):
+#    raycast(i, 0)
+#    
+#    raycast(length_of_display - 1, i)
+#    
+#    raycast((length_of_display - 1) - i, length_of_display - 1)
+#    
+#    raycast(0, (length_of_display - 1) - i)
+
+
+print("Loading function raycast_rays..")
+def raycast_rays():
+    global casting_world
+    length_of_display = len(casting_world)
+    
+    for i in range(0, length_of_display - 1):
+        #Thread(target=raycast_4_rays(length_of_display, i)).start()
+        raycast(i, 0)
+        
+        raycast(length_of_display - 1, i)
+        
+        raycast((length_of_display - 1) - i, length_of_display - 1)
+        
+        raycast(0, (length_of_display - 1) - i)
+
+
+print("Loading function displaythread..")
+def displaythread(screen):
+    global casting_world
+    global originals
+    global quittime
+    global frames
+    global world
+    #plr.position[1] = len(world) // 2
+    #plr.position[0] = len(world[0]) // 2
+    while not api.isquit():
+        # LET HIM COOK :fire:
+#                   cookingdisplayoutput = []
+        displayoutput = []
+        casting_world = []
+
+#                    for n in range(worldtype[0]):
+#                        cookingdisplayoutput.append([])
+#
+        #    for m in range(100):
+        #        cookingdisplayoutput[n].append(air(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
+
+#                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
+
+        # I came up with a math formula to line up player coordinates
+        # between cookingdisplayoutput and displayoutput
+        # coordinate of player in cookingdisplayoutput =
+        # X - (X - (X_radius_around_player + 1))
+
+        for n in range(100):
+            displayoutput.append([])
+
+            for m in range(100):
+                displayoutput[-1].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
+
+        displayoutput = list(reversed(displayoutput))
+        
+        for Y in range(len(displayoutput)):
+            new_row = []
+            for X in range(len(displayoutput)):
+                new_row.append(Bdr)
+            casting_world.append(new_row)
+        
+        originals = displayoutput
+        raycast_rays()
+        displayoutput = casting_world
+        
+        api.display(screen, displayoutput, 8, 6)
+        api.wait(1/60) # "60 fps"
+        frames += 1
+        # How does this work again
+        # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*
+        # how does this run at ~23 fps
+        # the fact it runs at any fps past 10 is a miracle
+
 increment()
 
 # - Loading Finished -
@@ -543,13 +719,15 @@ increment()
 
 while True:
     # Main Menu
-    option = None # Set the currently selected option (variable name option's value) to None.
-    displaytitle() # Display the title.
+    option = None # Currently selected option.
+    meant_to_run = False
+    saveselected = False
+    displaytitle()
     # Present the options and how to select one of them.
     print(Fore.LIGHTBLACK_EX + "Press the number before the option to select it.")
     print(Fore.GREEN +         "                1. Singleplayer                 ")
-    print(Fore.BLUE +          "                2. Multiplayer                  ")
-    print(Fore.YELLOW +        "                3. Options                      ")
+    print(Fore.BLUE +          "  NOT AVAILABLE 2. Multiplayer                  ")
+    print(Fore.YELLOW +        "  NOT AVAILABLE 3. Options                      ")
     print(Fore.RED +           "                4. Quit                         ")
     print()
     
@@ -557,15 +735,19 @@ while True:
     option = api.wait_any()
     
     # Decide what to do with the keyboard input.
-    if option == "1":
+    if option == "4":
+        break
+    
+    elif option == "1":
         displaytitle()
         
         # Initialize the save options
         availablesaveoptions = ["1", "2", "3", "4"]
         availabledeletesaveoptions = ["5", "6", "7", "8"]
+        saveselected = False
         backtomenu = False
 
-        while True:
+        while not saveselected:
             api.wait(0.1) # Delay so the user doesn't accidentally delete the wrong saves.
             Saves = checksaves()
             displaytitle()
@@ -579,6 +761,8 @@ while True:
             print("                6. Delete " + Saves[1])
             print("                7. Delete " + Saves[2])
             print("                8. Delete " + Saves[3])
+            print(Fore.LIGHTBLACK_EX + "                0. Back to Menu." + Style.RESET_ALL)
+            
             selectedsave = api.wait_any() # await a key press
             if selectedsave in availabledeletesaveoptions:
                 match int(selectedsave):
@@ -587,6 +771,9 @@ while True:
                     case 7: api.delete("integri\\saves\\" + Saves[2] + ".py"); del Saves[2]
                     case 8: api.delete("integri\\saves\\" + Saves[3] + ".py"); del Saves[3]
                 continue
+            elif selectedsave == "0":
+                meant_to_run = False
+                break
             elif selectedsave not in availablesaveoptions:
                 continue
 
@@ -648,6 +835,8 @@ while True:
                 print("Success. We will get to work now.")
             else:
                 print("Loading..")
+                # i for the life of me do not know why this code would cause the Python
+                # definition of a memory leak and eat up so much fucking RAM
                 savename = str(Saves[int(selectedsave) - 1])
                 save = import_module("gamedata.integri.saves." + savename)
                 plr = save.plr
@@ -655,166 +844,14 @@ while True:
                 worldtype = save.worldtype
                 del save
                 print("Success. We will get to work now.")
-
-            api.initiatewindow()
-            screen = api.setres(800, 600)
-
-            global quittime
-            global frames
-            quittime = False
-            frames = 0
-
-            def framecounter():
-                global quittime
-                global frames
-                while not quittime:
-                    api.wait(1)
-                    print(f"fps: {frames}")
-                    frames = 0
-
-            def applylightingsystem(world):
-                # Set the top of the world's light level to 15.
-                for block in world[0]:
-                    block.light_level = 15
-
-                for timesY in range(2):
-                    # timesY is approximately how many iterations I expect it to take
-                    # to apply the lighting system and leave without any lighting glitches.
-                    for Ylevel_coordinate in range(1, len(world)):
-                        Ylevel = world[Ylevel_coordinate]
-                        # Since the light level of the top blocks is already 15, there is
-                        # no need to apply the lighting system to it.
-                        lightlevelsaroundblock = []
-
-                        for block_coordinate in range(len(Ylevel)):
-                            above_block = world[Ylevel_coordinate - 1][block_coordinate].light_level
-                            try:
-                                left_block = Ylevel[block_coordinate - 1].light_level
-                            except(IndexError):
-                                left_block = 0
-
-                            try:
-                                right_block = Ylevel[block_coordinate + 1].light_level
-                            except(IndexError):
-                                right_block = 0
-
-                            lightlevelsaroundblock.append(above_block)
-                            lightlevelsaroundblock.append(left_block)
-                            lightlevelsaroundblock.append(right_block)
-
-                            block = Ylevel[block_coordinate]
-                            block.light_level = api.average(lightlevelsaroundblock)
-                            block.image = api.color_with_light(block.image, block.light_level, 15)
-
-                return world
-
-            casting_world = []
-            originals = []
             
-            def raycast(target_X: int, target_Y: int) -> None:
-                global casting_world
-                global originals
-                half_casting_world_size = len(casting_world) // 2
-                impassable_hits = 0
-                impassable_limit = 3
-                
-                line = list(api.bresenham(half_casting_world_size, half_casting_world_size, target_X, target_Y))
+            saveselected = True
+            meant_to_run = True
 
-                for coordinates in line:
-                    # You will recieve no comment with this code. Fuck you, I'm tired and I want to get this
-                    # whole raycasting thing over with.
-                    Y = coordinates[1]
-                    X = coordinates[0]
-                    
-                    if originals[Y][X].passable or originals[Y][X].type == "entity":
-                        casting_world[Y][X] = originals[Y][X]
-                    
-                    elif not originals[Y][X].passable and not originals[Y][X].type == "entity" and not impassable_hits >= impassable_limit:
-                        casting_world[Y][X] = originals[Y][X]
-                        impassable_hits += 1
-                    
-                    elif not originals[Y][X].passable and not originals[Y][X].type == "entity" and impassable_hits >= impassable_limit:
-                        casting_world[Y][X] = originals[Y][X]
-                        break
-
-
-            def raycast_4_rays(length_of_display, i):
-                raycast(i, 0)
-                
-                raycast(length_of_display - 1, i)
-                
-                raycast((length_of_display - 1) - i, length_of_display - 1)
-                
-                raycast(0, (length_of_display - 1) - i)
-
-
-            def raycast_rays():
-                global casting_world
-                length_of_display = len(casting_world)
-                
-                for i in range(0, length_of_display - 1):
-                    #Thread(target=raycast_4_rays(length_of_display, i)).start()
-                    raycast(i, 0)
-                    
-                    raycast(length_of_display - 1, i)
-                    
-                    raycast((length_of_display - 1) - i, length_of_display - 1)
-                    
-                    raycast(0, (length_of_display - 1) - i)
-
-
-            def displaythread(screen):
-                global casting_world
-                global originals
-                global quittime
-                global frames
-                global world
-                #plr.position[1] = len(world) // 2
-                #plr.position[0] = len(world[0]) // 2
-                while not api.isquit():
-                    # LET HIM COOK :fire:
-            #                   cookingdisplayoutput = []
-                    displayoutput = []
-                    casting_world = []
-
-            #                    for n in range(worldtype[0]):
-            #                        cookingdisplayoutput.append([])
-            #
-                    #    for m in range(100):
-                    #        cookingdisplayoutput[n].append(air(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
-
-            #                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
-
-                    # I came up with a math formula to line up player coordinates
-                    # between cookingdisplayoutput and displayoutput
-                    # coordinate of player in cookingdisplayoutput =
-                    # X - (X - (X_radius_around_player + 1))
-
-                    for n in range(100):
-                        displayoutput.append([])
-
-                        for m in range(100):
-                            displayoutput[-1].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
-
-                    displayoutput = list(reversed(displayoutput))
-                    
-                    for Y in range(len(displayoutput)):
-                        new_row = []
-                        for X in range(len(displayoutput)):
-                            new_row.append(Bdr)
-                        casting_world.append(new_row)
-                    
-                    originals = displayoutput
-                    raycast_rays()
-                    displayoutput = casting_world
-                    
-                    api.display(screen, displayoutput, 8, 6)
-                    frames += 1
-                    api.wait(1/60) # "60 fps"
-                    # How does this work again
-                    # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*
-                    # how does this run at ~23 fps
-                    # the fact it runs at any fps pat 10 is a miracle
+        api.initiatewindow() # Initiate the windwo so that pygame doesn't go crazy.
+        
+        if meant_to_run:
+            screen = api.setres(800, 600)
 
             displayfunc = Thread(target=displaythread,args=[screen])
             displayfunc.start()
@@ -825,53 +862,53 @@ while True:
             gravmltp = 1
             holdingW = False
             newdata = [world, plr.replace]
-            while api.isquit() == False:
+        while meant_to_run and api.isquit() == False:
 
-                # Player interaction
+            # Player interaction
 
-                # Keys
-                wpressed = api.ispressed_key("w")
-                apressed = api.ispressed_key("a")
-                spressed = api.ispressed_key("s")
-                dpressed = api.ispressed_key("d")
-                breakmode = api.ispressed_key("shift")
+            # Keys
+            wpressed = api.ispressed_key("w")
+            apressed = api.ispressed_key("a")
+            spressed = api.ispressed_key("s")
+            dpressed = api.ispressed_key("d")
+            breakmode = api.ispressed_key("shift")
 
-                # Actions
-                if wpressed and not breakmode: newdata = plr.move("w", newdata[0], newdata[1]); holdingW = True
-                if dpressed and not breakmode: newdata = plr.move("a", newdata[0], newdata[1])
-                if spressed and not breakmode: newdata = plr.move("s", newdata[0], newdata[1])
-                if apressed and not breakmode: newdata = plr.move("d", newdata[0], newdata[1])
-                if wpressed and breakmode: newdata[0] = plr.breakblock("w", newdata[0], newdata[1])
-                if dpressed and breakmode: newdata[0] = plr.breakblock("a", newdata[0], newdata[1])
-                if spressed and breakmode: newdata[0] = plr.breakblock("s", newdata[0], newdata[1])
-                if apressed and breakmode: newdata[0] = plr.breakblock("d", newdata[0], newdata[1])
+            # Actions
+            if wpressed and not breakmode: newdata = plr.move("w", newdata[0], newdata[1]); holdingW = True
+            if dpressed and not breakmode: newdata = plr.move("a", newdata[0], newdata[1])
+            if spressed and not breakmode: newdata = plr.move("s", newdata[0], newdata[1])
+            if apressed and not breakmode: newdata = plr.move("d", newdata[0], newdata[1])
+            if wpressed and breakmode: newdata[0] = plr.breakblock("w", newdata[0], newdata[1])
+            if dpressed and breakmode: newdata[0] = plr.breakblock("a", newdata[0], newdata[1])
+            if spressed and breakmode: newdata[0] = plr.breakblock("s", newdata[0], newdata[1])
+            if apressed and breakmode: newdata[0] = plr.breakblock("d", newdata[0], newdata[1])
 
-                # Apply Gravity
+            # Apply Gravity
 
-                if world[plr.position[1] + 1][plr.position[0]].passable and holdingW: # If the block below the player can be fallen through and the player is holding down W
-                    gravtimer += 1 # then (self-explanatory code)
-                elif world[plr.position[1] + 1][plr.position[0]].passable and not holdingW: # If the block below the player can be fallen through but the player isn't holding down W
-                    if gravtimer < 25: gravtimer = 25 # then (self-explanatory code)
-                    else: gravtimer += 1
-                else:
-                    gravmltp = 0
-                    gravtimer = 0
-                if gravtimer >= 25: gravmltp += 0.3
-                if gravmltp > 0: newdata = plr.move("s", newdata[0], newdata[1], floor(gravmltp))
+            if world[plr.position[1] + 1][plr.position[0]].passable and holdingW: # If the block below the player can be fallen through and the player is holding down W
+                gravtimer += 1 # then (self-explanatory code)
+            elif world[plr.position[1] + 1][plr.position[0]].passable and not holdingW: # If the block below the player can be fallen through but the player isn't holding down W
+                if gravtimer < 25: gravtimer = 25 # then (self-explanatory code)
+                else: gravtimer += 1
+            else:
+                gravmltp = 0
+                gravtimer = 0
+            if gravtimer >= 25: gravmltp += 0.3
+            if gravmltp > 0: newdata = plr.move("s", newdata[0], newdata[1], floor(gravmltp))
 
-                # Other stuff
+            # Other stuff
 
-                world = newdata[0] # Update display
-                plr.replace = newdata[1] # Update what used to be at a position before the player was.
-                holdingW = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
-                api.wait(1/20) # "20 tps/ups"
-            quittime = True
-            api.closewindow()
+            world = newdata[0] # Update display
+            plr.replace = newdata[1] # Update what used to be at a position before the player was.
+            holdingW = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
+            api.wait(1/15) # "15 tps/ups"
+        quittime = True
+        api.closewindow()
 
+        if meant_to_run:
             print("Saving..")
             world = newdata[0] # Quickly update the world
             plr.replace = newdata[1] # Then update replace
             # May not be 100% accurate as in might be 1 frame behind but that is acceptable
             savegame(savename=savename,world=world,worldtype=worldtype,plr=plr,single=True)
             print("Saved.")
-        displaytitle()
