@@ -390,6 +390,8 @@ def reachableindex(liste, index):
             return True
         except KeyError:
             return False
+        except TypeError:
+            return False
 
 
 # - Engine -
@@ -425,7 +427,7 @@ def setres(width=800, height=600, flags=0, depth=0, display=0, vsync=0):
 
 
 # Set a block's saturation according to its light level.
-def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> int:
+def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> str:
     """A nearly fully modular function to define the saturation of a block depending on its light level.
 
     Args:
@@ -443,16 +445,19 @@ def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> 
     G = int(f"0x{hex_color[2]}{hex_color[3]}", 16)
     B = int(f"0x{hex_color[4]}{hex_color[5]}", 16)
     # MATH.
-    R = R + floor(0 - ((R / max_light_level) * light_level))
-    G = G + floor(0 - ((R / max_light_level) * light_level))
-    B = B + floor(0 - ((R / max_light_level) * light_level))
+    R = floor((R / max_light_level) * light_level)
+    G = floor((R / max_light_level) * light_level)
+    B = floor((R / max_light_level) * light_level)
     # Back to hex.
-    R_hex = hex(R).removeprefix("0x")
-    G_hex = hex(G).removeprefix("0x")
-    B_hex = hex(B).removeprefix("0x")
+    R_hex = str(hex(R).removeprefix("0x"))
+    G_hex = str(hex(G).removeprefix("0x"))
+    B_hex = str(hex(B).removeprefix("0x"))
+    # If lengths are too low, add zeroes.
+    if len(R_hex) < 2: R_hex += "0"
+    if len(G_hex) < 2: G_hex += "0"
+    if len(B_hex) < 2: B_hex += "0"
     # Add it up and re-add the #.
-    hex_color_changed = "#" + R_hex + G_hex + B_hex
-    return hex_color_changed
+    return f"#{R_hex}{G_hex}{B_hex}"
 
 
 # The maion function that puts shit on screen.

@@ -678,11 +678,15 @@ increment()
 
 # generateworld function
 
+print("Importing all necessary ingame libraries..")
+
 from gamedata.integri.utilityfolder.blocks import *
 from gamedata.integri.utilityfolder.generateworldpackage import *
 from gamedata.integri.utilityfolder.sprites import *
 
 increment()
+
+print("Brace for impact, this last 1% might be long!")
 
 # Title screen
 print("Making title function..")
@@ -715,7 +719,6 @@ def displaytitle(): # Define a function named displaytitle.
 
 print("Making function Add If Reachable (air)")
 def air(listt, index, index2): # "air" stands for "Add If Reachable"
-    global Bdr
     if index >= 0 and index2 >= 0:
         try:
             return listt[index][index2]
@@ -724,7 +727,36 @@ def air(listt, index, index2): # "air" stands for "Add If Reachable"
     else:
         return Bdr
 
-print("Brace for impact, this last 1% might be long!")
+print("Making function Add If Reachable Placeholder (air_placeholder)")
+def air_placeholder(
+    space: list[list[api.block]],
+    index_1: int,
+    index_2 = int
+) -> placeholder:
+    if index_1 < 0 or index_2 < 0:
+        return placeholder(
+            "Bdr",
+            "#000000",
+            0,
+            False
+        )
+    
+    try:
+        block = space[index_1][index_2]
+        return placeholder(
+            block.varname,
+            block.image,
+            0,
+            block.passable
+        )
+    except IndexError:
+        return placeholder(
+            "Bdr",
+            "#000000",
+            0,
+            False
+        )
+
 
 print("Loading quittime, frames, casting_world and originals..")
 quittime = False
@@ -781,25 +813,27 @@ def applylightingsystem(world):
     # Set the top of the world's light level to 15.
     for block in world[0]:
         block.light_level = 15
-
+    
     for timesY in range(2):
         # timesY is approximately how many iterations I expect it to take
         # to apply the lighting system and leave without any lighting glitches.
-        for Ylevel_coordinate in range(1, len(world)):
-            Ylevel = world[Ylevel_coordinate]
+        # O((n^2) * 2) lmfao
+        
+        for Y in range(1, len(world)):
+            Ylevel = world[Y]
             # Since the light level of the top blocks is already 15, there is
             # no need to apply the lighting system to it.
             lightlevelsaroundblock = []
 
-            for block_coordinate in range(len(Ylevel)):
-                above_block = world[Ylevel_coordinate - 1][block_coordinate].light_level
+            for X in range(len(Ylevel)):
+                above_block = world[Y - 1][X].light_level
                 try:
-                    left_block = Ylevel[block_coordinate - 1].light_level
+                    left_block = Ylevel[X - 1].light_level
                 except(IndexError):
                     left_block = 0
 
                 try:
-                    right_block = Ylevel[block_coordinate + 1].light_level
+                    right_block = Ylevel[X + 1].light_level
                 except(IndexError):
                     right_block = 0
 
@@ -807,9 +841,8 @@ def applylightingsystem(world):
                 lightlevelsaroundblock.append(left_block)
                 lightlevelsaroundblock.append(right_block)
 
-                block = Ylevel[block_coordinate]
-                block.light_level = api.average(lightlevelsaroundblock)
-                block.image = api.color_with_light(block.image, block.light_level, 15)
+                world[Y][X].light_level = api.average(lightlevelsaroundblock)
+                world[Y][X].image = api.color_with_light(block.image, block.light_level, 15)
 
     return world
 
@@ -1028,32 +1061,39 @@ def displaythread(screen):
     #display_time = 0
     while not api.isquit():
         # LET HIM COOK :fire:
-#                   cookingdisplayoutput = []
+        #cookingdisplayoutput = []
         #init_vars_start = api.engine_time()
         displayoutput = []
         casting_world = []
         #init_vars_end = api.engine_time()
         #init_vars_time += (init_vars_end - init_vars_start)
 
-#                    for n in range(worldtype[0]):
-#                        cookingdisplayoutput.append([])
-#
+        #for n in range(worldtype[0]):
+        #    cookingdisplayoutput.append([])
+        #
         #    for m in range(100):
-        #        cookingdisplayoutput[n].append(air(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
-
-#                    cookingdisplayoutput = applylightingsystem(cookingdisplayoutput)
+        #        cookingdisplayoutput[-1].append(air_placeholder(world, plr.position[1] - (n - worldtype[0]), plr.position[0] - (m - 50)))
+        #print(f"len(cookingdisplayoutput[0]): {len(cookingdisplayoutput[0])}")
+        #displayoutput = applylightingsystem(cookingdisplayoutput)
 
         # I came up with a math formula to line up player coordinates
         # between cookingdisplayoutput and displayoutput
         # coordinate of player in cookingdisplayoutput =
         # X - (X - (X_radius_around_player + 1))
+        
+        # Or just use m?? past me was a dumbass
 
         #start = api.engine_time()
         for n in range(100):
-            displayoutput.append([])
+            new_row = []
 
             for m in range(100):
-                displayoutput[-1].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
+                new_row.append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
+            
+            #if len(new_row) < 100:
+            #    print(displayoutput.index(displayoutput[-1]))
+            displayoutput.append(new_row)
+        print(f"len(displayoutput[0]): {len(displayoutput[0])}")
         #end = api.engine_time()
         #area_grab_time += (end - start)
         
