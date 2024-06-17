@@ -1,25 +1,24 @@
 import api
-from typing import NamedTuple
 
 # - Variables -
-print("Loading variables..")
+print("Loading Variables..")
 
 # Blocks
 print("Loading blocks..")
 
 Air = api.block(varname="Air",image="#00AAFF",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Air. 
-Grs = api.block(varname="Grs",image="#00FF00",passable=False,breakablebytool=True,droptoolvalue=1,drop="Dirt",falling=False) # Define Grass.
-Drt = api.block(varname="Drt",image="#945035",passable=False,breakablebytool=True,droptoolvalue=2,drop=None,falling=False) # Define Dirt.
+Grs = api.block(varname="Grs",image="#00FF00",passable=False,breakablebytool=True,droptoolvalue=1,drop="Grass",falling=False) # Define Grass.
+Drt = api.block(varname="Drt",image="#945035",passable=False,breakablebytool=True,droptoolvalue=2,drop="Dirt",falling=False) # Define Dirt.
 Stn = api.block(varname="Stn",image="#606060",passable=False,breakablebytool=True,droptoolvalue=3,drop="Stone",falling=False) # Define Stone.
-Snd = api.block(varname="Snd",image="#DDDD55",passable=False,breakablebytool=True,droptoolvalue=1,drop=None,falling=False) # Define Sand.
+Snd = api.block(varname="Snd",image="#DDDD55",passable=False,breakablebytool=True,droptoolvalue=1,drop="Sand",falling=False) # Define Sand.
 Bdr = api.block(varname="Bdr",image="#000000",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Bedrock.
-plr = api.entity(varname="plr",image="#FFC000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=20),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
+plr = api.entity(varname="plr",image="#FFC000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=25),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
 Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron ore",falling=False) # Define Iron ore.
 Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
 Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
 # Placeholder
-print("Loading placeholder NamedTuple..")
+print("Loading placeholders..")
 class placeholder:
     """A block but for display purposes."""
     def __init__(
@@ -41,14 +40,15 @@ class placeholder:
         return self.image
 
 class placeholder_dry:
-    """A block but for display purposes. It only has an image."""
-    
-    def __init__(self, image: str):
+    def __init__(
+        self,
+        image: str
+    ):
         self.image = image
     
     def __str__(self):
         return self.image
-    
+
     def __repr__(self):
         return self.image
 

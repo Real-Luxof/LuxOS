@@ -281,6 +281,10 @@ def clear():
 def wait(secs):
     time.sleep(secs)
 
+# Time.
+def engine_time() -> float:
+    """Like time.time()."""
+    return time.time()
 
 # - The Checkers -
 
@@ -794,6 +798,7 @@ class entity:
         Will not break passable blocks, blocks which have "breakablebytool" set to False,
         or blocks when there is no free slot in the inventory unless bypass_inventory is True.
         Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
+        If distance or entity.reach is over 1, will destroy all blocks in the way similar to entity.move.
 
         Args:
             direction (str): What direction the entity is attempting to break a block in. Can be "w", "a", "s", or "d". If you don't know what either of those options do, that's enough grass touching for you.
@@ -813,31 +818,95 @@ class entity:
             usedistance = distance
         else:
             usedistance = self.reach
-        match direction:
-            case "w":
-                dy -= usedistance
-            case "a":
-                dx -= usedistance
-            case "s":
-                dy += usedistance
-            case "d":
-                dx += usedistance
         
-        X = self.position[0] + dx
-        Y = self.position[1] + dy
+        for i in range(usedistance):
+            
+            match direction:
+                case "w":
+                    dy -= 1
+                case "a":
+                    dx -= 1
+                case "s":
+                    dy += 1
+                case "d":
+                    dx += 1
+            
+            X = self.position[0] + dx
+            Y = self.position[1] + dy
 
-        # Main -
+            # Main -
 
-        # De-nestified a fair bit :D
-        if data[Y][X].passable == False and self.handvalue <= data[Y][X].droptoolvalue:
-            if not bypass_inventory:
-                if not self.inventory.add_to_inventory([data[Y][X]]):
+            # De-nestified a fair bit :D
+            if not data[Y][X].passable and self.handvalue <= data[Y][X].droptoolvalue:
+                if not bypass_inventory:
+                    if not self.inventory.add_to_inventory([data[Y][X]]):
+                        data[Y][X] = replace
+                elif still_add_to_inventory:
+                    self.inventory.add_to_inventory([data[Y][X]])
                     data[Y][X] = replace
-            elif still_add_to_inventory:
-                self.inventory.add_to_inventory([data[Y][X]])
-                data[Y][X] = replace
-            else:
-                data[Y][X] = replace
+                else:
+                    data[Y][X] = replace
+
+        # Return -
+
+        return data
+
+    # Break a block
+    def placeblock(
+        self, direction: str, data: list, replace: block, distance: int = 0, bypass_inventory: bool = True, still_add_to_inventory: bool = True
+    ) -> list:
+        """Place a block a certain distance away from the entity.
+        Will not break passable blocks, blocks which have "breakablebytool" set to False,
+        or blocks when there is no free slot in the inventory unless bypass_inventory is True.
+        Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
+        If distance or entity.reach is over 1, will place on all passable blocks in the way similar to entity.move.
+        
+        Args:
+            direction (str): What direction the entity is attempting to break a block in. Can be "w", "a", "s", or "d". If you don't know what either of those options do, that's enough grass touching for you.
+            data (list): The world around the entity.
+            replace (block class): What will be left in the space the entity once was.
+            distance (int, optional): How far away the block it is attempting to break is. Defaults to the reach of the entity.
+
+        Returns:
+            2D Array: The world after the entity has broken that block in front of it.
+        """
+
+        # Load -
+
+        direction = str.lower(direction)
+        dx, dy = 0, 0
+        if distance != 0:
+            usedistance = distance
+        else:
+            usedistance = self.reach
+        
+        for i in range(usedistance):
+            
+            match direction:
+                case "w":
+                    dy -= 1
+                case "a":
+                    dx -= 1
+                case "s":
+                    dy += 1
+                case "d":
+                    dx += 1
+            
+            X = self.position[0] + dx
+            Y = self.position[1] + dy
+
+            # Main -
+
+            # De-nestified a fair bit :D
+            if data[Y][X].passable == False and self.handvalue <= data[Y][X].droptoolvalue:
+                if not bypass_inventory:
+                    if not self.inventory.add_to_inventory([data[Y][X]]):
+                        data[Y][X] = replace
+                elif still_add_to_inventory:
+                    self.inventory.add_to_inventory([data[Y][X]])
+                    data[Y][X] = replace
+                else:
+                    data[Y][X] = replace
 
         # Return -
 
@@ -1705,7 +1774,7 @@ def turntoblock(block: block = block(), addapi: bool = True) -> str:
     if block.type == "block":
         return f"{addapiiftrue(addapi=addapi)}block(varname=\"{block.varname}\",image={block.image},passable={block.passable},breakablebytool={block.breakablebytool},droptoolvalue={block.droptoolvalue},drop={block.drop},falling={block.falling})"
     elif block.type == "entity":
-        return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},image="{block.image}",maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
+        return f'{addapiiftrue(addapi=addapi)}entity(varname=\"{block.varname}\",image="{block.image}",maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
 
 
 def turnarraytoblocks(arrayofblocks: list = [[block], [block]]) -> list:

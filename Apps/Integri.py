@@ -60,9 +60,10 @@ increment()
 # Folder variables used for loading
 
 print("Loading path variables..")
-integrifiles = "gamedata\\integri" # Variable for main game files.
-integrisaves = "gamedata\\integri\\saves" # Variable for the saves folder.
-integrist = "gamedata\\integri\\soundtrack" # Variable for the soundtrack folder.
+integrifiles = "gamedata\\integri" # Main game files.
+integrisaves = "gamedata\\integri\\saves" # Saves folder.
+integrist = "gamedata\\integri\\soundtrack" # Soundtrack folder.
+integrisprites = "gamedata\\integri\\utilityfolder\\sprites.py" # Sprites.py file.
 
 increment()
 
@@ -80,7 +81,7 @@ import api
 
 plr = {api.turntoblock(block=plr)}
 world = {api.turnarraytoblocks(arrayofblocks=world)}
-worldtype = {worldtype}"""
+worldtype = [{worldtype[0]}, api.Limit({worldtype[1].upper_limit}, {worldtype[1].lower_limit})]"""
 
             f.write(data.replace("'", ""))
 
@@ -152,20 +153,20 @@ print("Loading Variables..")
 print("Loading blocks..")
 
 Air = api.block(varname="Air",image="#00AAFF",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Air. 
-Grs = api.block(varname="Grs",image="#00FF00",passable=False,breakablebytool=True,droptoolvalue=1,drop="Dirt",falling=False) # Define Grass.
-Drt = api.block(varname="Drt",image="#945035",passable=False,breakablebytool=True,droptoolvalue=2,drop=None,falling=False) # Define Dirt.
+Grs = api.block(varname="Grs",image="#00FF00",passable=False,breakablebytool=True,droptoolvalue=1,drop="Grass",falling=False) # Define Grass.
+Drt = api.block(varname="Drt",image="#945035",passable=False,breakablebytool=True,droptoolvalue=2,drop="Dirt",falling=False) # Define Dirt.
 Stn = api.block(varname="Stn",image="#606060",passable=False,breakablebytool=True,droptoolvalue=3,drop="Stone",falling=False) # Define Stone.
-Snd = api.block(varname="Snd",image="#DDDD55",passable=False,breakablebytool=True,droptoolvalue=1,drop=None,falling=False) # Define Sand.
+Snd = api.block(varname="Snd",image="#DDDD55",passable=False,breakablebytool=True,droptoolvalue=1,drop="Sand",falling=False) # Define Sand.
 Bdr = api.block(varname="Bdr",image="#000000",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Bedrock.
-plr = api.entity(varname="plr",image="#FFC000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=20),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
+plr = api.entity(varname="plr",image="#FFC000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=25),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
 Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron ore",falling=False) # Define Iron ore.
 Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
 Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
 
 # Placeholder
-print("Loading placeholder NamedTuple..")
+print("Loading placeholders..")
 class placeholder:
-    \"\"\"A block but for display purposes.\"\"\"
+    \"""A block but for display purposes.\"""
     def __init__(
         self,
         varname: str,
@@ -181,6 +182,19 @@ class placeholder:
     def __str__(self):
         return self.image
     
+    def __repr__(self):
+        return self.image
+
+class placeholder_dry:
+    def __init__(
+        self,
+        image: str
+    ):
+        self.image = image
+    
+    def __str__(self):
+        return self.image
+
     def __repr__(self):
         return self.image
 
@@ -367,9 +381,9 @@ biomes = [
         50,
         [Snd, Snd, Snd]
     )
-]"""
-        if f.read != data:
-            f.write(data)
+]
+"""
+        f.write(data)
 
 # Check generateworldpackage.
 print("Checking generateworldpackage..")
@@ -490,9 +504,168 @@ def generateworld(worldtype):
                 biomes=biomes,
                 ore_config=oreconfig,
             )
-    return [world, newworldtype]"""
-        if f.read != data:
-            f.write(data)
+    return [world, newworldtype]
+"""
+        f.write(data)
+
+# Check sprites.py.
+print("Checking sprites.py..")
+if not api.checkpath(integrisprites):
+    with open(integrisprites, "w+") as sprites:
+        data = """from ...integri.utilityfolder.blocks import *
+
+black_black = placeholder_dry("#000000")
+filler_black = placeholder_dry("#3F3F3F")
+black = placeholder_dry("#10121C")
+coal_dark_gray = placeholder_dry("#141414")
+stone_gray = placeholder_dry("#474747")
+coal_gray = placeholder_dry("#2E2E2E")
+iron_light_gray = placeholder_dry("#ABABAB")
+white = placeholder_dry("#FFFFFF")
+dirt_light_brown = placeholder_dry("#A26D3F")
+dirt_brown = placeholder_dry("#6E4C30")
+sand_yellow = placeholder_dry("#FFED7C")
+grass_green = placeholder_dry("#00A020")
+drs = placeholder_dry("#63101B") # drs = darker_spot
+dsp = placeholder_dry("#99192A") # dsp = dark_spot
+lsp = placeholder_dry("#EC273F") # lsp = light_spot
+TXT = placeholder_dry("#FFA2AC") # TXT = text
+
+none_row = [None, None, None, None, None, None, None]
+stone_row = [stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray]
+dirt_row = [dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown]
+grass_row = [grass_green, grass_green, grass_green, grass_green, grass_green, grass_green, grass_green]
+sand_row = [sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow]
+iron_row = [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray]
+filler_black_row = [filler_black, filler_black, filler_black, filler_black, filler_black, filler_black, filler_black]
+filler_inv_row = []
+black_row = []
+black_inv_row = []
+inventory_sprite = []
+inventory_sprite_slot_coords = []
+
+for i in range(20):
+    black_row.append(black)
+    black_inv_row.append(black_black)
+
+for i in range(21):
+    black_inv_row.append(black_black)
+
+for i in range(5):
+    filler_inv_row += filler_black_row
+    filler_inv_row.append(black_black)
+
+inventory_sprite.append(black_inv_row)
+for i in range(5):
+    for j in range(7):
+        inventory_sprite.append(filler_inv_row)
+    inventory_sprite.append(black_inv_row)
+
+for i in range(5):
+    for j in range(5):
+        inventory_sprite_slot_coords.append(((i * 8) + 1, (j * 8) + 1))
+
+health_bar_full = [
+    [None] + black_row,
+    [black, drs, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
+    [black, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
+    [black, drs, drs, dsp, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, TXT, TXT, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
+    [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
+    [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, lsp, lsp],
+    [None] + black_row
+]
+
+coal_item = [
+    none_row,
+    none_row,
+    none_row,
+    [None, None, coal_gray, coal_gray, None, None, None],
+    [None, coal_gray, coal_gray, coal_gray, coal_gray, None, None],
+    [coal_gray, coal_gray, coal_dark_gray, coal_dark_gray, coal_gray, coal_gray, None],
+    [coal_gray, coal_dark_gray, coal_dark_gray, coal_dark_gray, coal_dark_gray, coal_gray, coal_gray]
+]
+
+iron_ore_item = [
+    stone_row,
+    [stone_gray, iron_light_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray],
+    [stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, iron_light_gray, stone_gray],
+    stone_row,
+    [stone_gray, stone_gray, iron_light_gray, stone_gray, stone_gray, stone_gray, stone_gray],
+    [stone_gray, stone_gray, stone_gray, stone_gray, iron_light_gray, stone_gray, stone_gray],
+    stone_row
+]
+
+stone_item = [
+    stone_row,
+    stone_row,
+    stone_row,
+    stone_row,
+    stone_row,
+    stone_row,
+    stone_row
+]
+
+dirt_item = [
+    dirt_row,
+    [dirt_brown, dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown, dirt_brown],
+    [dirt_light_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_light_brown],
+    dirt_row,
+    [dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown],
+    dirt_row,
+    [dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown]
+]
+
+grass_item = [
+    grass_row,
+    grass_row,
+    [grass_green, dirt_brown, grass_green, grass_green, grass_green, grass_green, dirt_brown],
+    [dirt_brown, dirt_brown, dirt_brown, grass_green, dirt_brown, dirt_brown, dirt_brown],
+    dirt_row,
+    dirt_row,
+    dirt_row
+]
+
+sand_item = [
+    sand_row,
+    sand_row,
+    sand_row,
+    sand_row,
+    sand_row,
+    sand_row,
+    sand_row
+]
+
+iron_bar_item = [
+    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
+    [iron_light_gray, white, iron_light_gray, white, white, white, white],
+    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
+    iron_row,
+    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
+    iron_row,
+    iron_row
+]
+
+#whole_lotta_nothing = [
+#    none_row,
+#    none_row,
+#    none_row,
+#    none_row,
+#    none_row,
+#    none_row,
+#    none_row
+#]
+
+sprites = {
+    #"None": whole_lotta_nothing,
+    "Dirt": dirt_item,
+    "Stone": stone_item,
+    "Sand": sand_item,
+    "Iron ore": iron_ore_item,
+    "Coal": coal_item,
+    "Iron bar": iron_bar_item
+}
+"""
+    sprites.write(data)
 
 increment()
 increment()
@@ -503,6 +676,7 @@ increment()
 
 from gamedata.integri.utilityfolder.blocks import *
 from gamedata.integri.utilityfolder.generateworldpackage import *
+from gamedata.integri.utilityfolder.sprites import *
 
 increment()
 
@@ -557,11 +731,44 @@ originals = []
 
 print("Loading function framecounter..")
 def framecounter():
-    global quittime
+    #global new_casting_world_time
+    #global reverse_area_time
+    #global health_bar_time
+    #global init_vars_time
+    #global area_grab_time
+    #global raycast_time
+    #global display_time
+    #global quittime
     global frames
     while not quittime:
         api.wait(1)
+        #total_time = new_casting_world_time + reverse_area_time + health_bar_time + init_vars_time + area_grab_time + raycast_time + display_time
+        
+        #NCW_per = (new_casting_world_time / total_time) * 100
+        #RA_per = (reverse_area_time / total_time) * 100
+        #HB_per = (health_bar_time / total_time) * 100
+        #IV_per = (init_vars_time / total_time) * 100
+        #AG_per = (area_grab_time / total_time) * 100
+        #RC_per = (raycast_time / total_time) * 100
+        #D_per = (display_time / total_time) * 100
+        
+        #new_casting_world_time = 0
+        #reverse_area_time = 0
+        #health_bar_time = 0
+        #init_vars_time = 0
+        #area_grab_time = 0
+        #raycast_time = 0
+        #display_time = 0
+        
         print(f"fps: {frames}")
+        #print(f"total time: {total_time}")
+        #print(f"new casting world time percent: {NCW_per}%")
+        #print(f"reverse area time percent: {RA_per}%")
+        #print(f"health bar generation time percent: {HB_per}%")
+        #print(f"variable initialization time percent: {IV_per}%")
+        #print(f"area grab time percent: {AG_per}%")
+        #print(f"raycast time percent: {RC_per}%")
+        #print(f"display time percent: {D_per}%")
         frames = 0
 
 
@@ -608,26 +815,25 @@ def raycast(target_X: int, target_Y: int) -> None:
     global casting_world
     global originals
     half_casting_world_size = len(casting_world) // 2
+    half_casting_world_size_2 = (half_casting_world_size, half_casting_world_size)
     impassable_hits = 0
-    impassable_limit = 3
+    impassable_limit = 5
     
-    line = list(api.bresenham(half_casting_world_size, half_casting_world_size, target_X, target_Y))
-
-    for coordinates in line:
+    # readability? who needs that when i have an optimizemaxxing streak?
+    for (X, Y) in api.bresenham(half_casting_world_size, half_casting_world_size, target_X, target_Y):
         # You will recieve no comment with this code. Fuck you, I'm tired and I want to get this
         # whole raycasting thing over with.
-        Y = coordinates[1]
-        X = coordinates[0]
+        original_block = originals[Y][X]
         
-        if originals[Y][X].passable or originals[Y][X].varname == "plr":
-            casting_world[Y][X] = originals[Y][X]
+        if original_block.passable or (X, Y) == half_casting_world_size_2:
+            casting_world[Y][X] = original_block
         
-        elif not originals[Y][X].passable and not originals[Y][X].varname == "plr" and not impassable_hits >= impassable_limit:
-            casting_world[Y][X] = originals[Y][X]
+        elif not original_block.passable and not (X, Y) == half_casting_world_size_2 and not impassable_hits >= impassable_limit:
+            casting_world[Y][X] = original_block
             impassable_hits += 1
         
-        elif not originals[Y][X].passable and not originals[Y][X].varname == "plr" and impassable_hits >= impassable_limit:
-            casting_world[Y][X] = originals[Y][X]
+        elif not original_block.passable and not (X, Y) == half_casting_world_size_2 and impassable_hits >= impassable_limit:
+            casting_world[Y][X] = original_block
             break
 
 
@@ -695,26 +901,12 @@ def calculate_health_bar(health: int) -> list[list[placeholder_dry]]:
     """
     black = placeholder_dry("#10121C")
     white = placeholder_dry("#FFFFFF")
-    drs = placeholder_dry("#2C1E31") # drs = darker_spot
-    dsp = placeholder_dry("#AC2847") # dsp = dark_spot
-    lsp = placeholder_dry("#EC273F") # lsp = light_spot
-    TXT = placeholder_dry("#FFA2AC") # TXT = text
     
     columns = []
     black_row = []
     
     for i in range(20):
         black_row.append(black)
-    
-    health_bar_full = [
-        [None] + black_row,
-        [black, drs, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
-        [black, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
-        [black, drs, drs, dsp, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, TXT, TXT, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
-        [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
-        [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, lsp, lsp],
-        [None] + black_row
-    ]
     
     health_bar_computed = [health_bar_full[0]]
     
@@ -732,6 +924,44 @@ def calculate_health_bar(health: int) -> list[list[placeholder_dry]]:
     health_bar_computed.append(health_bar_full[-1])
     
     return health_bar_computed
+
+
+print("Loading function load_inventory..")
+def load_inventory(
+    display: list[list],
+    inventory: api.inventory
+):
+    """Loads the 25x25 inventory of the player onto a display.
+
+    Args:
+        display (list[list]): The display to load the inventory onto.
+        inventory (api.inventory): The inventory to load.
+
+    Returns:
+        list[list]: The display after having the inventory loaded on it.
+    """
+    output = display
+    slotvalues = list(inventory.slots.values())
+    
+    output = stick_to_display(
+        inventory_sprite,
+        output,
+        (29, 29)
+    )
+    
+    for slot_index in range(len(slotvalues)):
+        sprite_coord = inventory_sprite_slot_coords[slot_index]
+        slot = slotvalues[slot_index]
+        
+        if slot != None:
+            if slot.drop != None:
+                output = stick_to_display(
+                    sprites[slot.drop],
+                    output,
+                    (29 + sprite_coord[0], 29 + sprite_coord[1])
+                )
+    
+    return output
 
 
 print("Loading function stick_to_display..")
@@ -766,19 +996,34 @@ def stick_to_display(
 
 print("Loading function displaythread..")
 def displaythread(screen):
+    #global new_casting_world_time
+    #global reverse_area_time
+    #global health_bar_time
+    #global init_vars_time
+    #global area_grab_time
     global casting_world
+    #global raycast_time
+    #global display_time
     global originals
     global quittime
     global frames
     global world
     global plr
-    #plr.position[1] = len(world) // 2
-    #plr.position[0] = len(world[0]) // 2
+    #new_casting_world_time = 0
+    #reverse_area_time = 0
+    #health_bar_time = 0
+    #init_vars_time = 0
+    #area_grab_time = 0
+    #raycast_time = 0
+    #display_time = 0
     while not api.isquit():
         # LET HIM COOK :fire:
 #                   cookingdisplayoutput = []
+        #init_vars_start = api.engine_time()
         displayoutput = []
         casting_world = []
+        #init_vars_end = api.engine_time()
+        #init_vars_time += (init_vars_end - init_vars_start)
 
 #                    for n in range(worldtype[0]):
 #                        cookingdisplayoutput.append([])
@@ -793,38 +1038,64 @@ def displaythread(screen):
         # coordinate of player in cookingdisplayoutput =
         # X - (X - (X_radius_around_player + 1))
 
+        #start = api.engine_time()
         for n in range(100):
             displayoutput.append([])
 
             for m in range(100):
                 displayoutput[-1].append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
-
-        displayoutput = list(reversed(displayoutput))
+        #end = api.engine_time()
+        #area_grab_time += (end - start)
         
+        #start = api.engine_time()
+        displayoutput = list(reversed(displayoutput))
+        #end = api.engine_time()
+        #reverse_area_time += (end - start)
+
+        #start = api.engine_time()
         for Y in range(len(displayoutput)):
             new_row = []
             for X in range(len(displayoutput)):
                 new_row.append(Bdr)
             casting_world.append(new_row)
+        #end = api.engine_time()
+        #new_casting_world_time += (end - start)
         
+        #start = api.engine_time()
         originals = displayoutput
         raycast_rays()
         displayoutput = casting_world
+        #end = api.engine_time()
+        #raycast_time += (end - start)
         
+        #start = api.engine_time()
         health_bar = calculate_health_bar(plr.health)
         displayoutput = stick_to_display(
             health_bar,
             displayoutput,
             (99 - 20, 0)
         )
+        #end = api.engine_time()
+        #health_bar_time += (end - start)
         
+        if api.ispressed_key("e"):
+            displayoutput = load_inventory(
+                displayoutput,
+                plr.inventory
+            )
+        
+        #start = api.engine_time()
         api.display(screen, displayoutput, 8, 6)
+        #end = api.engine_time()
+        #display_time += (end - start)
         api.wait(1/60) # "60 fps"
         frames += 1
         # How does this work again
         # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*
         # how does this run at ~23 fps
         # the fact it runs at any fps past 10 is a miracle
+        # HOW DOES IT KEEP GOING HIGHER EVERY UPDATE I'M NOT EVEN DOING ANYTHING
+        # come to think of it this whole thing even working is a miracle
 
 increment()
 
@@ -976,7 +1247,17 @@ while True:
 
             gravmltp = 0
             holdingW = False
+            specialmode = False
             newdata = [world, plr.replace]
+            
+            # profiling
+            new_casting_world_time = 0
+            reverse_area_time = 0
+            health_bar_time = 0
+            init_vars_time = 0
+            area_grab_time = 0
+            raycast_time = 0
+            display_time = 0
         while meant_to_run and api.isquit() == False:
 
             # Player interaction
@@ -987,16 +1268,35 @@ while True:
             spressed = api.ispressed_key("s")
             dpressed = api.ispressed_key("d")
             breakmode = api.ispressed_key("shift")
+            buildmode = api.ispressed_key("ctrl")
+            
+            if breakmode or buildmode:
+                specialmode = True
+            
+            if breakmode and buildmode:
+                specialmode = False
 
             # Actions
-            if wpressed and not breakmode: newdata = plr.move("w", newdata[0], newdata[1]); holdingW = True
-            if dpressed and not breakmode: newdata = plr.move("a", newdata[0], newdata[1])
-            if spressed and not breakmode: newdata = plr.move("s", newdata[0], newdata[1])
-            if apressed and not breakmode: newdata = plr.move("d", newdata[0], newdata[1])
-            if wpressed and breakmode: newdata[0] = plr.breakblock("w", newdata[0], newdata[1])
-            if dpressed and breakmode: newdata[0] = plr.breakblock("a", newdata[0], newdata[1])
-            if spressed and breakmode: newdata[0] = plr.breakblock("s", newdata[0], newdata[1])
-            if apressed and breakmode: newdata[0] = plr.breakblock("d", newdata[0], newdata[1])
+            if wpressed and not specialmode: newdata = plr.move("w", newdata[0], newdata[1]); holdingW = True
+            
+            elif wpressed and breakmode: newdata[0] = plr.breakblock("w", newdata[0], newdata[1], 2)
+            
+            #elif wpressed and buildmode: newdata[0] = plr.
+            
+            
+            if dpressed and not specialmode: newdata = plr.move("a", newdata[0], newdata[1])
+            
+            elif dpressed and breakmode: newdata[0] = plr.breakblock("a", newdata[0], newdata[1], 2)
+            
+            
+            if spressed and not specialmode: newdata = plr.move("s", newdata[0], newdata[1])
+            
+            elif spressed and breakmode: newdata[0] = plr.breakblock("s", newdata[0], newdata[1], 2)
+            
+            
+            if apressed and not specialmode: newdata = plr.move("d", newdata[0], newdata[1])
+            
+            elif apressed and breakmode: newdata[0] = plr.breakblock("d", newdata[0], newdata[1], 2)
 
             # Apply Gravity
 
@@ -1014,6 +1314,8 @@ while True:
 
             world = newdata[0] # Update display
             plr.replace = newdata[1] # Update what used to be at a position before the player was.
+            specialmode = False
+            breakmode = False
             holdingW = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
             api.wait(1/15) # "15 tps/ups"
         quittime = True
