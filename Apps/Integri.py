@@ -54,6 +54,10 @@ from threading import Thread
 print("Importing function: ceil from module: math")
 from math import ceil, floor
 
+# Json.
+print("Json.")
+import json
+
 increment()
 increment()
 
@@ -76,6 +80,7 @@ def savegame(savename, world, worldtype, plr, single):
             # plr = the current player character
             # world = the current world
             # api.player(image=\"{plr.image}\",maxhealth=""" + str(plr.maxhealth) + """,health=""" + str(plr.health) + """,armor=""" + str(plr.armor) + """,attack=""" + str(plr.attack) + """,defense=""" + str(plr.defense) + """,speed=""" + str(plr.speed) + f""",position=[{plr.position[0]}, {plr.position[1]}],replace=api.{api.turntoblock(plr.replace)}]""" + """,inventory=api.inventory(slotnum=""" + str(plr.inventory.slotnum) + """,slotdata=""" + str(plr.inventory.slots) + """,selectedindex=\"""" + plr.inventory.selectedindex + """\"),dead=""" + str(plr.dead) + """,deffactor=""" + str(plr.deffactor) + """,atkfactor=""" + str(plr.atkfactor) + """)
+            #json.dumps(vars(plr))
             data = f"""from ..utilityfolder.blocks import *
 import api
 
@@ -100,24 +105,23 @@ increment()
 
 print("Making checksaves function and running it to check saves..")
 def checksaves():
-    if api.checkpath(integrisaves): # Check if the Saves folder exists.
-        Saves = os.listdir(integrisaves) # If yes, list all the files in there.
-        if "__pycache__" in Saves:
-            del Saves[Saves.index("__pycache__")]
-        while len(Saves) < 4: # While there are less than 4 elements in Saves,
-            Saves.append("") # Add an empty string to the list.
-        for savename in Saves:
-            savenamelist = savename.split(".py") # Separate ".py" from every string in the list.
-            del savenamelist[-1] # Delete the ".py" from every string in the list..
-            newsavename = ""
-            for char in savenamelist:
-                newsavename += char
-            Saves[Saves.index(savename)] = newsavename
-    else: # If it doesn't, then..
-        print("Making saves folder..") 
-        os.system("md " + integrisaves) # Create the saves folder,
-        Saves = ["", "", "", ""] # and make the Saves variable blank because there aren't any saves yet.
-    return Saves # Return the variable Saves.
+    if not api.checkpath(integrisaves):
+        print("Making saves folder..")
+        os.system(f"md {integrisaves}")
+        Saves = ["", "", "", ""]
+        return Saves
+    
+    Saves = os.listdir(integrisaves)
+    Saves = api.stripimportant(Saves, ["__pycache__"])
+    
+    while len(Saves) < 4:
+        Saves.append("")
+    
+    for savename_index in range(len(Saves)):
+        Saves[savename_index] = Saves[savename_index].removesuffix(".py")
+    
+    return Saves
+
 Saves = checksaves() # Run the function to check all the saves.
 
 increment()
@@ -942,6 +946,7 @@ def load_inventory(
     """
     output = display
     slotvalues = list(inventory.slots.values())
+    slotvalues_iterable = range(len(slotvalues))
     
     output = stick_to_display(
         inventory_sprite,
@@ -949,7 +954,12 @@ def load_inventory(
         (29, 29)
     )
     
-    for slot_index in range(len(slotvalues)):
+    #print(f"slotvalues: {slotvalues}")
+    #print(f"len(slotvalues: {len(slotvalues)})")
+    
+    for slot_index in slotvalues_iterable:
+        #print(f"inventory_sprite_slot_coords: {len(inventory_sprite_slot_coords)}")
+        #print(f"slot_index: {slot_index}")
         sprite_coord = inventory_sprite_slot_coords[slot_index]
         slot = slotvalues[slot_index]
         
@@ -1226,6 +1236,9 @@ while True:
                 savename = str(Saves[int(selectedsave) - 1])
                 save = import_module("gamedata.integri.saves." + savename)
                 plr = save.plr
+                if api.reachableindex(plr.inventory.slots, "slot26"):
+                    del plr.inventory.slots["slot26"]
+                print(plr.inventory.slots)
                 world = save.world
                 worldtype = save.worldtype
                 del save

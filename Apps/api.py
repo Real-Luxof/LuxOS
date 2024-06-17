@@ -558,60 +558,82 @@ def sysexit():
 
 # Inventory
 class inventory:
+    """Literally the name. slotdata should be like {"slot1": "jacuzzzzzzzi"}, and selectedindex should be like "slot1".
+    
+    Has 4 (with a hidden 5th) attributes.
+    self.slots: The slots. It is a dict accessed like "inventory_instance.slots["slot1"]".
+    self.slotnum: The number of slots in the inventory_instance.
+    self.selected: Corresponds to "inventory_instance.slots[inventory_instance.selectedindex]" but is a clone not a pointer 'cause of python bullshit.
+    self.selectedindex: The currently selected item's index as in "slot1".
+    
+    self.type: the type of the object, present in all classes. E.g. "inventory_instance.type" would be "inventory" and "entity_instance.type" would be "entity".
+    """
     def __init__(self, slotnum=10, slotdata=None, selectedindex=None):
-        if type(slotnum) == int or isint(slotnum):
-            slotnum = int(slotnum)
-            if slotnum > 0:
-                slots = {}
-                if slotdata != None:
-                    for i in slotdata:
-                        slots["slot" + str(list(slotdata.keys()).index(i))] = slotdata[
-                            i
-                        ]
-                for i in range(slotnum):
-                    if ismore(slots, "slot" + str(i + 1)) == False:
-                        slots["slot" + str(i + 1)] = None
-                self.slots = slots
-                if selectedindex == None:
-                    self.selected = slots["slot1"]
-                    self.selectedindex = "slot1"
-                else:
-                    self.selected = slots[selectedindex]
-                    self.selectedindex = selectedindex
-                self.slotnum = slotnum
-                self.type = "inventory"
+        if not isint(slotnum):
+            raise TypeError("NUMBER of slots must be an integer!")
+        
+        if slotnum <= 0:
+            raise ValueError("Number of slots must be over 0!")
+    
+        slotnum = int(slotnum)
+        slots = {}
+        
+        for slot_index in range(slotnum):
+            if reachableindex(slotdata, f"slot{slot_index}"):
+                slots[f"slot{slot_index}"] = slotdata[f"slot{slot_index}"]
             else:
-                raise ValueError
+                slots[f"slot{slot_index}"] = None
+        
+        self.slots = slots
+        
+        
+        if selectedindex == None:
+            self.selected = slots["slot1"]
+            self.selectedindex = "slot1"
         else:
-            raise TypeError
+            self.selected = slots[selectedindex]
+            self.selectedindex = selectedindex
+        
+        self.slotnum = slotnum
+        self.type = "inventory"
 
     # Select a slot in the inventory for use
     def select(self, selectnum: int):
-        self.selected = self.slots["slot" + str(selectnum)]
+        """Select a slot in the inventory for use."""
+        self.selectedindex = "slot" + str(selectnum)
+        self.selected = self.slots[self.selectedindex]
 
     # Clear the inventory of items
     def clearinventory(self):
-        for i in self.slots:
-            self.slots[i] = None
+        """Clear the inventory of items and select slot1."""
+        for slot in self.slots:
+            self.slots[slot] = None
+        
+        self.selectedindex = "slot1"
         self.selected = self.slots["slot1"]
 
     # Shrink the inventory starting from the end
     def shrinkinventory(self, slotnum: int):
+        """Shrink the inventory starting from the end."""
         for i in range(slotnum):
-            del list(self.slots)[-1]
+            
+            del self.slots[f"slot{abs(i - self.slotnum)}"]
             self.slotnum -= 1
 
     # Make the inventory bigger
     def enlargeinventory(self, slotnum: int, slotdata):
-        lastkey = str(list(self.slots)[-1])
-        lastkey = lastkey.split()
-        current = int(lastkey[-1])
-        for i in range(slotnum):
-            self.slots["slot" + str(current + 1)] = slotdata[i]
-            current += 1
-            self.slotnum += 1
+        """Make the inventory bigger."""
+        for slot_index in range(self.slotnum, slotnum + self.slotnum):
+            
+            if reachableindex(slotdata, slot_index - self.slotnum):
+                self.slots[f"slot{slot_index}"] = slotdata[slot_index]
+            
+            else:
+                self.slots[f"slot{slot_index}"] = None
+        
+        self.slotnum += slotnum
     
-    def add_to_inventory(self, items: list):
+    def add_to_inventory(self, items: list) -> list:
         """Adds an item to the inventory and returns whatever couldn't be put in the inventory.
 
         Args:
@@ -624,20 +646,27 @@ class inventory:
         
         for item in items:
             item_put = False
+            
             for slot in self.slots.keys():
-        
-                if self.slots[slot] == None:
-                    self.slots[slot] = item
-                    item_put = True
-                    break
+                if not self.slots[slot] == None:
+                    continue
                 
-            if not item_put:
-                remaining_items.append(item)
+                self.slots[slot] = item
+                item_put = True
+                break
+            
+            if item_put:
+                continue
+            
+            remaining_items.append(item)
         
         return remaining_items
 
     def __str__(self):
-        return self.slots
+        return str(self.slots)
+    
+    def __repr__(self):
+        return str(self.slots)
 
 
 # Block
@@ -684,7 +713,7 @@ class block:
 
         Args:
             Y (int): The Y coordinate of the block.
-            X (int): THe X coordinate of the block.
+            X (int): The X coordinate of the block.
             direction (str): Can be "w", "a", "s", or "d". If you don't know what either of those options do, stop living under the mariana trench.
             data (2D Array): The world around the block.
             replace (block class): What will be left in the space the block once was.
