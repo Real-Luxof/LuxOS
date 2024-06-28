@@ -163,19 +163,19 @@ def check_density(particle, area: list[list]) -> dict:
 # in the [block] class, we're gonna hack the game engine to set that
 # attribute anyway.
 red = api.block(varname="red", image="#AA0000", passable=False)
-red.__setattr__("attracted", ["green", "yellow", "blue", "purple", "white"])
+red.attracted = ["green", "yellow", "blue", "purple", "white"]
 
 green = api.block(varname="green", image="#00AA00", passable=False)
-green.__setattr__("attracted", ["yellow", "white", "cyan"])
+green.attracted = ["yellow", "white", "cyan"]
 
 yellow = api.block(varname="yellow", image="#AAAA00", passable=False)
-yellow.__setattr__("attracted", ["purple", "red"])
+yellow.attracted = ["purple", "red"]
 
 blue = api.block(varname="blue", image="#0000AA", passable=False)
-blue.__setattr__("attracted", ["white", "green"])
+blue.attracted = ["white", "green"]
 
 purple = api.block(varname="purple", image="#AA00AA", passable=False)
-purple.__setattr__("attracted", ["blue", "green", "cyan"])
+purple.attracted = ["blue", "green", "cyan"]
 
 cyan = api.block(varname="cyan", image="#00AAAA", passable=False)
 cyan.__setattr__("attracted", [])

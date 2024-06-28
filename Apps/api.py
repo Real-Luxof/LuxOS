@@ -826,19 +826,26 @@ class entity:
 
     # Break a block
     def breakblock(
-        self, direction: str, data: list, replace: block, distance: int = 0, bypass_inventory: bool = True, still_add_to_inventory: bool = True
-    ) -> list:
-        """Break a block a certain distance away from the entity.
+        self,
+        direction: str,
+        data: list,
+        replace: block,
+        distance: int = 0,
+        bypass_inventory: bool = True,
+        still_add_to_inventory: bool = True
+    ) -> list[list[block]]:
+        """Break blocks up to a certain distance away from the entity.
         Will not break passable blocks, blocks which have "breakablebytool" set to False,
         or blocks when there is no free slot in the inventory unless bypass_inventory is True.
         Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
-        If distance or entity.reach is over 1, will destroy all blocks in the way similar to entity.move.
-
+        If distance or entity.reach is over 1, will place on all passable blocks in the way similar to entity.move.
+        
         Args:
-            direction (str): What direction the entity is attempting to break a block in. Can be "w", "a", "s", or "d". If you don't know what either of those options do, that's enough grass touching for you.
-            data (list): The world around the entity.
-            replace (block class): What will be left in the space the entity once was.
-            distance (int, optional): How far away the block it is attempting to break is. Defaults to the reach of the entity.
+            direction (str): Simple: wasd. If you don't get it, stop touching grass.
+            data (list[list[block]]): The world around the entity.
+            distance (int, optional): The name. Defaults to the entity's reach attribute if it's 0.
+            bypass_inventory (bool, optional): It will not add items to the inventory automatically when this value is True. Defaults to True.
+            still_add_to_inventory (bool, optional): It will add items to the inventory and keep breaking blocks regardless of inventory fullness if this value is True. Defaults to True.
 
         Returns:
             2D Array: The world after the entity has broken that block in front of it.
@@ -871,15 +878,17 @@ class entity:
             # Main -
 
             # De-nestified a fair bit :D
-            if not data[Y][X].passable and self.handvalue <= data[Y][X].droptoolvalue:
-                if not bypass_inventory:
-                    if not self.inventory.add_to_inventory([data[Y][X]]):
-                        data[Y][X] = replace
-                elif still_add_to_inventory:
-                    self.inventory.add_to_inventory([data[Y][X]])
+            if data[Y][X].passable or self.handvalue <= data[Y][X].droptoolvalue:
+                continue
+            
+            if not bypass_inventory:
+                if not self.inventory.add_to_inventory([data[Y][X]]):
                     data[Y][X] = replace
-                else:
-                    data[Y][X] = replace
+            elif still_add_to_inventory:
+                self.inventory.add_to_inventory([data[Y][X]])
+                data[Y][X] = replace
+            else:
+                data[Y][X] = replace
 
         # Return -
 
@@ -887,22 +896,43 @@ class entity:
 
     # Break a block
     def placeblock(
-        self, direction: str, data: list, replace: block, distance: int = 0, bypass_inventory: bool = True, still_add_to_inventory: bool = True
-    ) -> list:
-        """Place a block a certain distance away from the entity.
+        self,
+        direction: str,
+        data: list[list[block]],
+        replace: block = None,
+        distance: int = 0,
+        ignore_passable: bool = False
+    ) -> list[list[block]]:
+        """Place blocks up to a certain distance away from the entity.
         Will not break passable blocks, blocks which have "breakablebytool" set to False,
         or blocks when there is no free slot in the inventory unless bypass_inventory is True.
         Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
         If distance or entity.reach is over 1, will place on all passable blocks in the way similar to entity.move.
         
         Args:
-            direction (str): What direction the entity is attempting to break a block in. Can be "w", "a", "s", or "d". If you don't know what either of those options do, that's enough grass touching for you.
-            data (list): The world around the entity.
-            replace (block class): What will be left in the space the entity once was.
-            distance (int, optional): How far away the block it is attempting to break is. Defaults to the reach of the entity.
+            direction (str): Simple: wasd. If you don't get it, stop touching grass.
+            data (list[list[block]]): The world around the entity.
+            distance (int, optional): The name. Defaults to the entity's reach attribute if it's 0.
+            bypass_inventory (bool, optional): It will not add items to the inventory automatically when this value is True. Defaults to True.
+            still_add_to_inventory (bool, optional): It will add items to the inventory and keep breaking blocks regardless of inventory fullness if this value is True. Defaults to True.
 
         Returns:
             2D Array: The world after the entity has broken that block in front of it.
+        """
+        """Place blocks up to a certain distance away from the entity.
+        Will not place on non-passable blocks, unless ignore_passable is set to True.
+        Will stop placing blocks after encountering a non-passable block, unless ignore_passable is set to True.
+        Will not place blocks when there is no item available in the inventory unless replace is not equal to None.
+
+        Args:
+            direction (str): _description_
+            data (list[list[block]]): _description_
+            replace (block, optional): _description_. Defaults to None.
+            distance (int, optional): _description_. Defaults to 0.
+            ignore_passable (bool, optional): Ignores whether or not a block is passable, read the summary. Defaults to False
+
+        Returns:
+            list: _description_
         """
 
         # Load -
@@ -932,15 +962,17 @@ class entity:
             # Main -
 
             # De-nestified a fair bit :D
-            if data[Y][X].passable == False and self.handvalue <= data[Y][X].droptoolvalue:
-                if not bypass_inventory:
-                    if not self.inventory.add_to_inventory([data[Y][X]]):
-                        data[Y][X] = replace
-                elif still_add_to_inventory:
-                    self.inventory.add_to_inventory([data[Y][X]])
+            if data[Y][X].passable or self.handvalue <= data[Y][X].droptoolvalue:
+                continue
+            
+            if not bypass_inventory:
+                if not self.inventory.add_to_inventory([data[Y][X]]):
                     data[Y][X] = replace
-                else:
-                    data[Y][X] = replace
+            elif still_add_to_inventory:
+                self.inventory.add_to_inventory([data[Y][X]])
+                data[Y][X] = replace
+            else:
+                data[Y][X] = replace
 
         # Return -
 

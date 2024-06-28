@@ -948,10 +948,15 @@ def calculate_health_bar(health: int) -> list[list[placeholder_dry]]:
     health_bar_computed = [health_bar_full[0]]
     
     for row_index in range(1, len(health_bar_full) - 1):
+        
         row = health_bar_full[row_index]
-        health_bar_computed.append([])
+        health_bar_computed.append([black])
+        
         for column_index in range(1, len(row) + 1):
-            column = row[column_index - 1]
+            if not api.reachableindex(row, column_index):
+                break
+            
+            column = row[column_index]
             
             if calc_health_pixel(health, abs(5 * (column_index - len(row)))):
                 health_bar_computed[-1].append(column)
@@ -1084,6 +1089,7 @@ def displaythread(screen):
         # Or just use m?? past me was a dumbass
 
         #start = api.engine_time()
+        # this could actually be improved but i'm too lazy to do that
         for n in range(100):
             new_row = []
 
@@ -1093,7 +1099,7 @@ def displaythread(screen):
             #if len(new_row) < 100:
             #    print(displayoutput.index(displayoutput[-1]))
             displayoutput.append(new_row)
-        print(f"len(displayoutput[0]): {len(displayoutput[0])}")
+        #print(f"len(displayoutput[0]): {len(displayoutput[0])}")
         #end = api.engine_time()
         #area_grab_time += (end - start)
         
@@ -1304,13 +1310,14 @@ while True:
             newdata = [world, plr.replace]
             
             # profiling
-            new_casting_world_time = 0
-            reverse_area_time = 0
-            health_bar_time = 0
-            init_vars_time = 0
-            area_grab_time = 0
-            raycast_time = 0
-            display_time = 0
+            #new_casting_world_time = 0
+            #reverse_area_time = 0
+            #health_bar_time = 0
+            #init_vars_time = 0
+            #area_grab_time = 0
+            #raycast_time = 0
+            #display_time = 0
+            #hurt_time = True
         while meant_to_run and api.isquit() == False:
 
             # Player interaction

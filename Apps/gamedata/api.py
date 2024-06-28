@@ -281,6 +281,10 @@ def clear():
 def wait(secs):
     time.sleep(secs)
 
+# Time.
+def engine_time() -> float:
+    """Like time.time()."""
+    return time.time()
 
 # - The Checkers -
 
@@ -386,6 +390,8 @@ def reachableindex(liste, index):
             return True
         except KeyError:
             return False
+        except TypeError:
+            return False
 
 
 # - Engine -
@@ -421,7 +427,7 @@ def setres(width=800, height=600, flags=0, depth=0, display=0, vsync=0):
 
 
 # Set a block's saturation according to its light level.
-def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> int:
+def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> str:
     """A nearly fully modular function to define the saturation of a block depending on its light level.
 
     Args:
@@ -439,16 +445,19 @@ def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> 
     G = int(f"0x{hex_color[2]}{hex_color[3]}", 16)
     B = int(f"0x{hex_color[4]}{hex_color[5]}", 16)
     # MATH.
-    R = R + floor(0 - ((R / max_light_level) * light_level))
-    G = G + floor(0 - ((R / max_light_level) * light_level))
-    B = B + floor(0 - ((R / max_light_level) * light_level))
+    R = floor((R / max_light_level) * light_level)
+    G = floor((R / max_light_level) * light_level)
+    B = floor((R / max_light_level) * light_level)
     # Back to hex.
-    R_hex = hex(R).removeprefix("0x")
-    G_hex = hex(G).removeprefix("0x")
-    B_hex = hex(B).removeprefix("0x")
+    R_hex = str(hex(R).removeprefix("0x"))
+    G_hex = str(hex(G).removeprefix("0x"))
+    B_hex = str(hex(B).removeprefix("0x"))
+    # If lengths are too low, add zeroes.
+    if len(R_hex) < 2: R_hex += "0"
+    if len(G_hex) < 2: G_hex += "0"
+    if len(B_hex) < 2: B_hex += "0"
     # Add it up and re-add the #.
-    hex_color_changed = "#" + R_hex + G_hex + B_hex
-    return hex_color_changed
+    return f"#{R_hex}{G_hex}{B_hex}"
 
 
 # The maion function that puts shit on screen.
@@ -460,25 +469,38 @@ def display(
     widthofeachblock and heightofeachblock are self-explanatory."""
     Y = 0
     for Ycoord in newscreen:  # Selects a list from newscreen.
-        X = 0  # Set X to 0 for use in a new Y axis.
-        for block in Ycoord:  # Selects a block in said list,
+        width_is_due = False
+        duewidthofeachblock = widthofeachblock
+        X = 0 
+        for Xcoord in range(len(Ycoord)):  # Selects a block in said list,
+            block = Ycoord[Xcoord]
+            try:
+                next_block = Ycoord[Xcoord + 1]
+            except IndexError:
+                next_block = None
+            
             #if ishex(str(block)):
             # then it draws the block on screen with it's color
             # being what comes from its __repr__/__str__ function.
             # the rest is self-explanatory.
-            block = str(
-                block
-            )  # Turn it into <type 'str'> instead of <class 'api.block'> or smth
-
-            pygame.draw.rect(
-                screen,
-                pygame.Color(block),
-                (X, Y, widthofeachblock, heightofeachblock),
-            )
-            X += widthofeachblock  # Add widthofeachblock to X. Why?
-            # or else it would try to overlap all the colors on the same X coordinates.
-        Y += heightofeachblock  # Add heightofeachblock to Y. Why?
-        # or else it would try to overlap all the colors on the same Y coordinates.
+            block = str(block)  # Turn it into <type 'str'> instead of <class 'api.block'> or smth
+            next_block = str(next_block) # Same to next_block
+            
+            if block != next_block:
+                pygame.draw.rect(
+                    screen,
+                    pygame.Color(block),
+                    (X, Y, duewidthofeachblock, heightofeachblock),
+                )
+                width_is_due = True
+            
+            if width_is_due:
+                X += duewidthofeachblock
+                duewidthofeachblock = 0
+                width_is_due = False
+            
+            duewidthofeachblock += widthofeachblock
+        Y += heightofeachblock
     pygame.display.flip()  # Display the newly drawn screen on the window.
 
 
@@ -541,61 +563,115 @@ def sysexit():
 
 # Inventory
 class inventory:
+    """Literally the name. slotdata should be like {"slot1": "jacuzzzzzzzi"}, and selectedindex should be like "slot1".
+    
+    Has 4 (with a hidden 5th) attributes.
+    self.slots: The slots. It is a dict accessed like "inventory_instance.slots["slot1"]".
+    self.slotnum: The number of slots in the inventory_instance.
+    self.selected: Corresponds to "inventory_instance.slots[inventory_instance.selectedindex]" but is a clone not a pointer 'cause of python bullshit.
+    self.selectedindex: The currently selected item's index as in "slot1".
+    
+    self.type: the type of the object, present in all classes. E.g. "inventory_instance.type" would be "inventory" and "entity_instance.type" would be "entity".
+    """
     def __init__(self, slotnum=10, slotdata=None, selectedindex=None):
-        if type(slotnum) == int or isint(slotnum):
-            slotnum = int(slotnum)
-            if slotnum > 0:
-                slots = {}
-                if slotdata != None:
-                    for i in slotdata:
-                        slots["slot" + str(list(slotdata.keys()).index(i))] = slotdata[
-                            i
-                        ]
-                for i in range(slotnum):
-                    if ismore(slots, "slot" + str(i + 1)) == False:
-                        slots["slot" + str(i + 1)] = None
-                self.slots = slots
-                if selectedindex == None:
-                    self.selected = slots["slot1"]
-                    self.selectedindex = "slot1"
-                else:
-                    self.selected = slots[selectedindex]
-                    self.selectedindex = selectedindex
-                self.slotnum = slotnum
-                self.type = "inventory"
+        if not isint(slotnum):
+            raise TypeError("NUMBER of slots must be an integer!")
+        
+        if slotnum <= 0:
+            raise ValueError("Number of slots must be over 0!")
+    
+        slotnum = int(slotnum)
+        slots = {}
+        
+        for slot_index in range(slotnum):
+            if reachableindex(slotdata, f"slot{slot_index}"):
+                slots[f"slot{slot_index}"] = slotdata[f"slot{slot_index}"]
             else:
-                raise ValueError
+                slots[f"slot{slot_index}"] = None
+        
+        self.slots = slots
+        
+        
+        if selectedindex == None:
+            self.selected = slots["slot1"]
+            self.selectedindex = "slot1"
         else:
-            raise TypeError
+            self.selected = slots[selectedindex]
+            self.selectedindex = selectedindex
+        
+        self.slotnum = slotnum
+        self.type = "inventory"
 
     # Select a slot in the inventory for use
     def select(self, selectnum: int):
-        self.selected = self.slots["slot" + str(selectnum)]
+        """Select a slot in the inventory for use."""
+        self.selectedindex = "slot" + str(selectnum)
+        self.selected = self.slots[self.selectedindex]
 
     # Clear the inventory of items
     def clearinventory(self):
-        for i in self.slots:
-            self.slots[i] = None
+        """Clear the inventory of items and select slot1."""
+        for slot in self.slots:
+            self.slots[slot] = None
+        
+        self.selectedindex = "slot1"
         self.selected = self.slots["slot1"]
 
     # Shrink the inventory starting from the end
     def shrinkinventory(self, slotnum: int):
+        """Shrink the inventory starting from the end."""
         for i in range(slotnum):
-            del list(self.slots)[-1]
+            
+            del self.slots[f"slot{abs(i - self.slotnum)}"]
             self.slotnum -= 1
 
     # Make the inventory bigger
     def enlargeinventory(self, slotnum: int, slotdata):
-        lastkey = str(list(self.slots)[-1])
-        lastkey = lastkey.split()
-        current = int(lastkey[-1])
-        for i in range(slotnum):
-            self.slots["slot" + str(current + 1)] = slotdata[i]
-            current += 1
-            self.slotnum += 1
+        """Make the inventory bigger."""
+        for slot_index in range(self.slotnum, slotnum + self.slotnum):
+            
+            if reachableindex(slotdata, slot_index - self.slotnum):
+                self.slots[f"slot{slot_index}"] = slotdata[slot_index]
+            
+            else:
+                self.slots[f"slot{slot_index}"] = None
+        
+        self.slotnum += slotnum
+    
+    def add_to_inventory(self, items: list) -> list:
+        """Adds an item to the inventory and returns whatever couldn't be put in the inventory.
+
+        Args:
+            items (list): A list of items to put in the inventory. Can also be a list with just one element.
+
+        Returns:
+            list: The remaining items which could not be put in the inventory.
+        """
+        remaining_items = []
+        
+        for item in items:
+            item_put = False
+            
+            for slot in self.slots.keys():
+                if not self.slots[slot] == None:
+                    continue
+                
+                self.slots[slot] = item
+                item_put = True
+                break
+            
+            if item_put:
+                continue
+            
+            remaining_items.append(item)
+        
+        return remaining_items
 
     def __str__(self):
-        return self.slots
+        return str(self.slots)
+    
+    def __repr__(self):
+        return str(self.slots)
 
 
 # Block
@@ -642,7 +718,7 @@ class block:
 
         Args:
             Y (int): The Y coordinate of the block.
-            X (int): THe X coordinate of the block.
+            X (int): The X coordinate of the block.
             direction (str): Can be "w", "a", "s", or "d". If you don't know what either of those options do, stop living under the mariana trench.
             data (2D Array): The world around the block.
             replace (block class): What will be left in the space the block once was.
@@ -714,7 +790,7 @@ class entity:
         self,
         replace: block,
         varname="plr",
-        character="#000000",
+        image="#000000",
         maxhealth: int = 100,
         health: int = 100,
         armor: int = 0,
@@ -730,7 +806,7 @@ class entity:
         handvalue: int = 1,
     ):
         self.varname = varname
-        self.character = character
+        self.image = image
         self.maxhealth = maxhealth
         self.health = health
         self.armor = armor
@@ -750,15 +826,26 @@ class entity:
 
     # Break a block
     def breakblock(
-        self, direction: str, data: list, replace: block, distance: int = 0
-    ) -> list:
-        """Break a block a certain distance away from the entity. Will not break passable blocks, blocks which have "breakablebytool" set to False, or blocks when there is no free slot in the inventory.
-
+        self,
+        direction: str,
+        data: list,
+        replace: block,
+        distance: int = 0,
+        bypass_inventory: bool = True,
+        still_add_to_inventory: bool = True
+    ) -> list[list[block]]:
+        """Break blocks up to a certain distance away from the entity.
+        Will not break passable blocks, blocks which have "breakablebytool" set to False,
+        or blocks when there is no free slot in the inventory unless bypass_inventory is True.
+        Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
+        If distance or entity.reach is over 1, will place on all passable blocks in the way similar to entity.move.
+        
         Args:
-            direction (str): What direction the entity is attempting to break a block in. Can be "w", "a", "s", or "d". If you don't know what either of those options do, that's enough grass touching for you.
-            data (list): The world around the entity.
-            replace (block class): What will be left in the space the entity once was.
-            distance (int, optional): How far away the block it is attempting to break is. Defaults to the reach of the entity.
+            direction (str): Simple: wasd. If you don't get it, stop touching grass.
+            data (list[list[block]]): The world around the entity.
+            distance (int, optional): The name. Defaults to the entity's reach attribute if it's 0.
+            bypass_inventory (bool, optional): It will not add items to the inventory automatically when this value is True. Defaults to True.
+            still_add_to_inventory (bool, optional): It will add items to the inventory and keep breaking blocks regardless of inventory fullness if this value is True. Defaults to True.
 
         Returns:
             2D Array: The world after the entity has broken that block in front of it.
@@ -772,40 +859,120 @@ class entity:
             usedistance = distance
         else:
             usedistance = self.reach
-        match direction:
-            case "w":
-                dy -= usedistance
-            case "a":
-                dx -= usedistance
-            case "s":
-                dy += usedistance
-            case "d":
-                dx += usedistance
+        
+        for i in range(usedistance):
+            
+            match direction:
+                case "w":
+                    dy -= 1
+                case "a":
+                    dx -= 1
+                case "s":
+                    dy += 1
+                case "d":
+                    dx += 1
+            
+            X = self.position[0] + dx
+            Y = self.position[1] + dy
 
-        # Main -
+            # Main -
 
-        print("main!")
-        if data[self.position[1] + dy][self.position[0] + dx].passable == False:
-            print("made it")
-            if (
-                self.handvalue
-                <= data[self.position[1] + dy][self.position[0] + dx].droptoolvalue
-            ):
-                if self.inventory.selected == None:
-                    self.inventory.slots[self.inventory.selectedindex] = data[
-                        self.position[1] + dy
-                    ][self.position[0] + dx]
-                    print("succ!")
-                    data[self.position[1] + dy][self.position[0] + dx] = replace
-                else:
-                    for i in range(self.inventory.slotnum):
-                        print("i in range")
-                        if self.inventory.slots["slot" + str(i + 1)] == None:
-                            self.inventory.slots["slot" + str(i + 1)] = data[
-                                self.position[1] + dy
-                            ][self.position[0] + dx]
-                            data[self.position[1] + dy][self.position[0] + dx] = replace
-                            break
+            # De-nestified a fair bit :D
+            if data[Y][X].passable or self.handvalue <= data[Y][X].droptoolvalue:
+                continue
+            
+            if not bypass_inventory:
+                if not self.inventory.add_to_inventory([data[Y][X]]):
+                    data[Y][X] = replace
+            elif still_add_to_inventory:
+                self.inventory.add_to_inventory([data[Y][X]])
+                data[Y][X] = replace
+            else:
+                data[Y][X] = replace
+
+        # Return -
+
+        return data
+
+    # Break a block
+    def placeblock(
+        self,
+        direction: str,
+        data: list[list[block]],
+        replace: block = None,
+        distance: int = 0,
+        ignore_passable: bool = False
+    ) -> list[list[block]]:
+        """Place blocks up to a certain distance away from the entity.
+        Will not break passable blocks, blocks which have "breakablebytool" set to False,
+        or blocks when there is no free slot in the inventory unless bypass_inventory is True.
+        Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
+        If distance or entity.reach is over 1, will place on all passable blocks in the way similar to entity.move.
+        
+        Args:
+            direction (str): Simple: wasd. If you don't get it, stop touching grass.
+            data (list[list[block]]): The world around the entity.
+            distance (int, optional): The name. Defaults to the entity's reach attribute if it's 0.
+            bypass_inventory (bool, optional): It will not add items to the inventory automatically when this value is True. Defaults to True.
+            still_add_to_inventory (bool, optional): It will add items to the inventory and keep breaking blocks regardless of inventory fullness if this value is True. Defaults to True.
+
+        Returns:
+            2D Array: The world after the entity has broken that block in front of it.
+        """
+        """Place blocks up to a certain distance away from the entity.
+        Will not place on non-passable blocks, unless ignore_passable is set to True.
+        Will stop placing blocks after encountering a non-passable block, unless ignore_passable is set to True.
+        Will not place blocks when there is no item available in the inventory unless replace is not equal to None.
+
+        Args:
+            direction (str): _description_
+            data (list[list[block]]): _description_
+            replace (block, optional): _description_. Defaults to None.
+            distance (int, optional): _description_. Defaults to 0.
+            ignore_passable (bool, optional): Ignores whether or not a block is passable, read the summary. Defaults to False
+
+        Returns:
+            list: _description_
+        """
+
+        # Load -
+
+        direction = str.lower(direction)
+        dx, dy = 0, 0
+        if distance != 0:
+            usedistance = distance
+        else:
+            usedistance = self.reach
+        
+        for i in range(usedistance):
+            
+            match direction:
+                case "w":
+                    dy -= 1
+                case "a":
+                    dx -= 1
+                case "s":
+                    dy += 1
+                case "d":
+                    dx += 1
+            
+            X = self.position[0] + dx
+            Y = self.position[1] + dy
+
+            # Main -
+
+            # De-nestified a fair bit :D
+            if data[Y][X].passable or self.handvalue <= data[Y][X].droptoolvalue:
+                continue
+            
+            if not bypass_inventory:
+                if not self.inventory.add_to_inventory([data[Y][X]]):
+                    data[Y][X] = replace
+            elif still_add_to_inventory:
+                self.inventory.add_to_inventory([data[Y][X]])
+                data[Y][X] = replace
+            else:
+                data[Y][X] = replace
 
         # Return -
 
@@ -843,6 +1010,9 @@ class entity:
                 dy += 1
             case "d":
                 dx += 1
+        
+        X = self.position[0] + dx
+        Y = self.position[1] + dy
 
         # Main -
 
@@ -851,15 +1021,15 @@ class entity:
         for i in range(usespeed):
             # Idk how I would even begin to comment this
             if (
-                reachableindex(data, self.position[1] + dy)
-                and reachableindex(data[self.position[1]], self.position[0] + dx)
-                and self.position[1] + dy > -1
-                and self.position[0] + dx > -1
+                reachableindex(data, Y)
+                and reachableindex(data[self.position[1]], X)
+                and Y > -1
+                and X > -1
             ):
-                if data[self.position[1] + dy][self.position[0] + dx].passable:
+                if data[Y][X].passable:
                     data[self.position[1]][self.position[0]] = replace
-                    final2 = data[self.position[1] + dy][self.position[0] + dx]
-                    data[self.position[1] + dy][self.position[0] + dx] = self
+                    final2 = data[Y][X]
+                    data[Y][X] = self
                     self.position[1] += dy
                     self.position[0] += dx
 
@@ -889,10 +1059,10 @@ class entity:
         return self.dead
 
     def __str__(self):
-        return self.character
+        return self.image
 
     def __repr__(self):
-        return self.character
+        return self.image
 
 
 # World Generation -
@@ -1485,7 +1655,13 @@ def optimized_generate(
     #    for j in range(width):
     #        space[-1].append(air)
     #space = [[air] * width] * height
-    space = [[air] * width for y in range(height)]
+    #space = [[air] * width for y in range(height)]
+    space = []
+    for i in range(height):
+        new_row = []
+        for j in range(width):
+            new_row.append(air)
+        space.append(new_row)
 
     # - Add blocks (finally use biomes) -
 
@@ -1659,12 +1835,12 @@ def turntoblock(block: block = block(), addapi: bool = True) -> str:
         addapi (bool, optional): Adds "api." before any function used in the api if true. Defaults to True.
 
     Returns:
-        str: Out comes something like "api.block(image=)" or "api.entity(character=)".
+        str: Out comes something like "api.block(image=)" or "api.entity(image=)".
     """
     if block.type == "block":
         return f"{addapiiftrue(addapi=addapi)}block(varname=\"{block.varname}\",image={block.image},passable={block.passable},breakablebytool={block.breakablebytool},droptoolvalue={block.droptoolvalue},drop={block.drop},falling={block.falling})"
     elif block.type == "entity":
-        return f'{addapiiftrue(addapi=addapi)}entity(varname={block.varname},character="{block.character}",maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
+        return f'{addapiiftrue(addapi=addapi)}entity(varname=\"{block.varname}\",image="{block.image}",maxhealth={block.maxhealth},health={block.health},armor={block.armor},attack={block.attack},defense={block.defense},speed={block.speed},position={block.position},replace={block.replace.varname},inventory={addapiiftrue(addapi=addapi)}inventory(slotnum={block.inventory.slotnum},slotdata={putstringsaroundslots(block.inventory)},selectedindex="{block.inventory.selectedindex}"),dead={block.dead},deffactor={block.deffactor},atkfactor={block.atkfactor},reach={block.reach},handvalue={block.handvalue})'
 
 
 def turnarraytoblocks(arrayofblocks: list = [[block], [block]]) -> list:

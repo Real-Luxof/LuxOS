@@ -1,12 +1,12 @@
 #  I spent way too much time on this only to realize I don't need it
 # Nvm I do need it
-def match_coordinates(X: int, Y: int) -> dict:
+def match_coordinates(X: int, Y: int, attraction_table, world) -> dict:
     weight_x = 0
     weight_y = 0
 
     match Y:
         case 0:
-            weight_y += 1
+            weight_y += attraction_table[] 1
             if X < 2:
                 weight_x += 1
             elif X > 2:
