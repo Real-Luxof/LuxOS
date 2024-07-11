@@ -148,22 +148,36 @@ class Miner:
     # That girl's a mineeeer, that girl's a mineeer!
     job_needs = [
         Item("PICKAXE", 1, 1, "debuff work disable"), # this is what happens when the needs are not met
-        Item("TORCH", 5, 1, "debuff work pop -1 -50")
+        Item("TORCH AND LIGHTER", 5, 1, "debuff work pop -1 -50")
     ]
     extra_needs = {
         Item("CANARY", 1, 10, "buff work pop 1 1") # this is what happens when the needs are met
     }
     pop_effects = [
         "work satisfaction -0.00001 -0.0001",
-        "work consciousness 0.00001 0.001", # mining isn't really a desirable job
+        "work consciousness 0.00001 0.0001", # mining isn't really a desirable job
         "work pop -1 -1" # yeah das why also cuz u in a mine damnit
     ]
     
     possible_produce = [
-        
+        "70.0 10 COAL", # chance_of_produce num_of_produce name_of_produce is the format here
+        "30.0 5 IRON_ORE"
     ]
 
-# enough commentless coding, time to actually make you understand.
+class Lumberjack:
+    job_needs = [
+        Item("AXE", 1, 1, "debuff work disable")
+    ]
+    pop_effects = [
+        "work consciousness 0.00001 0.00005" # you wouldn't wanna be cutting trees all day but at least
+        # you aint a miner
+    ]
+    
+    possible_produce = [
+        "100.0 10 WOOD_LOG"
+    ]
+
+# enough near commentless coding, time to actually make you understand.
 # tf is this "effect" thing and how does it work?
 # simple, like this: "type_of_buff action pop_trait num_to_add_1 num_to_add_2"
 # type_of_buff can be "debuff" or "buff", "buff" will happen if the need is met and "debuff" for the opposite.
@@ -172,6 +186,9 @@ class Miner:
 # pop_trait is what trait of the pop the effect is working on.
 # the num_to_adds are a range of nums of which a number is randomly added.
 # also use "action disable" to disable that action :D
+# yield is a special trait through which you can modify the produce
+# its types are yield_int and yield_percent respectively
+# you can guess what those do by their names
 
 print("VR Glasses, buy today.")
 class Poor:
@@ -191,20 +208,91 @@ class Poor:
                 "passive satisfaction 0.0005 0.002"
             ],
             [
-                ""
+                "" # job decides debuff/disable or whatevs
             ]
         )
     ]
     # they don't care if they don't get luxuries, but it would be nice
 
 class Middle:
-    important_needs = []
-    important_needs = ["BASIC", "JOB", "LUXURY-1"]
+    important_needs = [
+        TypeOfNeed(
+            "BASIC",
+            [
+                "passive satisfaction 0.0005 0.002"
+            ],
+            [
+                "passive pop -1 -250"
+            ]
+        ),
+        TypeOfNeed(
+            "JOB",
+            [
+                "passive satisfaction 0.0005 0.002"
+            ],
+            [
+                "" # job decides debuff/disable or whatevs
+            ]
+        ),
+        TypeOfNeed(
+            "LUXURY-1",
+            [
+                "passive satisfaction 0.005 0.009",
+                "passive consciousness -0.009 -0.005"
+            ],
+            [
+                "passive consciousness 0.005 0.009"
+                # no luxuries? at their richness? yeah, right.
+            ]
+        )
+    ]
     # kinda rich, they want nice things too.
 
 class Rich:
-    important_needs = ["BASIC", "JOB", "LUXURY-1", "LUXURY-2"]
+    important_needs = [
+        TypeOfNeed(
+            "BASIC",
+            [
+                "passive satisfaction 0.0005 0.002"
+            ],
+            [
+                "passive pop -1 -250"
+            ]
+        ),
+        TypeOfNeed(
+            "JOB",
+            [
+                "passive satisfaction 0.0005 0.002"
+            ],
+            [
+                "" # job decides debuff/disable or whatevs
+            ]
+        ),
+        TypeOfNeed(
+            "LUXURY-1",
+            [
+                "passive consciousness -0.009 -0.005"
+            ],
+            [
+                "passive consciousness 0.009 0.03",
+                "passive satisfaction -0.009 -0.005"
+            ]
+        ),
+        TypeOfNeed(
+            "LUXURY-2",
+            [
+                "passive satisfaction 0.05 0.009"
+            ],
+            [
+                "passive consciousness 0.009 0.03"
+            ]
+        )
+    ]
     # i don't need my designer clothes, but i do need that roasted turkey filled with mayo.
+    # yeah LUXURY-3 exists which absolutely blows the minds of whoever gets it
+
+# oh btw don't worry, if the higher classes don't get their stuff for a long enough time
+# they'll either get demoted (bad because the factories close) or make petitions n stuff
 
 print("Granting consciousness to Humanity at the low low price of $3.99..")
 # Population unit
@@ -220,5 +308,9 @@ class POP:
         self.pop = pop # num of people
         self.satisfaction = satisfaction # satisfaction with life
         self.consciousness = consciousness # how conscious they are of what's going on around them
-        self.social_class = social_class # decides what kinds of needs they consider really important
-        self.job = job # supposed to be one of the job classes
+        # decides what kinds of needs they consider really important
+        # and what jobs they'll have
+        self.social_class = social_class
+        # supposed to be one of the job classes
+        self.job = job
+            

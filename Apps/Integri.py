@@ -1279,8 +1279,7 @@ while True:
                 print("Success. We will get to work now.")
             else:
                 print("Loading..")
-                # i for the life of me do not know why this code would cause the Python
-                # definition of a memory leak and eat up so much fucking RAM
+                # python stop fucking compiling the save to efficient bytecode just RUN IT
                 savename = str(Saves[int(selectedsave) - 1])
                 save = import_module("gamedata.integri.saves." + savename)
                 plr = save.plr
@@ -1295,10 +1294,10 @@ while True:
             saveselected = True
             meant_to_run = True
 
-        api.initiatewindow() # Initiate the windwo so that pygame doesn't go crazy.
+        api.initiatewindow() # Initiate the window so that pygame doesn't go crazy.
         
         if meant_to_run:
-            # Initialize a fwe variables
+            # Initialize a few variables
             screen = api.setres(800, 600)
 
             displayfunc = Thread(target=displaythread,args=[screen])
@@ -1330,7 +1329,7 @@ while True:
             spressed = api.ispressed_key("s")
             dpressed = api.ispressed_key("d")
             breakmode = api.ispressed_key("shift")
-            buildmode = api.ispressed_key("ctrl")
+            buildmode = api.ispressed_key("b")
             
             if breakmode or buildmode:
                 specialmode = True
