@@ -5,10 +5,12 @@ import time
 import os
 import random
 import multiprocessing
-from sys import exit as theactualsysexit
-from typing import Collection
+from math import floor
+from functools import wraps
 from typing import Iterable
+from typing import Collection
 from typing import NamedTuple
+from sys import exit as theactualsysexit
 
 try:
     from playsound import playsound
@@ -35,9 +37,31 @@ except ModuleNotFoundError:
     os.system("pip install bresenham")
     from bresenham import bresenham
 
-from math import floor
+try:
+    from perlin_noise import PerlinNoise
+except ModuleNotFoundError:
+    os.system("pip install perlin-noise")
+    from perlin_noise import PerlinNoise
 
 # - Miscellaneous -
+
+
+# Speed benchmark decorator
+# totally did not copy and paste with some modifications
+def benchmark(func):
+    
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        
+        time_start = time.time()
+        result = func(*args, **kwargs)
+        time_end = time.time()
+        
+        time_duration = time_end - time_start
+        print(f'Took {time_duration} seconds')
+        return result
+    
+    return wrapper
 
 
 # Apply chaos
@@ -200,6 +224,14 @@ def putstringsaroundslots(inventory):
     returner = returner.removesuffix(",")
     returner += "}"
     return returner
+
+
+def reverse_if_true(some_list: list, boolean: bool):
+    """DISCLAIMER: This is an internal function. It uses reversed() on some_list if boolean is True."""
+    if boolean:
+        return reversed(some_list)
+    else:
+        return some_list
 
 
 # Install a module
@@ -666,6 +698,31 @@ class inventory:
             remaining_items.append(item)
         
         return remaining_items
+    
+    def pop(self, index: int=-1, not_None: bool=True):
+        """Like some_list.pop(index) but for the inventory.
+        If not_None is True, it will attempt to not return None unless there is no other option."""
+        value = None # the value to return should be None at the start in case it never gets assigned
+        if index < 0 and not not_None:
+            index = self.slotnum + index
+        
+        if not_None:
+            not_none_index_count = 0
+            for slot_index in reverse_if_true(range(self.slotnum), index < 0):
+                
+                if self.slots[f"slot{slot_index}"] != None:
+                    not_none_index_count += 1
+                
+                if not_none_index_count >= abs(index):
+                    
+                    value = self.slots[f"slot{slot_index}"] # get val
+                    self.slots[f"slot{slot_index}"] = None # remove val
+        
+        else:
+            value = self.slots[f"slot{index}"] # get val
+            self.slots[f"slot{index}"] = None # remove val
+        
+        return value
 
     def __str__(self):
         return str(self.slots)
@@ -878,8 +935,10 @@ class entity:
             # Main -
 
             # De-nestified a fair bit :D
-            if data[Y][X].passable or self.handvalue <= data[Y][X].droptoolvalue:
+            if data[Y][X].passable:
                 continue
+            elif self.handvalue < data[Y][X].droptoolvalue:
+                break
             
             if not bypass_inventory:
                 if not self.inventory.add_to_inventory([data[Y][X]]):
@@ -901,38 +960,26 @@ class entity:
         data: list[list[block]],
         replace: block = None,
         distance: int = 0,
-        ignore_passable: bool = False
+        ignore_passable: bool = False,
+        ignore_inventory: bool = False,
+        item_to_block_dict: dict = {}
     ) -> list[list[block]]:
         """Place blocks up to a certain distance away from the entity.
-        Will not break passable blocks, blocks which have "breakablebytool" set to False,
-        or blocks when there is no free slot in the inventory unless bypass_inventory is True.
-        Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
+        Will also stop placing blocks after the inventory is empty.
+        This function pulls from the end of the inventory to the start.
         If distance or entity.reach is over 1, will place on all passable blocks in the way similar to entity.move.
         
         Args:
             direction (str): Simple: wasd. If you don't get it, stop touching grass.
             data (list[list[block]]): The world around the entity.
+            replace (block, optional): If ignore_inventory is True, it will only place this argument.
             distance (int, optional): The name. Defaults to the entity's reach attribute if it's 0.
-            bypass_inventory (bool, optional): It will not add items to the inventory automatically when this value is True. Defaults to True.
-            still_add_to_inventory (bool, optional): It will add items to the inventory and keep breaking blocks regardless of inventory fullness if this value is True. Defaults to True.
+            ignore_passable (bool, optional): Will not stop placing blocks after encountering an impassable block.
+            ignore_inventory (bool, optional): Read the description of the replace argument.
+            item_to_block_dict (dict): if ignore_inventory is False, this dict will be used to transform items into blocks.
 
         Returns:
-            2D Array: The world after the entity has broken that block in front of it.
-        """
-        """Place blocks up to a certain distance away from the entity.
-        Will not place on non-passable blocks, unless ignore_passable is set to True.
-        Will stop placing blocks after encountering a non-passable block, unless ignore_passable is set to True.
-        Will not place blocks when there is no item available in the inventory unless replace is not equal to None.
-
-        Args:
-            direction (str): _description_
-            data (list[list[block]]): _description_
-            replace (block, optional): _description_. Defaults to None.
-            distance (int, optional): _description_. Defaults to 0.
-            ignore_passable (bool, optional): Ignores whether or not a block is passable, read the summary. Defaults to False
-
-        Returns:
-            list: _description_
+            2D Array: The world after the entity has placed that block.
         """
 
         # Load -
@@ -961,18 +1008,19 @@ class entity:
 
             # Main -
 
-            # De-nestified a fair bit :D
-            if data[Y][X].passable or self.handvalue <= data[Y][X].droptoolvalue:
+            if not data[Y][X].passable and not ignore_passable:
+                break
+            
+            if ignore_inventory:
+                data[Y][X] = replace
                 continue
             
-            if not bypass_inventory:
-                if not self.inventory.add_to_inventory([data[Y][X]]):
-                    data[Y][X] = replace
-            elif still_add_to_inventory:
-                self.inventory.add_to_inventory([data[Y][X]])
-                data[Y][X] = replace
-            else:
-                data[Y][X] = replace
+            popped_item = self.inventory.pop()
+            
+            if popped_item == None:
+                break
+            
+            data[Y][X] = item_to_block_dict[popped_item]
 
         # Return -
 
@@ -1075,6 +1123,7 @@ class Limit(NamedTuple):
 
 # Biome
 class Biome(NamedTuple):
+    name: str
     chance_of_spawning: int
     minimum_length: int
     maximum_length: int
@@ -1090,7 +1139,7 @@ class OreConfiguration(NamedTuple):
 
 # Terrain
 class Terrain:
-    """A Terrain type. Used for the new, OPTIMIZED and FASTER (hopefully) optimized_generate!
+    """A Terrain type. Used for the new, OPTIMIZED and FASTER optimized_generate!
 
 Args:
     name (str): The name. Used to tell a programmer what this terrain type is.
@@ -1485,6 +1534,7 @@ def generate(
     if oreconfig != {}:
         if oreeverywhere == False:
             for topblock in toplayer:
+                # no im not gonna touch this shit
                 for ore in list(oreconfig.values()):
 
                     spawnchance = random.randint(1, ore[0])
@@ -1508,6 +1558,8 @@ def generate(
                             )[list(oreconfig.values()).index(ore)][3]
 
         elif oreeverywhere == True:
+            # god i love the fact i'm never gonna have to touch this again
+            # holy shit this looks like some programmer puked all over their keyboard 
             data = list(space.values())
             for ylevel in data:
                 for xlevel in ylevel:
@@ -1541,6 +1593,7 @@ def optimized_generate(
     
     biomes: list[Biome] = [
             Biome(
+                "plains",
                 50,
                 10,
                 50,
@@ -1548,6 +1601,7 @@ def optimized_generate(
             ),
             
             Biome(
+                "desert",
                 50,
                 10,
                 50,
@@ -1630,8 +1684,6 @@ def optimized_generate(
     # None is pretty falsy, so I'll just use if not [variable].
     if not seed:
         seed = rand_num(random.randint(0, 1000000000000))
-    else:
-        random.seed(seed)
     
     if not starting_y:
         starting_y = random.randint(limit.upper_limit, limit.lower_limit)

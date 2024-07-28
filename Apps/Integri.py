@@ -156,21 +156,120 @@ print("Loading Variables..")
 # Blocks
 print("Loading blocks..")
 
-Air = api.block(varname="Air",image="#00AAFF",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Air. 
-Grs = api.block(varname="Grs",image="#00FF00",passable=False,breakablebytool=True,droptoolvalue=1,drop="Grass",falling=False) # Define Grass.
-Drt = api.block(varname="Drt",image="#945035",passable=False,breakablebytool=True,droptoolvalue=2,drop="Dirt",falling=False) # Define Dirt.
-Stn = api.block(varname="Stn",image="#606060",passable=False,breakablebytool=True,droptoolvalue=3,drop="Stone",falling=False) # Define Stone.
-Snd = api.block(varname="Snd",image="#DDDD55",passable=False,breakablebytool=True,droptoolvalue=1,drop="Sand",falling=False) # Define Sand.
-Bdr = api.block(varname="Bdr",image="#000000",passable=True,breakablebytool=False,droptoolvalue=None,drop=None,falling=False) # Define Bedrock.
-plr = api.entity(varname="plr",image="#FFC000",maxhealth=100,health=100,armor=0,attack=5,defense=5,speed=1,position=[0,12],replace=Air,inventory=api.inventory(slotnum=25),dead=False,deffactor=0.5,atkfactor=0.5) # Define the player.
-Iro = api.block(varname="Iro",image="#797979",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron ore",falling=False) # Define Iron ore.
-Col = api.block(varname="Col",image="#202020",passable=False,breakablebytool=True,droptoolvalue=3,drop="Coal",falling=False) # Define Coal.
-Irn = api.block(varname="Irn",image="#909090",passable=False,breakablebytool=True,droptoolvalue=4,drop="Iron bar",falling=False) # Define Iron bar.
+Air = api.block(
+    varname="Air",
+    image="#00AAFF",
+    passable=True,
+    breakablebytool=False,
+    droptoolvalue=None,
+    drop=None,
+    falling=False
+)
+Grs = api.block(
+    varname="Grs",
+    image="#00FF00",
+    passable=False,
+    breakablebytool=True,
+    droptoolvalue=1,
+    drop="Grass",
+    falling=False
+)
+Drt = api.block(
+    varname="Drt",
+    image="#945035",
+    passable=False,
+    breakablebytool=True,
+    droptoolvalue=2,
+    drop="Dirt",
+    falling=False
+)
+Stn = api.block(
+    varname="Stn",
+    image="#606060",
+    passable=False,
+    breakablebytool=True,
+    droptoolvalue=3,
+    drop="Stone",
+    falling=False
+)
+Snd = api.block(
+    varname="Snd",
+    image="#DDDD55",
+    passable=False,
+    breakablebytool=True,
+    droptoolvalue=1,
+    drop="Sand",
+    falling=False
+)
+Bdr = api.block(
+    varname="Bdr",
+    image="#000000",
+    passable=True,
+    breakablebytool=False,
+    droptoolvalue=None,
+    drop=None,
+    falling=False
+)
+plr = api.entity(
+    varname="plr",
+    image="#FFC000",
+    maxhealth=100,
+    health=100,
+    armor=0,
+    attack=5,
+    defense=5,
+    speed=1,
+    position=[0,12],
+    replace=Air,
+    inventory=api.inventory(slotnum=25),
+    dead=False,
+    deffactor=0.5,
+    atkfactor=0.5,
+    handvalue=2
+)
+Iro = api.block(
+    varname="Iro",
+    image="#797979",
+    passable=False,
+    breakablebytool=True,
+    droptoolvalue=4,
+    drop="Iron ore",
+    falling=False
+)
+Col = api.block(
+    varname="Col",
+    image="#202020",
+    passable=False,
+    breakablebytool=True,
+    droptoolvalue=3,
+    drop="Coal",
+    falling=False
+)
+Irn = api.block(
+    varname="Irn",
+    image="#909090",
+    passable=False,
+    breakablebytool=True,
+    droptoolvalue=4,
+    drop="Iron bar",
+    falling=False
+)
+
+# this is used for placing blocks
+all_blocks_dict = {
+    "Iron bar": Irn,
+    "Coal": Col,
+    "Iron ore": Iro,
+    "Sand": Snd,
+    "Stone": Stn,
+    "Dirt": Drt,
+    "Grass": Grs
+}
 
 # Placeholder
 print("Loading placeholders..")
 class placeholder:
-    \"""A block but for display purposes.\"""
+    \"\"\"A block but for display purposes.\"\"\"
     def __init__(
         self,
         varname: str,
@@ -1004,12 +1103,11 @@ def load_inventory(
         slot = slotvalues[slot_index]
         
         if slot != None:
-            if slot.drop != None:
-                output = stick_to_display(
-                    sprites[slot.drop],
-                    output,
-                    (29 + sprite_coord[0], 29 + sprite_coord[1])
-                )
+            output = stick_to_display(
+                sprites[slot],
+                output,
+                (29 + sprite_coord[0], 29 + sprite_coord[1])
+            )
     
     return output
 
@@ -1154,6 +1252,8 @@ def displaythread(screen):
         # the fact it runs at any fps past 10 is a miracle
         # HOW DOES IT KEEP GOING HIGHER EVERY UPDATE I'M NOT EVEN DOING ANYTHING
         # come to think of it this whole thing even working is a miracle
+
+
 
 increment()
 
@@ -1329,35 +1429,58 @@ while True:
             spressed = api.ispressed_key("s")
             dpressed = api.ispressed_key("d")
             breakmode = api.ispressed_key("shift")
-            buildmode = api.ispressed_key("b")
+            buildmode = api.ispressed_key("ctrl") # forget this building doesn't work
             
             if breakmode or buildmode:
                 specialmode = True
             
             if breakmode and buildmode:
-                specialmode = False
+                specialmode = False # fuck you smartass
 
             # Actions
-            if wpressed and not specialmode: newdata = plr.move("w", newdata[0], newdata[1]); holdingW = True
             
-            elif wpressed and breakmode: newdata[0] = plr.breakblock("w", newdata[0], newdata[1], 2)
+            # by god don't ask me why the controls are flipped for A and D
+            # idk why but it must be there for a purpose
             
-            #elif wpressed and buildmode: newdata[0] = plr.
+            # W moving
+            if wpressed:
+                if not specialmode:
+                    newdata = plr.move("w", newdata[0], newdata[1])
+                    holdingW = True
+                elif breakmode:
+                    newdata[0] = plr.breakblock("w", newdata[0], newdata[1], 2)
+                elif buildmode:
+                    newdata[0] = plr.placeblock("w", newdata[0], distance=2, item_to_block_dict=all_blocks_dict)
             
+            # A moving
+            if apressed:
+                if not specialmode:
+                    newdata = plr.move("d", newdata[0], newdata[1])
+                    holdingW = True
+                elif breakmode:
+                    newdata[0] = plr.breakblock("d", newdata[0], newdata[1], 2)
+                elif buildmode:
+                    newdata[0] = plr.placeblock("d", newdata[0], distance=2, item_to_block_dict=all_blocks_dict)
             
-            if dpressed and not specialmode: newdata = plr.move("a", newdata[0], newdata[1])
+            # S moving
+            if spressed:
+                if not specialmode:
+                    newdata = plr.move("s", newdata[0], newdata[1])
+                    holdingW = True
+                elif breakmode:
+                    newdata[0] = plr.breakblock("s", newdata[0], newdata[1], 2)
+                elif buildmode:
+                    newdata[0] = plr.placeblock("s", newdata[0], distance=2, item_to_block_dict=all_blocks_dict)
             
-            elif dpressed and breakmode: newdata[0] = plr.breakblock("a", newdata[0], newdata[1], 2)
-            
-            
-            if spressed and not specialmode: newdata = plr.move("s", newdata[0], newdata[1])
-            
-            elif spressed and breakmode: newdata[0] = plr.breakblock("s", newdata[0], newdata[1], 2)
-            
-            
-            if apressed and not specialmode: newdata = plr.move("d", newdata[0], newdata[1])
-            
-            elif apressed and breakmode: newdata[0] = plr.breakblock("d", newdata[0], newdata[1], 2)
+            # D moving
+            if dpressed:
+                if not specialmode:
+                    newdata = plr.move("a", newdata[0], newdata[1])
+                    holdingW = True
+                elif breakmode:
+                    newdata[0] = plr.breakblock("a", newdata[0], newdata[1], 2)
+                elif buildmode:
+                    newdata[0] = plr.placeblock("a", newdata[0], distance=2, item_to_block_dict=all_blocks_dict)
 
             # Apply Gravity
 
@@ -1374,7 +1497,7 @@ while True:
             # Other stuff
 
             world = newdata[0] # Update display
-            plr.replace = newdata[1] # Update what used to be at a position before the player was.
+            plr.replace = newdata[1]
             specialmode = False
             breakmode = False
             holdingW = False # Tell the game the player has not moved up (this is used for gravity in the next tick/update).
