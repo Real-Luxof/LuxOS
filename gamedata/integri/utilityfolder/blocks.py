@@ -116,18 +116,6 @@ all_blocks_dict = {
     "Grass": Grs
 }
 
-# this is used for scaling
-all_blocks = [
-    Irn,
-    Col,
-    Iro,
-    Snd,
-    Stn,
-    Drt,
-    Grs,
-    plr,
-]
-
 # Placeholder
 print("Loading placeholders..")
 class placeholder:

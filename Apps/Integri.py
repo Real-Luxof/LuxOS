@@ -148,7 +148,7 @@ api.checkandmake(f"{integrifiles}\\utilityfolder")
 print("Checking blocks file..")
 if not api.checkpath(f"{integrifiles}\\utilityfolder\\blocks.py"):
     with open(f"{integrifiles}\\utilityfolder\\blocks.py", "w+") as f:
-        data = """import api
+        data = """from api import block, entity, inventory, Biome, OreConfiguration
 
 # - Variables -
 print("Loading Variables..")
@@ -156,7 +156,7 @@ print("Loading Variables..")
 # Blocks
 print("Loading blocks..")
 
-Air = api.block(
+Air = block(
     varname="Air",
     image="#00AAFF",
     passable=True,
@@ -165,7 +165,7 @@ Air = api.block(
     drop=None,
     falling=False
 )
-Grs = api.block(
+Grs = block(
     varname="Grs",
     image="#00FF00",
     passable=False,
@@ -174,7 +174,7 @@ Grs = api.block(
     drop="Grass",
     falling=False
 )
-Drt = api.block(
+Drt = block(
     varname="Drt",
     image="#945035",
     passable=False,
@@ -183,7 +183,7 @@ Drt = api.block(
     drop="Dirt",
     falling=False
 )
-Stn = api.block(
+Stn = block(
     varname="Stn",
     image="#606060",
     passable=False,
@@ -192,7 +192,7 @@ Stn = api.block(
     drop="Stone",
     falling=False
 )
-Snd = api.block(
+Snd = block(
     varname="Snd",
     image="#DDDD55",
     passable=False,
@@ -201,7 +201,7 @@ Snd = api.block(
     drop="Sand",
     falling=False
 )
-Bdr = api.block(
+Bdr = block(
     varname="Bdr",
     image="#000000",
     passable=True,
@@ -210,7 +210,7 @@ Bdr = api.block(
     drop=None,
     falling=False
 )
-plr = api.entity(
+plr = entity(
     varname="plr",
     image="#FFC000",
     maxhealth=100,
@@ -221,13 +221,13 @@ plr = api.entity(
     speed=1,
     position=[0,12],
     replace=Air,
-    inventory=api.inventory(slotnum=25),
+    inventory=inventory(slotnum=25),
     dead=False,
     deffactor=0.5,
     atkfactor=0.5,
     handvalue=2
 )
-Iro = api.block(
+Iro = block(
     varname="Iro",
     image="#797979",
     passable=False,
@@ -236,7 +236,7 @@ Iro = api.block(
     drop="Iron ore",
     falling=False
 )
-Col = api.block(
+Col = block(
     varname="Col",
     image="#202020",
     passable=False,
@@ -245,7 +245,7 @@ Col = api.block(
     drop="Coal",
     falling=False
 )
-Irn = api.block(
+Irn = block(
     varname="Irn",
     image="#909090",
     passable=False,
@@ -293,6 +293,7 @@ class placeholder_dry:
         self,
         image: str
     ):
+        self.varname = "gsgl3r9vkjs3r" # necessity
         self.image = image
     
     def __str__(self):
@@ -305,7 +306,7 @@ class placeholder_dry:
 print("Loading ore configuration..")
 
 oreconfig = [
-    api.OreConfiguration(
+    OreConfiguration(
         2,
         1,
         10,
@@ -313,7 +314,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         2,
         2,
         20,
@@ -321,7 +322,7 @@ oreconfig = [
         Col
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         5,
         3,
         30,
@@ -329,7 +330,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         5,
         3,
         50,
@@ -337,7 +338,7 @@ oreconfig = [
         Col
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         7,
         5,
         100,
@@ -345,7 +346,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         15,
         13,
         120,
@@ -353,7 +354,7 @@ oreconfig = [
         Col
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         15,
         10,
         180,
@@ -361,7 +362,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         25,
         17,
         390,
@@ -369,7 +370,7 @@ oreconfig = [
         Col
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         25,
         20,
         300,
@@ -377,7 +378,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         30,
         30,
         700,
@@ -385,7 +386,7 @@ oreconfig = [
         Col
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         30,
         30,
         700,
@@ -393,7 +394,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         30,
         30,
         700,
@@ -401,7 +402,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         35,
         50,
         1500,
@@ -409,7 +410,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         45,
         60,
         2500,
@@ -417,7 +418,7 @@ oreconfig = [
         Col
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         45,
         60,
         2500,
@@ -425,7 +426,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         45,
         60,
         2500,
@@ -433,7 +434,7 @@ oreconfig = [
         Col
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         50,
         100,
         4000,
@@ -441,7 +442,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         50,
         100,
         4000,
@@ -449,7 +450,7 @@ oreconfig = [
         Col
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         60,
         300,
         6000,
@@ -457,7 +458,7 @@ oreconfig = [
         Iro
     ),
     
-    api.OreConfiguration(
+    OreConfiguration(
         60,
         300,
         6000,
@@ -471,15 +472,15 @@ print("Loading biomes..")
 
 # Gonna do the oreconfig shenanigans with biomes.
 biomes = [
-    api.Biome(
+    Biome(
         "plains",
         50,
         10,
         50,
-        [Grs, Grs, Drt, Drt, Drt, Drt]
+        [Grs, Drt, Drt, Drt, Drt]
     ),
     
-    api.Biome(
+    Biome(
         "desert",
         50,
         10,
@@ -511,7 +512,7 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
         case 2:
             newworldtype = [1000, api.Limit(50, 950)]
@@ -523,7 +524,7 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
         case 3:
             newworldtype = [1500, api.Limit(100, 1400)]
@@ -535,7 +536,7 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
         case 4:
             newworldtype = [2000, api.Limit(100, 1900)]
@@ -547,7 +548,7 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
         case 5:
             newworldtype = [3500, api.Limit(200, 3300)]
@@ -559,7 +560,7 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
         case 6:
             newworldtype = [5000, api.Limit(500, 4500)]
@@ -571,7 +572,7 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
         case 7:
             newworldtype = [7000, api.Limit(500, 6500)]
@@ -583,7 +584,7 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
         case 8:
             newworldtype = [8000, api.Limit(500, 7500)]
@@ -595,7 +596,7 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
         case 9:
             newworldtype = [10000, api.Limit(1000, 8000)]
@@ -607,10 +608,9 @@ def generateworld(worldtype):
                 stone=Stn,
                 limit=newworldtype[1],
                 biomes=biomes,
-                ore_config=oreconfig,
+                ore_config=oreconfig
             )
-    return [world, newworldtype]
-"""
+    return [world, newworldtype]"""
         f.write(data)
 
 # Check sprites.py.
@@ -618,47 +618,27 @@ print("Checking sprites.py..")
 if not api.checkpath(integrisprites):
     with open(integrisprites, "w+") as sprites:
         data = """from ...integri.utilityfolder.blocks import *
+from api import Surface
 
-black_black = placeholder_dry("#000000")
+# this is for the inventory don't mind this
+black = placeholder_dry("#000000")
 filler_black = placeholder_dry("#3F3F3F")
-black = placeholder_dry("#10121C")
-coal_dark_gray = placeholder_dry("#141414")
-stone_gray = placeholder_dry("#474747")
-coal_gray = placeholder_dry("#2E2E2E")
-iron_light_gray = placeholder_dry("#ABABAB")
-white = placeholder_dry("#FFFFFF")
-dirt_light_brown = placeholder_dry("#A26D3F")
-dirt_brown = placeholder_dry("#6E4C30")
-sand_yellow = placeholder_dry("#FFED7C")
-grass_green = placeholder_dry("#00A020")
-drs = placeholder_dry("#63101B") # drs = darker_spot
-dsp = placeholder_dry("#99192A") # dsp = dark_spot
-lsp = placeholder_dry("#EC273F") # lsp = light_spot
-TXT = placeholder_dry("#FFA2AC") # TXT = text
 
-none_row = [None, None, None, None, None, None, None]
-stone_row = [stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray]
-dirt_row = [dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown]
-grass_row = [grass_green, grass_green, grass_green, grass_green, grass_green, grass_green, grass_green]
-sand_row = [sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow]
-iron_row = [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray]
 filler_black_row = [filler_black, filler_black, filler_black, filler_black, filler_black, filler_black, filler_black]
-filler_inv_row = []
-black_row = []
+filler_inv_row = [black]
 black_inv_row = []
 inventory_sprite = []
 inventory_sprite_slot_coords = []
 
 for i in range(20):
-    black_row.append(black)
-    black_inv_row.append(black_black)
+    black_inv_row.append(black)
 
 for i in range(21):
-    black_inv_row.append(black_black)
+    black_inv_row.append(black)
 
 for i in range(5):
     filler_inv_row += filler_black_row
-    filler_inv_row.append(black_black)
+    filler_inv_row.append(black)
 
 inventory_sprite.append(black_inv_row)
 for i in range(5):
@@ -670,105 +650,172 @@ for i in range(5):
     for j in range(5):
         inventory_sprite_slot_coords.append(((i * 8) + 1, (j * 8) + 1))
 
-health_bar_full = [
-    [None] + black_row,
-    [black, drs, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
-    [black, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
-    [black, drs, drs, dsp, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, TXT, TXT, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
-    [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
-    [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, lsp, lsp],
-    [None] + black_row
-]
+all_sprites_text = f\"\"\"
+health_bar
+#NONE{"#10121C"*20}
+#10121C{"#63101B"*4}{"#99192A"*4}{"#EC273F"*2}#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F{"#FFA2AC"*3}{"#EC273F"*2}
+#10121C{"#63101B"*3}{"#99192A"*4}{"#EC273F"*3}#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F
+#10121C{"#63101B"*2}{"#99192A"*4}{"#EC273F"*3}{"#FFA2AC"*4}#EC273F#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F
+#10121C{"#63101B"*2}{"#99192A"*4}{"#EC273F"*4}#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F{"#FFA2AC"*3}#EC273F{"#EC273F"*2}
+#10121C{"#63101B"*2}{"#99192A"*4}{"#EC273F"*4}#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F#FFA2AC{"#EC273F"*4}
+#NONE{"#10121C"*20}
 
-coal_item = [
-    none_row,
-    none_row,
-    none_row,
-    [None, None, coal_gray, coal_gray, None, None, None],
-    [None, coal_gray, coal_gray, coal_gray, coal_gray, None, None],
-    [coal_gray, coal_gray, coal_dark_gray, coal_dark_gray, coal_gray, coal_gray, None],
-    [coal_gray, coal_dark_gray, coal_dark_gray, coal_dark_gray, coal_dark_gray, coal_gray, coal_gray]
-]
+Coal
+{"#NONE"*7}
+{"#NONE"*7}
+{"#NONE"*7}
+{"#NONE"*2}
+#NONE{"#2E2E2E"*2}{"#NONE"*3}
+#NONE{"#2E2E2E"*4}{"#NONE"*2}
+{"#2E2E2E"*2}{"#141414"*2}{"#2E2E2E"*2}#NONE
+#2E2E2E{"#141414"*4}{"#2E2E2E"*2}
 
-iron_ore_item = [
-    stone_row,
-    [stone_gray, iron_light_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray],
-    [stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, iron_light_gray, stone_gray],
-    stone_row,
-    [stone_gray, stone_gray, iron_light_gray, stone_gray, stone_gray, stone_gray, stone_gray],
-    [stone_gray, stone_gray, stone_gray, stone_gray, iron_light_gray, stone_gray, stone_gray],
-    stone_row
-]
+Iron ore
+{"#474747"*7}
+#474747#ABABAB{"#474747"*5}
+{"#474747"*5}#ABABAB#474747
+{"#474747"*7}
+{"474747"*2}#ABABAB{"474747"*4}
+{"#474747"*4}#ABABAB{"#474747"*2}
+{"#474747"*7}
 
-stone_item = [
-    stone_row,
-    stone_row,
-    stone_row,
-    stone_row,
-    stone_row,
-    stone_row,
-    stone_row
-]
+Stone
+#525252#5e5e5e#525252#5e5e5e#525252#383838#383838
+#5e5e5e#525252#454545#525252#525252#5e5e5e#454545
+#525252#5e5e5e#454545#5e5e5e#5e5e5e#525252#525252
+#5e5e5e#383838#525252#525252#454545#525252#383838
+#454545#525252#5e5e5e#454545#454545#525252#383838
+#383838#454545#525252#383838#454545#454545#525252
+#5e5e5e#5e5e5e#454545#5e5e5e#383838#383838#525252
 
-dirt_item = [
-    dirt_row,
-    [dirt_brown, dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown, dirt_brown],
-    [dirt_light_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_light_brown],
-    dirt_row,
-    [dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown],
-    dirt_row,
-    [dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown]
-]
+Dirt
+#2f5178#304c6e#304c6e#273e59#273e59#1e3045#273e59
+#304c6e#2f5178#2f5178#273e59#2f5178#273e59#304c6e
+#2f5178#273e59#273e59#2f5178#273e59#304c6e#273e59
+#273e59#304c6e#304c6e#1e3045#1e3045#273e59#304c6e
+#304c6e#273e59#273e59#2f5178#273e59#273e59#1e3045
+#1e3045#273e59#2f5178#304c6e#2f5178#273e59#2f5178
+#273e59#2f5178#273e59#273e59#273e59#2f5178#304c6e
 
-grass_item = [
-    grass_row,
-    grass_row,
-    [grass_green, dirt_brown, grass_green, grass_green, grass_green, grass_green, dirt_brown],
-    [dirt_brown, dirt_brown, dirt_brown, grass_green, dirt_brown, dirt_brown, dirt_brown],
-    dirt_row,
-    dirt_row,
-    dirt_row
-]
+Grass
+#52b55a#58c261#52b55a#58c261#52b55a#4ba652#58c261
+#58c261#4ba652#58c261#52b55a#58c261#52b55a#52b55a
+#52b55a#52b55a#4ba652#4ba652#273e59#4ba652#4ba652
+#4ba652#304c6e#4ba652#1e3045#1e3045#52b55a#4ba652
+#304c6e#273e59#273e59#2f5178#273e59#273e59#58c261
+#1e3045#273e59#2f5178#304c6e#2f5178#273e59#2f5178
+#273e59#2f5178#273e59#273e59#273e59#2f5178#304c6e
 
-sand_item = [
-    sand_row,
-    sand_row,
-    sand_row,
-    sand_row,
-    sand_row,
-    sand_row,
-    sand_row
-]
+Sand
+{f"{"#FFED7C"*7}"*7}
 
-iron_bar_item = [
-    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
-    [iron_light_gray, white, iron_light_gray, white, white, white, white],
-    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
-    iron_row,
-    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
-    iron_row,
-    iron_row
-]
+Iron bar
+{"#ABABAB"*5}#FFFFFF#ABABAB
+#ABABAB#FFFFFF#ABABAB{"#FFFFFF"*4}
+{"#ABABAB"*5}#FFFFFF#ABABAB
+{"#ABABAB"*7}
+{"#ABABAB"*5}#FFFFFF#ABABAB
+{"#ABABAB"*7}
+{"#ABABAB"*7}
 
-#whole_lotta_nothing = [
-#    none_row,
-#    none_row,
-#    none_row,
-#    none_row,
-#    none_row,
-#    none_row,
-#    none_row
-#]
+Drt
+#2f5178#304c6e#304c6e#273e59#273e59#1e3045#273e59#1e3045
+#304c6e#2f5178#2f5178#273e59#2f5178#273e59#304c6e#273e59
+#2f5178#273e59#273e59#2f5178#273e59#304c6e#273e59#1e3045
+#273e59#304c6e#304c6e#1e3045#1e3045#273e59#304c6e#273e59
+#304c6e#273e59#273e59#2f5178#273e59#273e59#1e3045#304c6e
+#1e3045#273e59#2f5178#304c6e#2f5178#273e59#2f5178#273e59
 
-sprites = {
-    #"None": whole_lotta_nothing,
-    "Dirt": dirt_item,
-    "Stone": stone_item,
-    "Sand": sand_item,
-    "Iron ore": iron_ore_item,
-    "Coal": coal_item,
-    "Iron bar": iron_bar_item
-}
+Grs
+#4ba652#58c261#58c261#4ba652#52b55a#52b55a#58c261#58c261
+#52b55a#4ba652#4ba652#52b55a#52b55a#4ba652#52b55a#58c261
+#4ba652#273e59#273e59#4ba652#58c261#4ba652#58c261#1e3045
+#273e59#304c6e#304c6e#1e3045#1e3045#58c261#304c6e#273e59
+#304c6e#273e59#273e59#2f5178#273e59#273e59#1e3045#304c6e
+#1e3045#273e59#2f5178#304c6e#2f5178#273e59#2f5178#273e59
+
+Stn
+#525252#5e5e5e#525252#5e5e5e#525252#383838#383838#525252
+#5e5e5e#525252#454545#525252#525252#5e5e5e#454545#454545
+#525252#5e5e5e#454545#5e5e5e#5e5e5e#525252#525252#5e5e5e
+#5e5e5e#383838#525252#525252#454545#525252#383838#383838
+#454545#525252#5e5e5e#454545#454545#525252#383838#525252
+#383838#454545#525252#383838#454545#454545#525252#525252
+\"\"\".split("\n")
+
+sprites = {}
+
+# Function to convert hex to RGB
+# thanks bing chat
+# never even thought of doing it this way, kinda crazy
+def hex_to_rgb(hex_code):
+    hex_code = hex_code.lstrip('#')
+    return tuple(int(hex_code[i:i+2], 16) for i in (0, 2, 4))
+
+# this i wrote myself
+# you can tell because it doesn't have weird python string manipulation int tuple thingmagicks
+
+for line in all_sprites_text:
+    current_sprite_name = ""
+    current_sprite_contents: list[list[placeholder_dry]] = []
+    reading_sprite = False
+    
+    if line == "":
+        if reading_sprite:
+            sprites[current_sprite_name] = current_sprite_contents
+            reading_sprite = False
+        continue
+    
+    elif "#" not in line:
+        if not reading_sprite:
+            current_sprite_name = line
+            current_sprite_contents.append([])
+            reading_sprite = True
+        else:
+            sprites[current_sprite_name] = current_sprite_contents
+            
+            current_sprite_name = ""
+            current_sprite_contents = []
+            reading_sprite = False
+    
+    elif reading_sprite:
+        for hex_code in line.split("#"):
+            if hex_code == "NONE":
+                current_sprite_contents[-1].append(None)
+            else:
+                current_sprite_contents[-1].append(hex_to_rgb(f"#{hex_code}"))
+            #elif current_sprite_name != "health_bar_full":
+            #    current_sprite_contents[-1].append(hex_to_rgb(f"#{hex_code}"))
+            #else:
+            #    current_sprite_contents.append(f"#{hex_code}")
+        current_sprite_contents.append([])
+
+
+# Now to turn all those arrays into surfaces.
+# there is a better way to do this but for readability i want surface creation and the hex interpreter
+# to be at different parts of the file.
+for key in sprites.keys():
+    # i kinda need the health bar to be left as-is
+    if current_sprite_name == "health_bar_full":
+        continue
+    
+    # this just checks if it's an item, not a block
+    if len(sprites[key]) > 6:
+        width = 7
+        height = 7
+    else:
+        width = 8
+        height = 6
+
+    new_sprite = Surface((width, height))
+
+    for Y in range(len(sprites[key])):
+        
+        for X in range(sprites[key][Y]):
+            
+            new_sprite.set_at((X, Y), sprites[key][Y][X])
+    
+    sprites[key] = new_sprite
 """
     sprites.write(data)
 
@@ -868,44 +915,10 @@ originals = []
 
 print("Loading function framecounter..")
 def framecounter():
-    #global new_casting_world_time
-    #global reverse_area_time
-    #global health_bar_time
-    #global init_vars_time
-    #global area_grab_time
-    #global raycast_time
-    #global display_time
-    #global quittime
     global frames
     while not quittime:
         api.wait(1)
-        #total_time = new_casting_world_time + reverse_area_time + health_bar_time + init_vars_time + area_grab_time + raycast_time + display_time
-        
-        #NCW_per = (new_casting_world_time / total_time) * 100
-        #RA_per = (reverse_area_time / total_time) * 100
-        #HB_per = (health_bar_time / total_time) * 100
-        #IV_per = (init_vars_time / total_time) * 100
-        #AG_per = (area_grab_time / total_time) * 100
-        #RC_per = (raycast_time / total_time) * 100
-        #D_per = (display_time / total_time) * 100
-        
-        #new_casting_world_time = 0
-        #reverse_area_time = 0
-        #health_bar_time = 0
-        #init_vars_time = 0
-        #area_grab_time = 0
-        #raycast_time = 0
-        #display_time = 0
-        
         print(f"fps: {frames}")
-        #print(f"total time: {total_time}")
-        #print(f"new casting world time percent: {NCW_per}%")
-        #print(f"reverse area time percent: {RA_per}%")
-        #print(f"health bar generation time percent: {HB_per}%")
-        #print(f"variable initialization time percent: {IV_per}%")
-        #print(f"area grab time percent: {AG_per}%")
-        #print(f"raycast time percent: {RC_per}%")
-        #print(f"display time percent: {D_per}%")
         frames = 0
 
 
@@ -1039,32 +1052,23 @@ def calculate_health_bar(health: int) -> list[list[placeholder_dry]]:
     """
     black = placeholder_dry("#10121C")
     white = placeholder_dry("#FFFFFF")
+    health_bar_full = sprites["health_bar_full"]
     
-    columns = []
-    black_row = []
+    health_bar_computed = []
     
-    for i in range(20):
-        black_row.append(black)
-    
-    health_bar_computed = [health_bar_full[0]]
-    
-    for row_index in range(1, len(health_bar_full) - 1):
+    for Y in range(0, 7):
+        health_bar_computed.append([])
         
-        row = health_bar_full[row_index]
-        health_bar_computed.append([black])
-        
-        for column_index in range(1, len(row) + 1):
-            if not api.reachableindex(row, column_index):
-                break
+        for X in range(1, 21):
+            coords = (X, Y)
             
-            column = row[column_index]
+            color_in_health = health_bar_full.get_at(coords)
             
-            if calc_health_pixel(health, abs(5 * (column_index - len(row)))):
-                health_bar_computed[-1].append(column)
+            if calc_health_pixel(health, abs(5 * (X - 20))):
+                # like what the fuck is this formula above me scoob?
+                health_bar_computed[-1].append(placeholder_dry(color_in_health))
             else:
-                health_bar_computed[-1].append(white)
-    
-    health_bar_computed.append(health_bar_full[-1])
+                health_bar_computed[-1].append(placeholder_dry((255, 255, 255, 255)))
     
     return health_bar_computed
 
@@ -1144,34 +1148,17 @@ def stick_to_display(
 
 print("Loading function displaythread..")
 def displaythread(screen):
-    #global new_casting_world_time
-    #global reverse_area_time
-    #global health_bar_time
-    #global init_vars_time
-    #global area_grab_time
     global casting_world
-    #global raycast_time
-    #global display_time
     global originals
     global quittime
     global frames
     global world
     global plr
-    #new_casting_world_time = 0
-    #reverse_area_time = 0
-    #health_bar_time = 0
-    #init_vars_time = 0
-    #area_grab_time = 0
-    #raycast_time = 0
-    #display_time = 0
     while not api.isquit():
         # LET HIM COOK :fire:
-        #cookingdisplayoutput = []
-        #init_vars_start = api.engine_time()
         displayoutput = []
         casting_world = []
-        #init_vars_end = api.engine_time()
-        #init_vars_time += (init_vars_end - init_vars_start)
+        #blits_left = []
 
         #for n in range(worldtype[0]):
         #    cookingdisplayoutput.append([])
@@ -1188,7 +1175,6 @@ def displaythread(screen):
         
         # Or just use m?? past me was a dumbass
 
-        #start = api.engine_time()
         # this could actually be improved but i'm too lazy to do that
         for n in range(100):
             new_row = []
@@ -1196,43 +1182,26 @@ def displaythread(screen):
             for m in range(100):
                 new_row.append(air(world, plr.position[1] - (n - 50), plr.position[0] - (m - 50)))
             
-            #if len(new_row) < 100:
-            #    print(displayoutput.index(displayoutput[-1]))
             displayoutput.append(new_row)
-        #print(f"len(displayoutput[0]): {len(displayoutput[0])}")
-        #end = api.engine_time()
-        #area_grab_time += (end - start)
         
-        #start = api.engine_time()
         displayoutput = list(reversed(displayoutput))
-        #end = api.engine_time()
-        #reverse_area_time += (end - start)
 
-        #start = api.engine_time()
         for Y in range(len(displayoutput)):
             new_row = []
             for X in range(len(displayoutput)):
                 new_row.append(Bdr)
             casting_world.append(new_row)
-        #end = api.engine_time()
-        #new_casting_world_time += (end - start)
         
-        #start = api.engine_time()
         originals = displayoutput
         raycast_rays()
         displayoutput = casting_world
-        #end = api.engine_time()
-        #raycast_time += (end - start)
         
-        #start = api.engine_time()
         health_bar = calculate_health_bar(plr.health)
         displayoutput = stick_to_display(
             health_bar,
             displayoutput,
-            (99 - 20, 0)
+            (79, 0)
         )
-        #end = api.engine_time()
-        #health_bar_time += (end - start)
         
         if api.ispressed_key("e"):
             displayoutput = load_inventory(
@@ -1240,11 +1209,35 @@ def displaythread(screen):
                 plr.inventory
             )
         
-        #start = api.engine_time()
-        api.display(screen, displayoutput, 8, 6)
-        #end = api.engine_time()
-        #display_time += (end - start)
-        api.wait(1/60) # "60 fps"
+        # FUCK YOU, I'LL USE MY OWN RENDERING ENGINE RAHHHHHHHH
+        # WE RIDE AT DAWWWNNN BITCHEEEEESSSSSSS
+        for Y in range(len(displayoutput)):
+            Y_blocks = displayoutput[Y]
+            
+            for X in range(len(Y_blocks)):
+                block: api.block = displayoutput[Y][X]
+                blockimage = api.Color(block.image)
+                
+                if not api.reachableindex(sprites, block.varname):
+                    api.draw_rectangle(
+                        screen,
+                        blockimage,
+                        X * 8,
+                        Y * 6,
+                        8,
+                        6
+                    )
+                else:
+                    screen.blit(source=sprites[block.varname], dest=(X * 8, Y * 6))
+        
+        #for surface_data in blits_left:
+        #    screen.blit(source=surface_data["surface"], dest=surface_data["coordinates"])
+        
+        api.update_screen()
+        
+        # haha fuck the framerate cap
+        #api.display(screen, displayoutput, 8, 6)
+        #api.wait(1/60) # "60 fps"
         frames += 1
         # How does this work again
         # lmao this shit ain't even CLOSE to 60 fps it runs at *~15*

@@ -1,4 +1,4 @@
-"""LuxOS Game Engine. *THE* GOAT."""
+"""why am i maintaining this version again? oh, right, the generator.py."""
 # Loading
 
 import time
@@ -449,13 +449,45 @@ def playaudioabs(absolutepathtofile: str):
 
 
 # Set Display Resolution among some other things.
-def setres(width=800, height=600, flags=0, depth=0, display=0, vsync=0):
+def setres(width=800, height=600, flags=0, depth=0, display=0, vsync=0) -> pygame.display:
     # Width = width of the screen
     # Height = height of the screen
     # I honestly have no idea what flags, depth, and display do.
     # Vsync = Vertical Sync, prevents screen tearing but does take additional GPU resources.
+    # or at least i think that's what vsync means
     screen = pygame.display.set_mode((width, height), flags, depth, display, vsync)
     return screen
+
+
+# Make a Surface.
+def Surface(
+    size: tuple[int, int],
+    flags: int = 0,
+    depth: int = 0,
+    masks: int = 0
+) -> pygame.Surface:
+    """Size is just tuple(width, height).\nDon't know what flags, depth, and masks are? I don't either."""
+    return pygame.Surface(size, flags, depth, masks)
+
+
+# draw some shit
+def draw_rectangle(
+    surface: pygame.Surface,
+    color: tuple[int, int, int], # type: ignore
+    X: int,
+    Y: int,
+    width: int,
+    height: int
+):
+    """Draws a {color}-colored rectangle {width} wide and {height} tall at {X, Y} on {surface}.
+    Do you understand? No? It's just pygame.draw.rect."""
+    pygame.draw.rect(surface, color, (X, Y, width, height))
+
+
+# literally just pygame.Color
+def Color(hex_code):
+    """Takes a hex code (like #0000FF) and turns it into an RGB tuple."""
+    return pygame.Color(hex_code)
 
 
 # Set a block's saturation according to its light level.
@@ -498,7 +530,9 @@ def display(
 ):
     """screen is obtained through api.setres
     newscreen is a list of lists, with higher indexes more at the bottom of the map.
-    widthofeachblock and heightofeachblock are self-explanatory."""
+    widthofeachblock and heightofeachblock are self-explanatory.
+    
+    This is a very basic rendering engine. You are advised to make your own."""
     Y = 0
     for Ycoord in newscreen:  # Selects a list from newscreen.
         width_is_due = False
@@ -533,7 +567,9 @@ def display(
             
             duewidthofeachblock += widthofeachblock
         Y += heightofeachblock
-    pygame.display.flip()  # Display the newly drawn screen on the window.
+    
+    pygame.display.flip() # Update the display
+    # the lack of triple quotes telling me what these functions do irritates me
 
 
 # Keyboard functions
@@ -650,7 +686,7 @@ class inventory:
         self.selected = self.slots["slot1"]
 
     # Shrink the inventory starting from the end
-    def shrinkinventory(self, slotnum: int):
+    def shrink(self, slotnum: int):
         """Shrink the inventory starting from the end."""
         for i in range(slotnum):
             
@@ -658,7 +694,7 @@ class inventory:
             self.slotnum -= 1
 
     # Make the inventory bigger
-    def enlargeinventory(self, slotnum: int, slotdata):
+    def enlarge(self, slotnum: int, slotdata):
         """Make the inventory bigger."""
         for slot_index in range(self.slotnum, slotnum + self.slotnum):
             
@@ -670,7 +706,7 @@ class inventory:
         
         self.slotnum += slotnum
     
-    def add_to_inventory(self, items: list) -> list:
+    def add(self, items: list) -> list:
         """Adds an item to the inventory and returns whatever couldn't be put in the inventory.
 
         Args:
@@ -711,12 +747,13 @@ class inventory:
             for slot_index in reverse_if_true(range(self.slotnum), index < 0):
                 
                 if self.slots[f"slot{slot_index}"] != None:
-                    not_none_index_count += 1
+                    not_none_index_count -= 1
                 
-                if not_none_index_count >= abs(index):
+                if not_none_index_count <= index:
                     
                     value = self.slots[f"slot{slot_index}"] # get val
                     self.slots[f"slot{slot_index}"] = None # remove val
+                    break
         
         else:
             value = self.slots[f"slot{index}"] # get val
@@ -889,12 +926,12 @@ class entity:
         replace: block,
         distance: int = 0,
         bypass_inventory: bool = True,
-        still_add_to_inventory: bool = True
+        still_add: bool = True
     ) -> list[list[block]]:
         """Break blocks up to a certain distance away from the entity.
         Will not break passable blocks, blocks which have "breakablebytool" set to False,
         or blocks when there is no free slot in the inventory unless bypass_inventory is True.
-        Will not add the block to the inventory when bypass_inventory is True unless still_add_to_inventory is True.
+        Will not add the block to the inventory when bypass_inventory is True unless still_add is True.
         If distance or entity.reach is over 1, will place on all passable blocks in the way similar to entity.move.
         
         Args:
@@ -902,7 +939,7 @@ class entity:
             data (list[list[block]]): The world around the entity.
             distance (int, optional): The name. Defaults to the entity's reach attribute if it's 0.
             bypass_inventory (bool, optional): It will not add items to the inventory automatically when this value is True. Defaults to True.
-            still_add_to_inventory (bool, optional): It will add items to the inventory and keep breaking blocks regardless of inventory fullness if this value is True. Defaults to True.
+            still_add (bool, optional): It will add items to the inventory and keep breaking blocks regardless of inventory fullness if this value is True. Defaults to True.
 
         Returns:
             2D Array: The world after the entity has broken that block in front of it.
@@ -919,6 +956,7 @@ class entity:
         
         for i in range(usedistance):
             
+            # god damn i don't drink but sometimes i write like i do
             match direction:
                 case "w":
                     dy -= 1
@@ -931,6 +969,7 @@ class entity:
             
             X = self.position[0] + dx
             Y = self.position[1] + dy
+            # i mean the logic makes sense but it could've been done better
 
             # Main -
 
@@ -941,10 +980,10 @@ class entity:
                 break
             
             if not bypass_inventory:
-                if not self.inventory.add_to_inventory([data[Y][X]]):
+                if not self.inventory.add([data[Y][X].drop]):
                     data[Y][X] = replace
-            elif still_add_to_inventory:
-                self.inventory.add_to_inventory([data[Y][X]])
+            elif still_add:
+                self.inventory.add([data[Y][X].drop])
                 data[Y][X] = replace
             else:
                 data[Y][X] = replace
@@ -991,8 +1030,11 @@ class entity:
         else:
             usedistance = self.reach
         
+        # Main -
+        
         for i in range(usedistance):
             
+            # ah it's only being used 1 or 2 times anyway
             match direction:
                 case "w":
                     dy -= 1
@@ -1005,9 +1047,7 @@ class entity:
             
             X = self.position[0] + dx
             Y = self.position[1] + dy
-
-            # Main -
-
+            
             if not data[Y][X].passable and not ignore_passable:
                 break
             
@@ -1021,6 +1061,9 @@ class entity:
                 break
             
             data[Y][X] = item_to_block_dict[popped_item]
+            
+            X += dx
+            Y += dy
 
         # Return -
 
@@ -1080,6 +1123,8 @@ class entity:
                     data[Y][X] = self
                     self.position[1] += dy
                     self.position[0] += dx
+                    Y += dy
+                    X += dx
 
         # Return -
 

@@ -1,4 +1,12 @@
-"""LuxOS Game Engine. *THE* GOAT."""
+"""LuxOS Game Engine. *THE* GOAT.
+It has a bunch of classes (with methods) that you can use for your game,
+along with world generation functions and a VERY basic rendering engine.
+Since the rendering engine is very basic, you are given the tools to
+write your own rendering engine, namely ""
+
+"powered by pygame and self-hatred :)"
+    -Luxof
+"""
 # Loading
 
 import time
@@ -449,13 +457,51 @@ def playaudioabs(absolutepathtofile: str):
 
 
 # Set Display Resolution among some other things.
-def setres(width=800, height=600, flags=0, depth=0, display=0, vsync=0):
+def setres(width=800, height=600, flags=0, depth=0, display=0, vsync=0) -> pygame.display:
     # Width = width of the screen
     # Height = height of the screen
     # I honestly have no idea what flags, depth, and display do.
     # Vsync = Vertical Sync, prevents screen tearing but does take additional GPU resources.
+    # or at least i think that's what vsync means
     screen = pygame.display.set_mode((width, height), flags, depth, display, vsync)
     return screen
+
+
+# Make a Surface.
+def Surface(
+    size: tuple[int, int],
+    flags: int = None,
+    depth: int = None,
+    masks = None
+) -> pygame.Surface:
+    """Size is just tuple(width, height).\nDon't know what flags, depth, and masks are? I don't either."""
+    return pygame.Surface(size)
+
+
+# draw some shit
+def draw_rectangle(
+    surface: pygame.Surface,
+    color: tuple[int, int, int], # type: ignore
+    X: int,
+    Y: int,
+    width: int,
+    height: int
+):
+    """Draws a {color}-colored rectangle {width} wide and {height} tall at {X, Y} on {surface}.
+    Do you understand? No? It's just pygame.draw.rect."""
+    pygame.draw.rect(surface, color, (X, Y, width, height))
+
+
+# literally just pygame.Color
+def Color(hex_code):
+    """Takes a hex code (like #0000FF) and turns it into an RGB tuple."""
+    return pygame.Color(hex_code)
+
+
+# update the screen
+def update_screen():
+    """Updates the screen."""
+    pygame.display.flip()
 
 
 # Set a block's saturation according to its light level.
@@ -498,7 +544,9 @@ def display(
 ):
     """screen is obtained through api.setres
     newscreen is a list of lists, with higher indexes more at the bottom of the map.
-    widthofeachblock and heightofeachblock are self-explanatory."""
+    widthofeachblock and heightofeachblock are self-explanatory.
+    
+    This is a very basic rendering engine. You are advised to make your own."""
     Y = 0
     for Ycoord in newscreen:  # Selects a list from newscreen.
         width_is_due = False

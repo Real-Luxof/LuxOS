@@ -1,45 +1,25 @@
 from ...integri.utilityfolder.blocks import *
+from api import Surface, Color
 
-black_black = placeholder_dry("#000000")
+# this is for the inventory don't mind this
+black = placeholder_dry("#0000f0")
 filler_black = placeholder_dry("#3F3F3F")
-black = placeholder_dry("#10121C")
-coal_dark_gray = placeholder_dry("#141414")
-stone_gray = placeholder_dry("#474747")
-coal_gray = placeholder_dry("#2E2E2E")
-iron_light_gray = placeholder_dry("#ABABAB")
-white = placeholder_dry("#FFFFFF")
-dirt_light_brown = placeholder_dry("#A26D3F")
-dirt_brown = placeholder_dry("#6E4C30")
-sand_yellow = placeholder_dry("#FFED7C")
-grass_green = placeholder_dry("#00A020")
-drs = placeholder_dry("#63101B") # drs = darker_spot
-dsp = placeholder_dry("#99192A") # dsp = dark_spot
-lsp = placeholder_dry("#EC273F") # lsp = light_spot
-TXT = placeholder_dry("#FFA2AC") # TXT = text
 
-none_row = [None, None, None, None, None, None, None]
-stone_row = [stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray]
-dirt_row = [dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown]
-grass_row = [grass_green, grass_green, grass_green, grass_green, grass_green, grass_green, grass_green]
-sand_row = [sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow, sand_yellow]
-iron_row = [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray]
 filler_black_row = [filler_black, filler_black, filler_black, filler_black, filler_black, filler_black, filler_black]
-filler_inv_row = [black_black]
-black_row = []
+filler_inv_row = [black]
 black_inv_row = []
 inventory_sprite = []
 inventory_sprite_slot_coords = []
 
 for i in range(20):
-    black_row.append(black)
-    black_inv_row.append(black_black)
+    black_inv_row.append(black)
 
 for i in range(21):
-    black_inv_row.append(black_black)
+    black_inv_row.append(black)
 
 for i in range(5):
     filler_inv_row += filler_black_row
-    filler_inv_row.append(black_black)
+    filler_inv_row.append(black)
 
 inventory_sprite.append(black_inv_row)
 for i in range(5):
@@ -51,103 +31,178 @@ for i in range(5):
     for j in range(5):
         inventory_sprite_slot_coords.append(((i * 8) + 1, (j * 8) + 1))
 
-health_bar_full = [
-    [None] + black_row,
-    [black, drs, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
-    [black, drs, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
-    [black, drs, drs, dsp, dsp, dsp, dsp, dsp, lsp, lsp, lsp, TXT, TXT, TXT, TXT, lsp, TXT, lsp, lsp, TXT, lsp],
-    [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, TXT, TXT, lsp, lsp],
-    [black, drs, drs, dsp, dsp, dsp, dsp, lsp, lsp, lsp, lsp, TXT, lsp, lsp, TXT, lsp, TXT, lsp, lsp, lsp, lsp],
-    [None] + black_row
-]
+all_sprites_text = f"""health_bar_full
+#0000f0 {"#10121C "*19}#10121C
+#10121C {"#63101B "*4}{"#99192A "*4}{"#EC273F "*2}#FFA2AC {"#EC273F "*2}#FFA2AC #EC273F {"#FFA2AC "*3}#EC273F #EC273F
+#10121C {"#63101B "*3}{"#99192A "*4}{"#EC273F "*3}#FFA2AC {"#EC273F "*2}#FFA2AC #EC273F #FFA2AC {"#EC273F "*2}#FFA2AC #EC273F
+#10121C {"#63101B "*3}{"#99192A "*4}{"#EC273F "*3}{"#FFA2AC "*4}#EC273F #FFA2AC {"#EC273F "*2}#FFA2AC #EC273F
+#10121C {"#63101B "*2}{"#99192A "*4}{"#EC273F "*4}#FFA2AC {"#EC273F "*2}#FFA2AC #EC273F {"#FFA2AC "*3}#EC273F #EC273F #EC273F
+#10121C {"#63101B "*2}{"#99192A "*4}{"#EC273F "*4}#FFA2AC {"#EC273F "*2}#FFA2AC #EC273F #FFA2AC {"#EC273F "*3}#EC273F
+#0000f0 {"#10121C "*19}#10121C
+END
+Coal
+#0000f0 #0000f0 #0000f0 #0000f0 #0000f0 #0000f0 #0000f0
+#0000f0 #0000f0 #0000f0 #0000f0 #0000f0 #0000f0 #0000f0
+#0000f0 #0000f0 #0000f0 #333333 #0000f0 #0000f0 #0000f0
+#0000f0 #0000f0 #2e2e2e #333333 #0000f0 #0000f0 #0000f0
+#0000f0 #2e2e2e #262626 #2e2e2e #333333 #0000f0 #0000f0
+#333333 #262626 #262626 #262626 #2e2e2e #333333 #0000f0
+#262626 #262626 #141414 #141414 #262626 #2e2e2e #333333
+END
+Iron ore
+#525252 #5e5e5e #525252 #5e5e5e #525252 #999999 #999999 
+#5e5e5e #525252 #454545 #525252 #525252 #5e5e5e #454545 
+#525252 #5e5e5e #454545 #5e5e5e #5e5e5e #525252 #525252 
+#5e5e5e #999999 #525252 #525252 #454545 #525252 #999999 
+#454545 #525252 #5e5e5e #454545 #454545 #525252 #999999 
+#999999 #454545 #525252 #999999 #454545 #454545 #525252 
+#5e5e5e #5e5e5e #454545 #5e5e5e #999999 #999999 #525252
+END
+Stone
+#525252 #5e5e5e #525252 #5e5e5e #525252 #383838 #383838
+#5e5e5e #525252 #454545 #525252 #525252 #5e5e5e #454545
+#525252 #5e5e5e #454545 #5e5e5e #5e5e5e #525252 #525252
+#5e5e5e #383838 #525252 #525252 #454545 #525252 #383838
+#454545 #525252 #5e5e5e #454545 #454545 #525252 #383838
+#383838 #454545 #525252 #383838 #454545 #454545 #525252
+#5e5e5e #5e5e5e #454545 #5e5e5e #383838 #383838 #525252
+END
+Dirt
+#78512f #6e4c30 #6e4c30 #593e27 #593e27 #45301e #593e27 
+#6e4c30 #78512f #78512f #593e27 #78512f #593e27 #6e4c30 
+#78512f #593e27 #593e27 #78512f #593e27 #6e4c30 #593e27 
+#593e27 #6e4c30 #6e4c30 #45301e #45301e #593e27 #6e4c30 
+#6e4c30 #593e27 #593e27 #78512f #593e27 #593e27 #45301e 
+#45301e #593e27 #78512f #6e4c30 #78512f #593e27 #78512f 
+#593e27 #78512f #593e27 #593e27 #593e27 #78512f #6e4c30
+END
+Grass
+#5ab552 #61c258 #5ab552 #61c258 #5ab552 #52a64b #61c258
+#61c258 #52a64b #61c258 #5ab552 #61c258 #5ab552 #5ab552
+#5ab552 #5ab552 #52a64b #52a64b #593e27 #52a64b #52a64b
+#52a64b #6e4c30 #52a64b #45301e #45301e #5ab552 #52a64b
+#6e4c30 #593e27 #593e27 #78512f #593e27 #593e27 #61c258
+#45301e #593e27 #78512f #6e4c30 #78512f #593e27 #78512f
+#593e27 #78512f #593e27 #593e27 #593e27 #78512f #6e4c30
+END
+Sand
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+END
+Iron bar
+{"#ABABAB "*5}#FFFFFF #ABABAB
+#ABABAB #FFFFFF #ABABAB{" #FFFFFF"*4}
+{"#ABABAB "*5}#FFFFFF #ABABAB
+{"#ABABAB "*6}#ABABAB
+{"#ABABAB "*5}#FFFFFF #ABABAB
+{"#ABABAB "*6}#ABABAB
+{"#ABABAB "*6}#ABABAB
+END
+Drt
+#78512f #6e4c30 #6e4c30 #593e27 #593e27 #45301e #593e27 #593e27
+#6e4c30 #78512f #78512f #593e27 #78512f #593e27 #6e4c30 #6e4c30
+#78512f #593e27 #593e27 #78512f #593e27 #6e4c30 #593e27 #45301e
+#593e27 #6e4c30 #6e4c30 #45301e #45301e #593e27 #6e4c30 #6e4c30
+#6e4c30 #593e27 #593e27 #78512f #593e27 #593e27 #45301e #78512f
+#45301e #593e27 #78512f #6e4c30 #78512f #593e27 #78512f #593e27
+END
+Grs
+#61c258 #61c258 #52a64b #5ab552 #5ab552 #52a64b #5ab552 #52a64b
+#61c258 #52a64b #5ab552 #52a64b #5ab552 #5ab552 #52a64b #61c258
+#61c258 #52a64b #61c258 #61c258 #593e27 #52a64b #61c258 #45301e
+#593e27 #61c258 #6e4c30 #45301e #45301e #61c258 #6e4c30 #6e4c30
+#6e4c30 #593e27 #593e27 #78512f #593e27 #593e27 #45301e #78512f
+#45301e #593e27 #78512f #6e4c30 #78512f #593e27 #78512f #593e27
+END
+Stn
+#525252 #5e5e5e #525252 #5e5e5e #525252 #383838 #383838 #525252
+#5e5e5e #525252 #454545 #525252 #525252 #5e5e5e #454545 #5e5e5e
+#525252 #5e5e5e #454545 #5e5e5e #5e5e5e #525252 #525252 #454545
+#5e5e5e #383838 #525252 #525252 #454545 #525252 #383838 #454545
+#454545 #525252 #5e5e5e #454545 #454545 #525252 #383838 #525252
+#383838 #454545 #525252 #383838 #454545 #454545 #525252 #454545
+END
+plr
+#f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833
+#f3a833 #f3a833 #ffffff #f3a833 #f3a833 #ffffff #f3a833 #f3a833
+#f3a833 #f3a833 #ffffff #f3a833 #f3a833 #ffffff #f3a833 #f3a833
+#f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833
+#f3a833 #ffffff #f3a833 #f3a833 #f3a833 #f3a833 #ffffff #f3a833
+#f3a833 #f3a833 #ffffff #ffffff #ffffff #ffffff #f3a833 #f3a833
+END"""
+all_sprites_text = all_sprites_text.split("\n")
 
-coal_item = [
-    none_row,
-    none_row,
-    none_row,
-    [None, None, coal_gray, coal_gray, None, None, None],
-    [None, coal_gray, coal_gray, coal_gray, coal_gray, None, None],
-    [coal_gray, coal_gray, coal_dark_gray, coal_dark_gray, coal_gray, coal_gray, None],
-    [coal_gray, coal_dark_gray, coal_dark_gray, coal_dark_gray, coal_dark_gray, coal_gray, coal_gray]
-]
+sprites = {}
 
-iron_ore_item = [
-    stone_row,
-    [stone_gray, iron_light_gray, stone_gray, stone_gray, stone_gray, stone_gray, stone_gray],
-    [stone_gray, stone_gray, stone_gray, stone_gray, stone_gray, iron_light_gray, stone_gray],
-    stone_row,
-    [stone_gray, stone_gray, iron_light_gray, stone_gray, stone_gray, stone_gray, stone_gray],
-    [stone_gray, stone_gray, stone_gray, stone_gray, iron_light_gray, stone_gray, stone_gray],
-    stone_row
-]
+current_sprite_name = ""
+current_sprite_contents: list[list[placeholder_dry]] = []
+reading_sprite = False
 
-stone_item = [
-    stone_row,
-    stone_row,
-    stone_row,
-    stone_row,
-    stone_row,
-    stone_row,
-    stone_row
-]
+for line in all_sprites_text:
+    
+    if line == "END":
+        if reading_sprite:
+            sprites[current_sprite_name] = current_sprite_contents
+            current_sprite_contents = []
+            reading_sprite = False
+        continue
+    
+    elif not line.startswith("#"):
+        if not reading_sprite:
+            current_sprite_name = line
+            current_sprite_contents.append([])
+            reading_sprite = True
+        else:
+            sprites[current_sprite_name] = current_sprite_contents
+            
+            current_sprite_name = ""
+            current_sprite_contents = []
+            reading_sprite = False
+    
+    elif reading_sprite:
+        for hex_code in line.split(" "):
+            if hex_code == "":
+                continue
+            elif hex_code == "#0000f0":
+                current_sprite_contents[-1].append(None)
+            else:
+                current_sprite_contents[-1].append(Color(hex_code))
+            #elif current_sprite_name != "health_bar_full":
+            #    current_sprite_contents[-1].append(Color(f"#{hex_code}"))
+            #else:
+            #    current_sprite_contents.append(f"#{hex_code}")
+        current_sprite_contents.append([])
 
-dirt_item = [
-    dirt_row,
-    [dirt_brown, dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown, dirt_brown],
-    [dirt_light_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_light_brown],
-    dirt_row,
-    [dirt_brown, dirt_brown, dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown],
-    dirt_row,
-    [dirt_brown, dirt_brown, dirt_light_brown, dirt_brown, dirt_brown, dirt_brown, dirt_brown]
-]
+# Now to turn all those arrays into surfaces.
+# there is a better way to do this but for readability i want surface creation and the hex interpreter
+# to be at different parts of the file.
+for key in sprites.keys():
+    
+    width = len(sprites[key][0]) 
+    height = len(sprites[key])
+#    if key == "health_bar_full":
+#        width = 21
+#        height = 7
+#    elif len(sprites[key]) > 6:
+#        width = 7
+#        height = 7
+#    else:
+#        width = 8
+#        height = 6
 
-grass_item = [
-    grass_row,
-    grass_row,
-    [grass_green, dirt_brown, grass_green, grass_green, grass_green, grass_green, dirt_brown],
-    [dirt_brown, dirt_brown, dirt_brown, grass_green, dirt_brown, dirt_brown, dirt_brown],
-    dirt_row,
-    dirt_row,
-    dirt_row
-]
+    new_sprite = Surface((width, height))
 
-sand_item = [
-    sand_row,
-    sand_row,
-    sand_row,
-    sand_row,
-    sand_row,
-    sand_row,
-    sand_row
-]
-
-iron_bar_item = [
-    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
-    [iron_light_gray, white, iron_light_gray, white, white, white, white],
-    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
-    iron_row,
-    [iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, iron_light_gray, white, iron_light_gray],
-    iron_row,
-    iron_row
-]
-
-#whole_lotta_nothing = [
-#    none_row,
-#    none_row,
-#    none_row,
-#    none_row,
-#    none_row,
-#    none_row,
-#    none_row
-#]
-
-sprites = {
-    #"None": whole_lotta_nothing,
-    "Grass": grass_item,
-    "Stone": stone_item,
-    "Dirt": dirt_item,
-    "Sand": sand_item,
-    "Iron ore": iron_ore_item,
-    "Coal": coal_item,
-    "Iron bar": iron_bar_item
-}
+    for Y in range(len(sprites[key])):
+        
+        for X in range(len(sprites[key][Y])):
+            if sprites[key][Y][X] != None:
+                new_sprite.set_at((X, Y), sprites[key][Y][X])
+            else:
+                new_sprite.set_at((X, Y), (0, 0, 0, 0))
+    
+    sprites[key] = new_sprite
