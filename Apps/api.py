@@ -2,7 +2,8 @@
 It has a bunch of classes (with methods) that you can use for your game,
 along with world generation functions and a VERY basic rendering engine.
 Since the rendering engine is very basic, you are given the tools to
-write your own rendering engine, namely ""
+write your own rendering engine, namely "Surface", "draw_rectangle",
+"update_screen", and "Color".
 
 "powered by pygame and self-hatred :)"
     -Luxof
