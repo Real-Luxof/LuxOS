@@ -37,13 +37,14 @@ def terminal():
         title()
         rawinput = input("> ")
         
-        cinput = str.lower(rawinput).split()
+        cinput = rawinput.split()
         
         if cinput == []:
             continue
         elif cinput[0] not in commands:
             continue
         
+        cinput[0] = str.lower(cinput[0])
         
         if cinput[0] == "quit":
             return 0
@@ -115,6 +116,8 @@ def terminal():
             
             files = listdir("Apps")
             files = api.stripimportant(files, ["api.py", "__pycache__", "gamedata"])
+            print(files)
+            print(cinput)
             
             if cinput[1] not in files:
                 print("No such app found. Did you make a typo?")

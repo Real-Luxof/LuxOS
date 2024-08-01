@@ -624,10 +624,10 @@ print("Checking sprites.py..")
 if not api.checkpath(integrisprites):
     with open(integrisprites, "w+") as sprites:
         data = """from ...integri.utilityfolder.blocks import *
-from api import Surface
+from api import Surface, Color
 
 # this is for the inventory don't mind this
-black = placeholder_dry("#000000")
+black = placeholder_dry("#0000f0")
 filler_black = placeholder_dry("#3F3F3F")
 
 filler_black_row = [filler_black, filler_black, filler_black, filler_black, filler_black, filler_black, filler_black]
@@ -656,123 +656,128 @@ for i in range(5):
     for j in range(5):
         inventory_sprite_slot_coords.append(((i * 8) + 1, (j * 8) + 1))
 
-all_sprites_text = f\"\"\"
-health_bar
-#NONE{"#10121C"*20}
-#10121C{"#63101B"*4}{"#99192A"*4}{"#EC273F"*2}#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F{"#FFA2AC"*3}{"#EC273F"*2}
-#10121C{"#63101B"*3}{"#99192A"*4}{"#EC273F"*3}#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F
-#10121C{"#63101B"*2}{"#99192A"*4}{"#EC273F"*3}{"#FFA2AC"*4}#EC273F#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F
-#10121C{"#63101B"*2}{"#99192A"*4}{"#EC273F"*4}#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F{"#FFA2AC"*3}#EC273F{"#EC273F"*2}
-#10121C{"#63101B"*2}{"#99192A"*4}{"#EC273F"*4}#FFA2AC{"#EC273F"*2}#FFA2AC#EC273F#FFA2AC{"#EC273F"*4}
-#NONE{"#10121C"*20}
-
+all_sprites_text = f\"\"\"health_bar_full
+#0000f0 {"#10121C "*19}#10121C
+#10121C {"#63101B "*4}{"#99192A "*4}{"#EC273F "*2}#FFA2AC {"#EC273F "*2}#FFA2AC #EC273F {"#FFA2AC "*3}#EC273F #EC273F
+#10121C {"#63101B "*3}{"#99192A "*4}{"#EC273F "*3}#FFA2AC {"#EC273F "*2}#FFA2AC #EC273F #FFA2AC {"#EC273F "*2}#FFA2AC #EC273F
+#10121C {"#63101B "*3}{"#99192A "*4}{"#EC273F "*3}{"#FFA2AC "*4}#EC273F #FFA2AC {"#EC273F "*2}#FFA2AC #EC273F
+#10121C {"#63101B "*2}{"#99192A "*4}{"#EC273F "*4}#FFA2AC {"#EC273F "*2}#FFA2AC #EC273F {"#FFA2AC "*3}#EC273F #EC273F #EC273F
+#10121C {"#63101B "*2}{"#99192A "*4}{"#EC273F "*4}#FFA2AC {"#EC273F "*2}#FFA2AC #EC273F #FFA2AC {"#EC273F "*3}#EC273F
+#0000f0 {"#10121C "*19}#10121C
+END
 Coal
-{"#NONE"*7}
-{"#NONE"*7}
-{"#NONE"*7}
-{"#NONE"*2}
-#NONE{"#2E2E2E"*2}{"#NONE"*3}
-#NONE{"#2E2E2E"*4}{"#NONE"*2}
-{"#2E2E2E"*2}{"#141414"*2}{"#2E2E2E"*2}#NONE
-#2E2E2E{"#141414"*4}{"#2E2E2E"*2}
-
+#0000f0 #0000f0 #0000f0 #0000f0 #0000f0 #0000f0 #0000f0
+#0000f0 #0000f0 #0000f0 #0000f0 #0000f0 #0000f0 #0000f0
+#0000f0 #0000f0 #0000f0 #333333 #0000f0 #0000f0 #0000f0
+#0000f0 #0000f0 #2e2e2e #333333 #0000f0 #0000f0 #0000f0
+#0000f0 #2e2e2e #262626 #2e2e2e #333333 #0000f0 #0000f0
+#333333 #262626 #262626 #262626 #2e2e2e #333333 #0000f0
+#262626 #262626 #141414 #141414 #262626 #2e2e2e #333333
+END
 Iron ore
-{"#474747"*7}
-#474747#ABABAB{"#474747"*5}
-{"#474747"*5}#ABABAB#474747
-{"#474747"*7}
-{"474747"*2}#ABABAB{"474747"*4}
-{"#474747"*4}#ABABAB{"#474747"*2}
-{"#474747"*7}
-
+#525252 #5e5e5e #525252 #5e5e5e #525252 #999999 #999999 
+#5e5e5e #525252 #454545 #525252 #525252 #5e5e5e #454545 
+#525252 #5e5e5e #454545 #5e5e5e #5e5e5e #525252 #525252 
+#5e5e5e #999999 #525252 #525252 #454545 #525252 #999999 
+#454545 #525252 #5e5e5e #454545 #454545 #525252 #999999 
+#999999 #454545 #525252 #999999 #454545 #454545 #525252 
+#5e5e5e #5e5e5e #454545 #5e5e5e #999999 #999999 #525252
+END
 Stone
-#525252#5e5e5e#525252#5e5e5e#525252#383838#383838
-#5e5e5e#525252#454545#525252#525252#5e5e5e#454545
-#525252#5e5e5e#454545#5e5e5e#5e5e5e#525252#525252
-#5e5e5e#383838#525252#525252#454545#525252#383838
-#454545#525252#5e5e5e#454545#454545#525252#383838
-#383838#454545#525252#383838#454545#454545#525252
-#5e5e5e#5e5e5e#454545#5e5e5e#383838#383838#525252
-
+#525252 #5e5e5e #525252 #5e5e5e #525252 #383838 #383838
+#5e5e5e #525252 #454545 #525252 #525252 #5e5e5e #454545
+#525252 #5e5e5e #454545 #5e5e5e #5e5e5e #525252 #525252
+#5e5e5e #383838 #525252 #525252 #454545 #525252 #383838
+#454545 #525252 #5e5e5e #454545 #454545 #525252 #383838
+#383838 #454545 #525252 #383838 #454545 #454545 #525252
+#5e5e5e #5e5e5e #454545 #5e5e5e #383838 #383838 #525252
+END
 Dirt
-#2f5178#304c6e#304c6e#273e59#273e59#1e3045#273e59
-#304c6e#2f5178#2f5178#273e59#2f5178#273e59#304c6e
-#2f5178#273e59#273e59#2f5178#273e59#304c6e#273e59
-#273e59#304c6e#304c6e#1e3045#1e3045#273e59#304c6e
-#304c6e#273e59#273e59#2f5178#273e59#273e59#1e3045
-#1e3045#273e59#2f5178#304c6e#2f5178#273e59#2f5178
-#273e59#2f5178#273e59#273e59#273e59#2f5178#304c6e
-
+#78512f #6e4c30 #6e4c30 #593e27 #593e27 #45301e #593e27 
+#6e4c30 #78512f #78512f #593e27 #78512f #593e27 #6e4c30 
+#78512f #593e27 #593e27 #78512f #593e27 #6e4c30 #593e27 
+#593e27 #6e4c30 #6e4c30 #45301e #45301e #593e27 #6e4c30 
+#6e4c30 #593e27 #593e27 #78512f #593e27 #593e27 #45301e 
+#45301e #593e27 #78512f #6e4c30 #78512f #593e27 #78512f 
+#593e27 #78512f #593e27 #593e27 #593e27 #78512f #6e4c30
+END
 Grass
-#52b55a#58c261#52b55a#58c261#52b55a#4ba652#58c261
-#58c261#4ba652#58c261#52b55a#58c261#52b55a#52b55a
-#52b55a#52b55a#4ba652#4ba652#273e59#4ba652#4ba652
-#4ba652#304c6e#4ba652#1e3045#1e3045#52b55a#4ba652
-#304c6e#273e59#273e59#2f5178#273e59#273e59#58c261
-#1e3045#273e59#2f5178#304c6e#2f5178#273e59#2f5178
-#273e59#2f5178#273e59#273e59#273e59#2f5178#304c6e
-
+#5ab552 #61c258 #5ab552 #61c258 #5ab552 #52a64b #61c258
+#61c258 #52a64b #61c258 #5ab552 #61c258 #5ab552 #5ab552
+#5ab552 #5ab552 #52a64b #52a64b #593e27 #52a64b #52a64b
+#52a64b #6e4c30 #52a64b #45301e #45301e #5ab552 #52a64b
+#6e4c30 #593e27 #593e27 #78512f #593e27 #593e27 #61c258
+#45301e #593e27 #78512f #6e4c30 #78512f #593e27 #78512f
+#593e27 #78512f #593e27 #593e27 #593e27 #78512f #6e4c30
+END
 Sand
-{f"{"#FFED7C"*7}"*7}
-
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+{"#FFED7C "*6}#FFED7C
+END
 Iron bar
-{"#ABABAB"*5}#FFFFFF#ABABAB
-#ABABAB#FFFFFF#ABABAB{"#FFFFFF"*4}
-{"#ABABAB"*5}#FFFFFF#ABABAB
-{"#ABABAB"*7}
-{"#ABABAB"*5}#FFFFFF#ABABAB
-{"#ABABAB"*7}
-{"#ABABAB"*7}
-
+{"#ABABAB "*5}#FFFFFF #ABABAB
+#ABABAB #FFFFFF #ABABAB{" #FFFFFF"*4}
+{"#ABABAB "*5}#FFFFFF #ABABAB
+{"#ABABAB "*6}#ABABAB
+{"#ABABAB "*5}#FFFFFF #ABABAB
+{"#ABABAB "*6}#ABABAB
+{"#ABABAB "*6}#ABABAB
+END
 Drt
-#2f5178#304c6e#304c6e#273e59#273e59#1e3045#273e59#1e3045
-#304c6e#2f5178#2f5178#273e59#2f5178#273e59#304c6e#273e59
-#2f5178#273e59#273e59#2f5178#273e59#304c6e#273e59#1e3045
-#273e59#304c6e#304c6e#1e3045#1e3045#273e59#304c6e#273e59
-#304c6e#273e59#273e59#2f5178#273e59#273e59#1e3045#304c6e
-#1e3045#273e59#2f5178#304c6e#2f5178#273e59#2f5178#273e59
-
+#78512f #6e4c30 #6e4c30 #593e27 #593e27 #45301e #593e27 #593e27
+#6e4c30 #78512f #78512f #593e27 #78512f #593e27 #6e4c30 #6e4c30
+#78512f #593e27 #593e27 #78512f #593e27 #6e4c30 #593e27 #45301e
+#593e27 #6e4c30 #6e4c30 #45301e #45301e #593e27 #6e4c30 #6e4c30
+#6e4c30 #593e27 #593e27 #78512f #593e27 #593e27 #45301e #78512f
+#45301e #593e27 #78512f #6e4c30 #78512f #593e27 #78512f #593e27
+END
 Grs
-#4ba652#58c261#58c261#4ba652#52b55a#52b55a#58c261#58c261
-#52b55a#4ba652#4ba652#52b55a#52b55a#4ba652#52b55a#58c261
-#4ba652#273e59#273e59#4ba652#58c261#4ba652#58c261#1e3045
-#273e59#304c6e#304c6e#1e3045#1e3045#58c261#304c6e#273e59
-#304c6e#273e59#273e59#2f5178#273e59#273e59#1e3045#304c6e
-#1e3045#273e59#2f5178#304c6e#2f5178#273e59#2f5178#273e59
-
+#61c258 #61c258 #52a64b #5ab552 #5ab552 #52a64b #5ab552 #52a64b
+#61c258 #52a64b #5ab552 #52a64b #5ab552 #5ab552 #52a64b #61c258
+#61c258 #52a64b #61c258 #61c258 #593e27 #52a64b #61c258 #45301e
+#593e27 #61c258 #6e4c30 #45301e #45301e #61c258 #6e4c30 #6e4c30
+#6e4c30 #593e27 #593e27 #78512f #593e27 #593e27 #45301e #78512f
+#45301e #593e27 #78512f #6e4c30 #78512f #593e27 #78512f #593e27
+END
 Stn
-#525252#5e5e5e#525252#5e5e5e#525252#383838#383838#525252
-#5e5e5e#525252#454545#525252#525252#5e5e5e#454545#454545
-#525252#5e5e5e#454545#5e5e5e#5e5e5e#525252#525252#5e5e5e
-#5e5e5e#383838#525252#525252#454545#525252#383838#383838
-#454545#525252#5e5e5e#454545#454545#525252#383838#525252
-#383838#454545#525252#383838#454545#454545#525252#525252
-\"\"\".split("\n")
+#525252 #5e5e5e #525252 #5e5e5e #525252 #383838 #383838 #525252
+#5e5e5e #525252 #454545 #525252 #525252 #5e5e5e #454545 #5e5e5e
+#525252 #5e5e5e #454545 #5e5e5e #5e5e5e #525252 #525252 #454545
+#5e5e5e #383838 #525252 #525252 #454545 #525252 #383838 #454545
+#454545 #525252 #5e5e5e #454545 #454545 #525252 #383838 #525252
+#383838 #454545 #525252 #383838 #454545 #454545 #525252 #454545
+END
+plr
+#f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833
+#f3a833 #f3a833 #ffffff #f3a833 #f3a833 #ffffff #f3a833 #f3a833
+#f3a833 #f3a833 #ffffff #f3a833 #f3a833 #ffffff #f3a833 #f3a833
+#f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833 #f3a833
+#f3a833 #ffffff #f3a833 #f3a833 #f3a833 #f3a833 #ffffff #f3a833
+#f3a833 #f3a833 #ffffff #ffffff #ffffff #ffffff #f3a833 #f3a833
+END\"\"\"
+all_sprites_text = all_sprites_text.split("\n")
 
 sprites = {}
 
-# Function to convert hex to RGB
-# thanks bing chat
-# never even thought of doing it this way, kinda crazy
-def hex_to_rgb(hex_code):
-    hex_code = hex_code.lstrip('#')
-    return tuple(int(hex_code[i:i+2], 16) for i in (0, 2, 4))
-
-# this i wrote myself
-# you can tell because it doesn't have weird python string manipulation int tuple thingmagicks
+current_sprite_name = ""
+current_sprite_contents: list[list[placeholder_dry]] = []
+reading_sprite = False
 
 for line in all_sprites_text:
-    current_sprite_name = ""
-    current_sprite_contents: list[list[placeholder_dry]] = []
-    reading_sprite = False
     
-    if line == "":
+    if line == "END":
         if reading_sprite:
             sprites[current_sprite_name] = current_sprite_contents
+            current_sprite_contents = []
             reading_sprite = False
         continue
     
-    elif "#" not in line:
+    elif not line.startswith("#"):
         if not reading_sprite:
             current_sprite_name = line
             current_sprite_contents.append([])
@@ -785,45 +790,49 @@ for line in all_sprites_text:
             reading_sprite = False
     
     elif reading_sprite:
-        for hex_code in line.split("#"):
-            if hex_code == "NONE":
+        for hex_code in line.split(" "):
+            if hex_code == "":
+                continue
+            elif hex_code == "#0000f0":
                 current_sprite_contents[-1].append(None)
             else:
-                current_sprite_contents[-1].append(hex_to_rgb(f"#{hex_code}"))
+                current_sprite_contents[-1].append(Color(hex_code))
             #elif current_sprite_name != "health_bar_full":
-            #    current_sprite_contents[-1].append(hex_to_rgb(f"#{hex_code}"))
+            #    current_sprite_contents[-1].append(Color(f"#{hex_code}"))
             #else:
             #    current_sprite_contents.append(f"#{hex_code}")
         current_sprite_contents.append([])
-
 
 # Now to turn all those arrays into surfaces.
 # there is a better way to do this but for readability i want surface creation and the hex interpreter
 # to be at different parts of the file.
 for key in sprites.keys():
-    # i kinda need the health bar to be left as-is
-    if current_sprite_name == "health_bar_full":
-        continue
     
-    # this just checks if it's an item, not a block
-    if len(sprites[key]) > 6:
-        width = 7
-        height = 7
-    else:
-        width = 8
-        height = 6
+    width = len(sprites[key][0]) 
+    height = len(sprites[key])
+#    if key == "health_bar_full":
+#        width = 21
+#        height = 7
+#    elif len(sprites[key]) > 6:
+#        width = 7
+#        height = 7
+#    else:
+#        width = 8
+#        height = 6
 
     new_sprite = Surface((width, height))
 
     for Y in range(len(sprites[key])):
         
-        for X in range(sprites[key][Y]):
-            
-            new_sprite.set_at((X, Y), sprites[key][Y][X])
+        for X in range(len(sprites[key][Y])):
+            if sprites[key][Y][X] != None:
+                new_sprite.set_at((X, Y), sprites[key][Y][X])
+            else:
+                new_sprite.set_at((X, Y), (0, 0, 0, 0))
     
     sprites[key] = new_sprite
 """
-    sprites.write(data)
+        sprites.write(data)
 
 increment()
 increment()
