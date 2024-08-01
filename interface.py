@@ -4,184 +4,144 @@ def terminal():
     from Apps import api
     def title():
         api.clear()
-    listofcommands = ["help","search","quit","find"]
-    listofmodularcommands = ["download", "run", "delete"]
-    downloadargs = 1
-
-    # Display List of Commands
     
-    def displayLOC(LOC, modularlist):
-        for i in LOC:
-            print(i)
-        for i in modularlist:
-            print(i)
-    
-    # Display Downloadable Content
-    
-    def displaydownloads(list):
-        clist = list.text
-        clist.replace("__pycache__", "")
-        clist.replace("api.py", "")
-        clist.replace(".py", "")
-        print(clist)
-
-    # No command exception
-    
-    global nocommandexception
-    nocommandexception = False
+    commands = [
+        "help", "search", "quit", "find", "download", "run", "delete"
+    ]
+    command_help_messages = {
+        "help": "Displays the list of commands.\nSyntax: help\n",
+        "search": "Searches for a list of downloadable applications online.\nSyntax: search\n",
+        "quit": "Quits this program.\nSyntax: quit\n",
+        "find": "Lists all downloaded applications.\nSyntax: find\n",
+        "download": "Downloads an app from the internet.\nSyntax: download [app_name]\n",
+        "run": "Runs an app on your machine.\nSyntax: run [app_name]\n",
+        "delete": "Deletes an app from your machine.\nSyntax: delete [app_name]\n"
+    }
 
     # Imports
 
-    import os
-    try: import requests
-    except(ModuleNotFoundError): os.system("pip install requests")
-    from Apps import api
+    from os import listdir, remove, system
     import urllib.request
-
-    # Music command
-    
-    if os.path.exists("music") == False:
-        os.system("md music")
-    global p
-    p = None
-    
-    # Game Data Folder
-    
-    if os.path.exists("Apps\\gamedata") == False:
-        os.system("md Apps\\gamedata")
+    try: import requests
+    except(ModuleNotFoundError): system("pip install requests")
+    from Apps import api
     
     # Loading Ended
     
     # Main App
     
+    print("Remember: type \"help\" for a list of commands.")
+    api.wait_key("Enter")
+    
     while True:
         title()
         rawinput = input("> ")
         
-        cinput = rawinput.split()
+        cinput = str.lower(rawinput).split()
         
-        # Processing Input
+        if cinput == []:
+            continue
+        elif cinput[0] not in commands:
+            continue
         
-        if cinput != []:
-            if cinput[0] in listofcommands:
-            # Help Command
+        
+        if cinput[0] == "quit":
+            return 0
+        
+        
+        elif cinput[0] == "help":
+            for command in commands:
+                print(f"{command}: {command_help_messages[command]}")
+            api.wait_key("Enter")
+            continue
+        
+        
+        elif cinput[0] == "search":
+            try:
+                r = requests.get("https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/list.txt")
+            except Exception as err:
+                # bro tip: prefix all your errors with "User error".
+                print(f"User error: {err}")
+                api.wait_key("Enter")
+                continue
             
-                if cinput[0] == listofcommands[0]:
-                    print("You may use the following commands:")
-                    displayLOC(listofcommands, listofmodularcommands)
-                    input("Press Enter to go back to title screen...")
+            if not r.status_code:
+                print(f"Server returned {r.status_code}")
+                api.wait_key("Enter")
+                continue
             
-            # Find Downloadable Content Command
+            print("Here's a list of apps you can download:")
+            for line in r.text.split("\n"):
+                if line.startswith("#"):
+                    continue
+                print(line)
+            api.wait_key("Enter")
+            continue
+        
+        
+        elif cinput[0] == "find":
+            files = listdir("Apps")
+            files = api.stripimportant(files, ["api.py", "__pycache__", "gamedata"])
+            print("Here's a list of apps you have:")
             
-                elif cinput[0] == listofcommands[1]:
-                    try:
-                        r = requests.get('https://programhub.survivalist260.repl.co/static/list.txt')
-                        if r.status_code:
-                            displaydownloads(r)
-                            input("When you download one of these Apps, check the spelling Because it is case-sensitive.\n(I made it that way to piss you off, my pleasure. <3)")
-                    except(ConnectionError or ConnectionAbortedError or ConnectionRefusedError or ConnectionResetError):
-                        input("Yo yo yo, would love to find you something you can download,\nbut I can't connect to the internet!")
+            for file in files:
+                print(file)
             
-            # Quit Command
+            api.wait_key("Enter")
+            continue
+        
+        
+        elif cinput[0] == "download":
+            if not api.reachableindex(cinput, 1):
+                print(f"Syntax: download [app_name]")
+                api.wait_key("Enter")
+                continue
             
-                elif cinput[0] == listofcommands[2]:
-                    break
+            try:
+                urllib.request.urlretrieve(f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{cinput[1]}.py", f"Apps\\{cinput[1]}.py")
+            except Exception as err:
+                print(f"The following error occured: {err}")
             
-            # List Downloaded Content Command
+            print("App downloaded.")
+            api.wait_key("Enter")
+            continue
+        
+        
+        elif cinput[0] == "run":
+            if not api.reachableindex(cinput, 1):
+                print(f"Syntax: run [app_name]")
+                api.wait_key("Enter")
+                continue
             
-                elif cinput[0] == listofcommands[3]:
-                    downloaded = os.listdir("Apps/")
-                    for i in downloaded:
-                        if i != "api.py" and i != "__pycache__" and i != "gamedata":
-                            print(i.replace(".py", ""))
-                    input("\nThat's all the apps you have.")
+            files = listdir("Apps")
+            files = api.stripimportant(files, ["api.py", "__pycache__", "gamedata"])
             
-            # Music Command
+            if cinput[1] not in files:
+                print("No such app found. Did you make a typo?")
+                api.wait_key("Enter")
+                continue
+            
+            system(f"py Apps\\{cinput[1]}")
+            print("App executed.")
+            api.wait_key("Enter")
+            continue
                 
-                elif cinput[0] == listofcommands[4]:
-                    musicorno = input("Do you want to play music? (Y/N) > ")
-                    if str.lower(musicorno).startswith("y"):
-                        downloadorno = input("Do you want to download music? (Y/N) > ")
-                        if str.lower(downloadorno).startswith("y"):
-                            try:
-                                r = requests.get('https://programhub.survivalist260.repl.co/static/music/list.txt')
-                                if r.status_code:
-                                    displaydownloads(r)
-                                    print("When you download a file, check the spelling Because it is case-sensitive.\n(I made it that way to piss you off, my pleasure. <3)")
-                                    selection = input("Select a file > ")
-                                    if selection in r.text:
-                                        urllib.request.urlretrieve('https://programhub.survivalist260.repl.co/static/music/' + selection)
-                                        input("Greeeaaat, it should be downloaded now. If you see an Error, figure that out yourself.")
-                                    else: input("That's not something you can download.")
-                            except(ConnectionError or ConnectionAbortedError or ConnectionRefusedError or ConnectionResetError):
-                                input("Bro I can't connect to the server. Why? idk you figure that out :P")
-
-                        music = os.listdir("music")
-                        n = 1
-                        for i in music:
-                            print(str(n) + ". " + i)
-                        selection = input("Select your music of choice (with the file extension) > ")
-                        p = api.playaudio(os.path.dirname(__file__) + "\\music\\" + selection)
-                    elif str.lower(musicorno).startswith("n") and p == None:
-                        p.terminate()
-                        p = None
-                    elif str.lower(musicorno).startswith("y") and p != None:
-                        input("Cannot play more than one track at a time.")
-                    elif str.lower(musicorno).startswith("n") and p == None:
-                        input("Cannot stop the music when none is playing.")
-
-            elif cinput[0] in listofmodularcommands:
-            # Download Command
-            
-                if cinput[0] == listofmodularcommands[0]:
-                    if api.ismore(cinput, downloadargs):
-                        try:
-                            r = requests.get('https://programhub.survivalist260.repl.co/static/list.txt')
-                            if r.status_code and cinput[1] in r.text:
-                                r = requests.get('https://programhub.survivalist260.repl.co/static/' + cinput[1] + '.txt')
-                                cr = r.text
-                                with open("Apps/" + cinput[1] + ".py", "w") as file:
-                                    file.write(cr)
-                                    print("File Downloaded Successfully!\nIf you already had the file, it was overwritten.")
-                                    input("That's a good way to update.")
-                            else:
-                                input("Pfft, are you SUURE that's something on the list of things you can download? I knew you were an idiot.")
-                        except(ConnectionError):
-                            input("Unable to connect to the server.")
-                    else:
-                        print("Don't know what to download? try using \"search\".")
-
-            # Run Command
-            
-                elif cinput[0] == listofmodularcommands[1]:
-                    downloaded = os.listdir("Apps/")
-                    api.stripimportant(downloaded)
-                    cinput[1] = cinput[1] + ".py"
-                    if cinput[1] in downloaded:
-                        title()
-                        os.system("py Apps/" + cinput[1])
-                        input("\nThe App was executed. That's the result. Now go away by pressing Enter.")
-                    else:
-                        input("Is that a file though?\ntry \"find\" for a list of files you can run.")
-            
-            # Delete Command
-            
-                elif cinput[0] == listofmodularcommands[2]:
-                    downloaded = os.listdir("Apps/")
-                    api.stripimportant(downloaded)
-                    cinput[1] = cinput[1] + ".py"
-                    if cinput[1] in downloaded:
-                        os.remove("Apps/" + cinput[1])
-                        input("\nApp slashed out of existence. Press Enter to go back to Title..\n(I have to remember every time that it's one of you lot I'm talking to and do have to include that message)")
-                    else: input("Seems like you made a mistake in the file name. Try putting the exact name in.")
-                
-            
-            # What if it's gibberish?
-            
-            else: input("I don't think that's a command.\nLost? try typing \"help\".")
         
-        # What if it's nothing at all?
-        
-        else: input("Didn't type anything?\nLost? try typing \"help\".")
-    
-    return 0
+        elif cinput[0] == "delete":
+            if not api.reachableindex(cinput, 1):
+                print(f"Syntax: delete [app_name]")
+                api.wait_key("Enter")
+                continue
+            
+            files = listdir("Apps")
+            files = api.stripimportant(files, ["api.py", "__pycache__", "gamedata"])
+            
+            if cinput[1] not in files:
+                print("No such app found. Did you make a typo?")
+                api.wait_key("Enter")
+                continue
+            
+            remove(f"Apps\\{cinput[1]}")
+            print("App deleted.")
+            api.wait_key("Enter")
+            continue

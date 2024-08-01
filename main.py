@@ -31,8 +31,8 @@ def bootloader():
     typewriter("   | |___| |          _____|  |   ")
     typewriter("   |_______|         |________|   ")
     typewriter("                                  ")
-    import interface
     typewriter("           Loading...")
+    import interface
 
     system("title [ LuxOS ]")
     interface.terminal()

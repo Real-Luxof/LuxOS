@@ -37,8 +37,8 @@ class placeHolder():
 
 # Make some variables.
 
-# The colors list. This has three decoy blocks, red, green and
-# blue.
+# The colors list. This has three decoy blocks. Red, Green and
+# Blue.
 colors = [placeHolder("#FF0000"), placeHolder("#00FF00"), placeHolder("#0000FF")]
 
 # We will need frames to figure out the FPS of the program.
@@ -53,32 +53,34 @@ screen = api.setres()
 # Display is what we're going to display.
 display = []
 
+# quit_time is used to tell other threads when to stop.
+quit_time = False
+
 # This is the framecounter function. It declares frames to be a
 # global variable. Then, every second, it prints its value then
 # sets it to zero.
 def framecounter():
     global frames
-    # api.isquit() tells us if the player has clicked the X on
-    # the window or not.
-    while not api.isquit():
+    global quit_time
+    # quit_time will tell this thread when to stop.
+    while not quit_time:
         api.wait(1)
         print(f"fps: {frames}")
         frames = 0
 
-# We will make display a 200x200 array filled with some colors from the
-# colors variable.
+# We will make display a 200x200 array filled with some colors
+# from the colors variable.
 for timesY in range(200):
     display.append([])
     for timesX in range(200):
         display[-1].append(choice(colors))
 
-# This starts the framecounter thread. We don't need to make a
-# variable out of it, since it will terminate itself upon
-# api.isquit().
+# This starts the framecounter thread. It will stop when the
+# variable quit_time is True.
 Thread(target=framecounter).start()
 
 # api.isquit() tells us if the player has clicked the X on the
-# window or not, as explained previously.
+# window or not.
 while not api.isquit():
     # The api.display() function takes 4 variables.
 
@@ -96,3 +98,7 @@ while not api.isquit():
     # frame, which the framecounter thread prints and sets to
     # 0 every second. This is one way to measure FPS.
     frames += 1
+
+# Now set quit_time to True, so that the other threads know
+# to stop.
+quit_time = True

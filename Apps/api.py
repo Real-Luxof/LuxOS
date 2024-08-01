@@ -5,7 +5,7 @@ Since the rendering engine is very basic, you are given the tools to
 write your own rendering engine, namely "Surface", "draw_rectangle",
 "update_screen", and "Color".
 
-"powered by pygame and self-hatred :)"
+"powered by pygame and self-hatred, made with pain and suffering. :)"
     -Luxof
 """
 # Loading
@@ -58,6 +58,8 @@ except ModuleNotFoundError:
 # Speed benchmark decorator
 # totally did not copy and paste with some modifications
 def benchmark(func):
+    """This is a wrapper. Use it like @api.benchmark before a function declaration.
+    It prints the amount of time that function's execution took every time it executes."""
     
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -75,7 +77,7 @@ def benchmark(func):
 
 # Apply chaos
 def rand_num(seed: float) -> float:
-    """Generates a random number, but small differences in seed translate to the calculations going completely batshit crazy.
+    """Generates a random number with an overly complicated process where small differences in seed return big differences in output.
 
     Args:
         seed (float or int): The seed to work with. Same seed gives same output.
@@ -226,7 +228,7 @@ def putstringsaroundslots(inventory):
         else:
             # Just put the value there if it makes through none of the checks above.
             returner += (
-                f'"{returningkeys[slotkeyindex]}": {returningvalues(slotkeyindex)},'
+                f'"{returningkeys[slotkeyindex]}": {str(returningvalues[slotkeyindex])},'
             )
 
     # Return an ouput.
@@ -337,26 +339,6 @@ def comparelist(list1, list2):
     return False
 
 
-# Check for index in list.
-def ismore(list: list, index: int):
-    """Checks if {index} in {list} is reachable. IF not, returns False.
-
-    Args:
-        list (list): Read the summary.
-        index (index): Read the summary.
-
-    Returns: bool
-
-    """
-    try:
-        list[index]
-        return True
-    except IndexError:
-        return False
-    except KeyError:
-        return False
-
-
 # Check if the string is a math operator.
 def isoperator(
     string: str, operators: list[str] = ["+", "-", "*", "x", "%", "/", "//", "^"]
@@ -412,7 +394,18 @@ def ishex(string):
 
 
 # Check if an index in a list or dictionary exists.
-def reachableindex(liste, index):
+# this variable name "liste" bothers me.
+def reachableindex(liste, index: int) -> bool:
+    """Check if index in liste exists.
+
+    Args:
+        liste (Any indexable type): The variable to index into.
+        index (int): The index.
+
+    Returns:
+        bool: True if success, False if not.
+    """
+    
     if type(liste) == list:
         if isint(index):
             if index < len(liste):
@@ -420,6 +413,8 @@ def reachableindex(liste, index):
             else:
                 return False
         else:
+            # wtf is this
+            # this is questionable behaviour
             try:
                 liste.index(index)
                 return True
@@ -594,16 +589,6 @@ def display(
 # Pause thread until any key is pressed.
 def wait_any():
     return keyboard.read_key()
-
-
-# Check if any key is currently being pressed.
-def ispressed_any():
-    return keyboard.on_press()
-
-
-# Check if any key has just been released.
-def isreleased_any():
-    return keyboard.on_release()
 
 
 # Specific key -

@@ -1,28 +1,25 @@
-# Imports
-import os # Import the OS library, mainly used to execute commands like "cls" or "del".
-import urllib.request # Import urllib.request, used to download files.
+from urllib.request import urlretrieve
+from keyboard import read_key
+from os import mkdir
 
-# Announcing that the program has started.
-input("Yooo! wassup my man?\nHeard you wanted the newest version of LUX OS, and I've got it right here!\nTake it.\n- This program may accidentally make things worse if you don't have an Internet Connection. -")
+print("Update process initiated. Please know that the latest commit may be unstable, get fucked if it is.")
+print("If you do not have access to the internet your files may be fucked as I have not tested this.")
+print("No files outside of the ones being downloaded will be overwritten.")
+print("Are you sure you wish to update?")
+print("Press any key to continue..")
+read_key()
+print("Install process intiated.")
 
-# Deleting files to make space for new ones.
-os.system("del main.py") # Delete main.py aka the bootloader.
-os.system("del interface.py") # Delete interface.py aka the kernel.
-os.system("del Apps\\api.py") # Delete api.py aka the Engine.
-os.system("del Apps\\gamedata\\api.py") # Delete the Engine inside gamedata.
-os.system("del APIDocs.txt") # Delete APIDocs.txt aka the Engine Manual.
+def install(file: str, destination: str):
+    print(f"Downloading: {file}")
+    urlretrieve(f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/{file}", file)
 
-# Grabbing the site.
-site = "https://programhub.survivalist260.repl.co/static/"
+install("main.py", "main.py")
+install("interface.py", "interface.py")
+mkdir("Apps")
+mkdir("Apps\\gamedata")
+install("Apps/api.py", "Apps\\api.py")
 
-# Downloading stuff.
-urllib.request.urlretrieve(site + "LUXOS_MAIN.txt", "main.py") # Download the latest version of main.py aka the bootloader.
-urllib.request.urlretrieve(site + "LUXOS_INTERFACE.txt", "interface.py") # Download the latest version of interface.py aka the kernel.
-urllib.request.urlretrieve(site + "LUXOS_APIDOCS.txt", "APIDocs.txt") # Download the latest version of APIDocs.txt aka the Engine Manual.
-os.system("mkdir Apps") # Make the directory "Apps"
-os.system("md Apps\\gamedata") # Make the directory "gamedata" inside "Apps"
-urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps\\api.py") # Download the latest version of API.py aka the Engine to Apps.
-urllib.request.urlretrieve(site + "LUXOS_API.txt", "Apps\\gamedata\\api.py") # Download API.py to Apps/gamedata.
-
-# Announcing that the program has ended.
-input("Aight bro, peace!\m")
+print("Installation complete.")
+print("Press any key to exit..")
+read_key()

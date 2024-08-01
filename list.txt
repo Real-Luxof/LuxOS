@@ -1,0 +1,9 @@
+# Oops! You seem to have stumbled upon a weird file.
+# What's this? it's a list of all the apps because I could not be arsed to use PyGithub.
+calc.py
+enginedemo.py
+helloworld.py
+Integri.py
+Nori.py
+randomcombos.py
+somethingmoreinteresting.py

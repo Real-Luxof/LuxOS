@@ -1,7 +1,5 @@
 # LuxOS
 Just a project I made for fun.
 
-Currently it can't do many things, the most interesting part of it is Integri. Downloading doesn't work either.
-The Music command is incomplete, it will not work.
-
-Probably never gonna compile all libraries to .exe files so anyone with a Windows machine can run it.
+Also has a game engine made in pure p̶̶a̶i̶n̶ Python, complete with a world generation function and
+a very, very basic rendering engine. You are advised to make your own rendering engine.
