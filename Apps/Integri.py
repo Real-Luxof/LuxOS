@@ -64,16 +64,10 @@ increment()
 # Folder variables used for loading
 
 print("Loading path variables..")
-integrifiles = "gamedata\\integri"
-integrisaves = "gamedata\\integri\\saves"
-integrist = "gamedata\\integri\\soundtrack"
-integrisprites = "gamedata\\integri\\utilityfolder\\sprites.py"
-
-if __name__ != '__main__':
-    integrifiles = f"Apps\\{integrifiles}"
-    integrisaves = f"Apps\\{integrisaves}"
-    integrist = f"Apps\\{integrist}"
-    integrisprites = f"Apps\\{integrisprites}"
+integrifiles = "Apps\\gamedata\\integri"
+integrisaves = "Apps\\gamedata\\integri\\saves"
+integrist = "Apps\\gamedata\\integri\\soundtrack"
+integrisprites = "Apps\\gamedata\\integri\\utilityfolder\\sprites.py"
 
 increment()
 
@@ -1389,7 +1383,7 @@ while True:
                 print("Loading..")
                 # python stop fucking compiling the save to efficient bytecode just RUN IT
                 savename = str(Saves[int(selectedsave) - 1])
-                save = import_module(integrisaves + savename)
+                save = import_module(f"{integrisaves}\\{savename}")
                 plr = save.plr
                 if api.reachableindex(plr.inventory.slots, "slot26"):
                     del plr.inventory.slots["slot26"]

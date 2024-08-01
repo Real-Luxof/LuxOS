@@ -1,5 +1,10 @@
 def terminal():
-    # Loading
+
+    from os import listdir, remove, system
+    import urllib.request
+    try: import requests
+    except(ModuleNotFoundError): system("pip install requests")
+    from Apps import api
 
     from Apps import api
     def title():
@@ -17,16 +22,6 @@ def terminal():
         "run": "Runs an app on your machine.\nSyntax: run [app_name]\n",
         "delete": "Deletes an app from your machine.\nSyntax: delete [app_name]\n"
     }
-
-    # Imports
-
-    from os import listdir, remove, system
-    import urllib.request
-    try: import requests
-    except(ModuleNotFoundError): system("pip install requests")
-    from Apps import api
-    
-    # Loading Ended
     
     # Main App
     
@@ -116,8 +111,6 @@ def terminal():
             
             files = listdir("Apps")
             files = api.stripimportant(files, ["api.py", "__pycache__", "gamedata"])
-            print(files)
-            print(cinput)
             
             if cinput[1] not in files:
                 print("No such app found. Did you make a typo?")

@@ -252,7 +252,7 @@ def install(module):
 
 # Delete a file
 def delete(file):
-    os.system("del gamedata\\" + file)
+    os.system("del Apps\\gamedata\\" + file)
 
 
 # Math shit -
