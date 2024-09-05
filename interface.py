@@ -91,17 +91,24 @@ def terminal():
         
         
         elif cinput[0] == "download":
+            latest_trace = "reachableindex"
+            
             if not api.reachableindex(cinput, 1):
                 print(f"Syntax: download [app_name]")
                 api.wait_key("Enter")
                 continue
             
             try:
+                latest_trace = "list.txt"
+                
                 req = requests.get("https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/list.txt").text
                 if cinput[1] not in req:
                     raise NameError("You cannot download that.")
                 
-                urllib.request.urlretrieve(f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{cinput[1]}.py", f"{cinput[1]}.py")
+                latest_trace = "retrieving app"
+                urllib.request.urlretrieve(f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{cinput[1]}", f"{cinput[1]}")
+                
+                latest_trace = "dependencies getting"
                 req: dict = loads(requests.get("https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/dependencies.json").text)
                 
                 if cinput[1] not in req.keys():
@@ -109,21 +116,28 @@ def terminal():
                     api.wait_key("Enter")
                     continue
                 
+                latest_trace = "keyerror maybe?"
                 dependency_list = req[cinput[1]]
                 
                 for dependency in dependency_list:
                     if dependency[0] == "folder":
+                        latest_trace = "folder " + dependency[1]
+                        
                         api.checkandmake(dependency[1])
+                    
                     elif dependency[0] == "file":
+                        latest_trace = "file " + dependency[1] + " " + dependency[2]
+                        
                         urllib.request.urlretrieve(
                             f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{dependency[1]}",
                             dependency[2]
                         )
                 
+                print("App downloaded.")
+                
             except Exception as err:
-                print(f"The following error occured: {err}")
+                print(f"The following error occured: {err}\ntrace: {latest_trace}")
             
-            print("App downloaded.")
             api.wait_key("Enter")
             continue
         

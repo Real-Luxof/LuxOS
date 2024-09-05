@@ -10,8 +10,8 @@
         ["folder", "gamedata\\integri"],
         ["folder", "gamedata\\integri\\saves"],
         ["folder", "gamedata\\integri\\utilityfolder"],
-        ["file", "gamedata/integri/utilityfolder/blocks.py", "gamedata\\integri\\utilityfolder\\"],
-        ["file", "gamedata/integri/utilityfolder/generateworldpackage.py", "gamedata\\integri\\utilityfolder\\"],
-        ["file", "gamedata/integri/utilityfolder/sprites.py", "gamedata\\integri\\utilityfolder\\"]
+        ["file", "gamedata/integri/utilityfolder/blocks.py", "gamedata\\integri\\utilityfolder\\blocks.py"],
+        ["file", "gamedata/integri/utilityfolder/generateworldpackage.py", "gamedata\\integri\\utilityfolder\\generateworldpackage.py"],
+        ["file", "gamedata/integri/utilityfolder/sprites.py", "gamedata\\integri\\utilityfolder\\sprites.py"]
     ]
 }
