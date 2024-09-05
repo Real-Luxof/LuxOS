@@ -126,7 +126,7 @@ def terminal():
                         api.checkandmake(dependency[1])
                     
                     elif dependency[0] == "file":
-                        latest_trace = "file " + dependency[1] + " " + dependency[2]
+                        latest_trace = f"file {dependency[1]} {dependency[2]}"
                         
                         urllib.request.urlretrieve(
                             f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{dependency[1]}",
