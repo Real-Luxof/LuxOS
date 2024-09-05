@@ -1,0 +1,17 @@
+{
+    "what's this?": "a dependency list.",
+
+    "ColorWars.py": [
+        ["folder", "gamedata\\colorwars"],
+        ["file", "gamedata/colorwars/ColorWarsTitleIcon.png", "gamedata\\colorwars\\ColorWarsTitleIcon.png"]
+    ],
+
+    "Integri.py": [
+        ["folder", "gamedata\\integri"],
+        ["folder", "gamedata\\integri\\saves"],
+        ["folder", "gamedata\\integri\\utilityfolder"],
+        ["file", "gamedata/integri/utilityfolder/blocks.py", "gamedata\\integri\\utilityfolder\\"],
+        ["file", "gamedata/integri/utilityfolder/generateworldpackage.py", "gamedata\\integri\\utilityfolder\\"],
+        ["file", "gamedata/integri/utilityfolder/sprites.py", "gamedata\\integri\\utilityfolder\\"]
+    ]
+}

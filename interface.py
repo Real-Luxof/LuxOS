@@ -1,12 +1,15 @@
 def terminal():
 
-    from os import listdir, remove, system
+    from os import listdir, remove, system, chdir
     import urllib.request
+    from Apps import api
+    from json import loads
     try: import requests
     except(ModuleNotFoundError): system("pip install requests")
-    from Apps import api
 
     from Apps import api
+    chdir("Apps")
+    
     def title():
         api.clear()
     
@@ -76,7 +79,7 @@ def terminal():
         
         
         elif cinput[0] == "find":
-            files = listdir("Apps")
+            files = listdir()
             files = api.stripimportant(files, ["api.py", "__pycache__", "gamedata"])
             print("Here's a list of apps you have:")
             
@@ -94,7 +97,29 @@ def terminal():
                 continue
             
             try:
-                urllib.request.urlretrieve(f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{cinput[1]}.py", f"Apps\\{cinput[1]}.py")
+                req = requests.get("https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/list.txt").text
+                if cinput[0] not in req:
+                    raise NameError("You cannot download that.")
+                
+                urllib.request.urlretrieve(f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{cinput[1]}.py", f"{cinput[1]}.py")
+                req: dict = loads(requests.get("https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/dependencies.json").text)
+                
+                if cinput[1] not in req.keys():
+                    print("App downloaded.")
+                    api.wait_key("Enter")
+                    continue
+                
+                dependency_list = req[cinput[1]]
+                
+                for dependency in dependency_list:
+                    if dependency[0] == "folder":
+                        api.checkandmake(dependency[1])
+                    elif dependency[0] == "file":
+                        urllib.request.urlretrieve(
+                            f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{dependency[1]}",
+                            dependency[2]
+                        )
+                
             except Exception as err:
                 print(f"The following error occured: {err}")
             
@@ -109,7 +134,7 @@ def terminal():
                 api.wait_key("Enter")
                 continue
             
-            files = listdir("Apps")
+            files = listdir()
             files = api.stripimportant(files, ["api.py", "__pycache__", "gamedata"])
             
             if cinput[1] not in files:
@@ -117,7 +142,7 @@ def terminal():
                 api.wait_key("Enter")
                 continue
             
-            system(f"py Apps\\{cinput[1]}")
+            system(f"py {cinput[1]}")
             print("App executed.")
             api.wait_key("Enter")
             continue
@@ -129,7 +154,7 @@ def terminal():
                 api.wait_key("Enter")
                 continue
             
-            files = listdir("Apps")
+            files = listdir()
             files = api.stripimportant(files, ["api.py", "__pycache__", "gamedata"])
             
             if cinput[1] not in files:
@@ -137,7 +162,7 @@ def terminal():
                 api.wait_key("Enter")
                 continue
             
-            remove(f"Apps\\{cinput[1]}")
+            remove(f"{cinput[1]}")
             print("App deleted.")
             api.wait_key("Enter")
             continue

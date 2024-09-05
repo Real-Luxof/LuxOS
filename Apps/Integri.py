@@ -64,16 +64,16 @@ increment()
 # Folder variables used for loading
 
 print("Loading path variables..")
-integrifiles = "Apps\\gamedata\\integri"
-integrisaves = "Apps\\gamedata\\integri\\saves"
-integrist = "Apps\\gamedata\\integri\\soundtrack"
-integrisprites = "Apps\\gamedata\\integri\\utilityfolder\\sprites.py"
+integrifiles = "gamedata\\integri"
+integrisaves = "gamedata\\integri\\saves"
+integrist = "gamedata\\integri\\soundtrack"
+integrisprites = "gamedata\\integri\\utilityfolder\\sprites.py"
 
 increment()
 
 # Make the savegame function
 print("Making savegame function..")
-def savegame(savename, world, worldtype, plr, single):
+def savegame(savename: str, world: list[list[api.block]], worldtype: int, plr: api.entity, single: bool) -> None:
     if single == True: # If single is equal to True,
         with open(integrisaves + "\\" + savename + ".py", "w+") as f: # Open the save from the saves folder in the integri game files folder and call it "f".
             # Define what will go in there in a variable called "data", then write it to the file.
@@ -616,7 +616,7 @@ def generateworld(worldtype):
 # Check sprites.py.
 print("Checking sprites.py..")
 if not api.checkpath(integrisprites):
-    with open(integrisprites, "w+") as sprites:
+    with open(integrisprites, "w+") as sprites_file:
         data = """from ...integri.utilityfolder.blocks import *
 from api import Surface, Color
 
@@ -826,7 +826,7 @@ for key in sprites.keys():
     
     sprites[key] = new_sprite
 """
-        sprites.write(data)
+        sprites_file.write(data)
 
 increment()
 increment()
@@ -869,13 +869,13 @@ title = [ # Define the title characters and their colors.
     "        " + Back.RED + " |__________| " + Back.GREEN + " |_|    \\_\\ " + Back.BLUE + " |_|" + Style.RESET_ALL,
     "\n"
 ]
-def displaytitle(): # Define a function named displaytitle.
+def displaytitle() -> None: # Define a function named displaytitle.
     api.fullclear() # Clear the screen.
     for row in title: # Check, and
         print(row) # Print out every row in the title variable.
 
 print("Making function Add If Reachable (air)")
-def air(listt, index, index2): # "air" stands for "Add If Reachable"
+def air(listt, index, index2) -> api.block: # "air" stands for "Add If Reachable"
     if index >= 0 and index2 >= 0:
         try:
             return listt[index][index2]
@@ -923,7 +923,7 @@ originals = []
 
 
 print("Loading function framecounter..")
-def framecounter():
+def framecounter() -> None:
     global frames
     while not quittime:
         api.wait(1)
@@ -932,6 +932,7 @@ def framecounter():
 
 
 print("Loading function applylightingsystem..")
+# no.
 def applylightingsystem(world):
     # Set the top of the world's light level to 15.
     for block in world[0]:
@@ -1008,7 +1009,7 @@ def raycast(target_X: int, target_Y: int) -> None:
 
 
 print("Loading function raycast_rays..")
-def raycast_rays():
+def raycast_rays() -> None:
     global casting_world
     length_of_display = len(casting_world)
     
@@ -1027,7 +1028,7 @@ print("Loading function calc_healh_pixel..")
 def calc_health_pixel(
     health: int,
     required_health: int
-):
+) -> bool:
     if health >= required_health:
         return True
     else:
@@ -1086,7 +1087,7 @@ print("Loading function load_inventory..")
 def load_inventory(
     display: list[list],
     inventory: api.inventory
-):
+) -> list[list[api.block | placeholder_dry]]:
     """Loads the 25x25 inventory of the player onto a display.
 
     Args:
@@ -1130,7 +1131,7 @@ def stick_to_display(
     array: list[list[placeholder_dry]],
     display: list[list],
     starting_XY: tuple
-) -> list[list]:
+) -> list[list[block | placeholder_dry]]:
     """Puts an array into a display.
 
     Args:
@@ -1156,7 +1157,7 @@ def stick_to_display(
 
 
 print("Loading function displaythread..")
-def displaythread(screen):
+def displaythread(screen) -> None:
     global casting_world
     global originals
     global quittime
@@ -1407,7 +1408,7 @@ while True:
             framecounterfunc = Thread(target=framecounter)
             framecounterfunc.start()
 
-            gravmltp = 0
+            gravmltp = 0.0
             holdingW = False
             specialmode = False
             newdata = [world, plr.replace]
@@ -1491,7 +1492,7 @@ while True:
                 if not holdingW:
                     gravmltp += 0.3
             else:
-                gravmltp = 0
+                gravmltp = 0.0
             
             for i in range(floor(gravmltp)):
                 newdata = plr.move("s", newdata[0], newdata[1], 1)

@@ -5,6 +5,8 @@ Since the rendering engine is very basic, you are given the tools to
 write your own rendering engine, namely "Surface", "draw_rectangle",
 "update_screen", and "Color".
 
+Also gives you pygame in case you need something the engine doesn't have.
+
 "powered by pygame and self-hatred, made with pain and suffering. :)"
     -Luxof
 """
@@ -16,11 +18,10 @@ import random
 import multiprocessing
 from math import floor
 from functools import wraps
-from typing import Iterable
-from typing import Collection
-from typing import NamedTuple
+from typing import Iterable, Collection, NamedTuple, Any
 from sys import exit as theactualsysexit
 
+# fuck you, you WILL install what i want.
 try:
     from playsound import playsound
 except ModuleNotFoundError:
@@ -143,17 +144,19 @@ def scale_2dlist(data: list, extendby_Y: int = 2, extendby_X: int = 2) -> list:
             ]  # Duplicate each item in the row
             result.append(new_row)  # Duplicate each row
             # weird method of adding new lists cuz python stores it weird if i don't do this
+            # yeah pointer bs
     return result
 
 
 # Check if a file exists. If it doesn't, make it.
 def checkandmake(pathtofile: str) -> bool:
-    """Check if a path exists. If it doesn't, make it and return False."""
+    """Check if a path exists. If it doesn't, make it as a directory and return False."""
     if not os.path.exists(pathtofile):
-        os.system(f"md {pathtofile}")
+        os.mkdir(pathtofile)
         return False
     else:
         return True
+
 
 # Check if a file exists. If it doesn't, return False.
 def checkpath(pathtofile: str) -> bool:
@@ -246,18 +249,22 @@ def reverse_if_true(some_list: list, boolean: bool):
 
 
 # Install a module
-def install(module):
+def install(module: str) -> None:
+    """Installs a module. You should probably not use this."""
+    # god knows only i will ever work on this project, may as well
+    # be unsafe as hell lmao
     os.system("pip install " + module)
 
 
 # Delete a file
-def delete(file):
-    os.system("del Apps\\gamedata\\" + file)
+def delete(file: str) -> None:
+    """Deletes a file from the gamedata folder. You should probably not use this either."""
+    os.remove("Apps\\gamedata\\" + file)
 
 
 # Math shit -
 # Calculate when the operator is a string.
-def calculate(num1, op, num2):
+def calculate(num1: int, op: str, num2: int) -> int:
     num1 = int(num1)
     num2 = int(num2)
     if op == "+":
@@ -269,7 +276,7 @@ def calculate(num1, op, num2):
     elif op == "%":
         return num1 % num2
     elif op == "^":
-        return num1 ^ num2
+        return num1 ** num2
     elif op == "/":
         return num1 / num2
 
@@ -287,6 +294,7 @@ def average(iterable: list, return_float: bool=False) -> int:
             if return_float was set to False.
         (float): The average of all the numbers in the list. Returned if the average was a float.
     """
+    # i still remember when me and my classmates' faces lit up at seeing "Sigma X" written on the board.
     sigma_iterable = sum(iterable)
     number_of_elements = len(iterable)
     if return_float:
@@ -296,12 +304,12 @@ def average(iterable: list, return_float: bool=False) -> int:
 
 
 # Clear Screen.
-def fullclear():
-    """Like os.system('cls'), but with no catch."""
+def fullclear() -> None:
+    """Like os.system('cls'), but without the LuxOS logo. Use this for your own."""
     os.system("cls")
 
 
-def clear():
+def clear() -> None:
     """Like os.system('cls'), but adds the LuxOS logo."""
     os.system("cls")
     print("  _          _    _     _      _  ")
@@ -321,7 +329,8 @@ def clear():
 
 
 # Wait.
-def wait(secs):
+def wait(secs: int | float) -> None:
+    """It's like time.sleep."""
     time.sleep(secs)
 
 # Time.
@@ -332,70 +341,37 @@ def engine_time() -> float:
 # - The Checkers -
 
 # Check if one list has an element of the other.
-def comparelist(list1, list2):
+def comparelist(list1: list, list2: list) -> bool:
+    """Check if one list has at least one element of the other."""
     for i in list1:
         if i in list2:
             return True
     return False
 
 
-# Check if the string is a math operator.
-def isoperator(
-    string: str, operators: list[str] = ["+", "-", "*", "x", "%", "/", "//", "^"]
-) -> bool:
-    """Checks if {string} is one of {operators}.
-
-    Args:
-        string (str): Check the summary.
-        operators (list[str]): Check the summary. Defaults to ["+", "-", "*", "x", "%", "/", "//", "^"].
-
-    Returns: bool
-    """
-    if string in operators:
-        return True
-    else:
-        return False
-
-
-# Check if the variable is a list.
-def islist(var):
-    if type(var) == list:
-        return True
-    else:
-        return False
-
-
-# Check if the variable is a string.
-def isstring(var):
-    if type(var) == str:
-        return True
-    else:
-        return False
-
-
 # Check if the string is an integer.
-def isint(string):
+def isint(string: str) -> bool:
+    """It's so obvious."""
     try:
         int(string)
         return True
-    except ValueError:
-        return False
-    except TypeError:
+    except Exception:
         return False
 
 
 # Check if the string is a hex code.
-def ishex(string):
+def ishex(string: str) -> bool:
+    """You don't need an explanation for this, do you?"""
     try:
         pygame.Color(string)
         return True
-    except ValueError:
+    except Exception:
         return False
 
 
 # Check if an index in a list or dictionary exists.
 # this variable name "liste" bothers me.
-def reachableindex(liste, index: int) -> bool:
+def reachableindex(liste: Any | list, index: Any | int) -> bool:
     """Check if index in liste exists.
 
     Args:
@@ -434,20 +410,20 @@ def reachableindex(liste, index: int) -> bool:
 
 
 # Playing audio -
-def playaudio(relativepathtofile: str):
-    path = f"{os.path.dirname(__file__)}\\{relativepathtofile}"
-    p = multiprocessing.Process(target=playsound, args=[path])
-    p.start()
-    return p
+#def playaudio(relativepathtofile: str):
+#    path = f"{os.path.dirname(__file__)}\\{relativepathtofile}"
+#    p = multiprocessing.Process(target=playsound, args=[path])
+#    p.start()
+#    return p
 
 
-def playaudioabs(absolutepathtofile: str):
-    p = multiprocessing.Process(target=playsound, args=[absolutepathtofile])
-    p.start()
-    return p
+#def playaudioabs(absolutepathtofile: str):
+#    p = multiprocessing.Process(target=playsound, args=[absolutepathtofile])
+#    p.start()
+#    return p
 
 
-# To stop the audio, use p.terminate()
+# To stop the audio, use p.terminate().
 
 # Display -
 
@@ -489,7 +465,7 @@ def draw_rectangle(
 
 
 # literally just pygame.Color
-def Color(hex_code):
+def Color(hex_code: str):
     """Takes a hex code (like #0000FF) and turns it into an RGB tuple."""
     return pygame.Color(hex_code)
 
@@ -536,7 +512,7 @@ def color_with_light(hex_color: str, light_level: int, max_light_level: int) -> 
 
 # The maion function that puts shit on screen.
 def display(
-    screen, newscreen: list[list], widthofeachblock: int, heightofeachblock: int
+    screen: pygame.display, newscreen: list[list[Any]], widthofeachblock: int, heightofeachblock: int
 ):
     """screen is obtained through api.setres
     newscreen is a list of lists, with higher indexes more at the bottom of the map.
@@ -582,34 +558,39 @@ def display(
     # the lack of triple quotes telling me what these functions do irritates me
 
 
-# Keyboard functions
+# input funcs
 
 
 # Any key -
 # Pause thread until any key is pressed.
-def wait_any():
+def wait_any() -> str:
+    """Pauses the thread until any key is pressed."""
     return keyboard.read_key()
 
 
 # Specific key -
 # Pause thread until key is pressed.
-def wait_key(key):
+def wait_key(key: str) -> bool:
+    """Pauses the thread until a specific key is pressed."""
     return keyboard.wait(key)
 
 
 # Check if key is currently being pressed.
-def ispressed_key(key):
+def ispressed_key(key: str) -> bool:
+    """Checks if a specific key is currently being pressed."""
     return keyboard.is_pressed(key)
 
 
 # Check if key has just been released.
-def isreleased_key(key):
+def isreleased_key(key: str) -> bool:
+    """Checks if a specific key has just been released."""
     return keyboard.on_release_key(key)
 
 
 # The X -
 # Check if the user clicked the X on the top-right of the window.
-def isquit():
+def isquit() -> bool:
+    """Checks if the user clicked the X on the top-right of the window."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return True
@@ -617,12 +598,14 @@ def isquit():
 
 
 # Close the window
-def closewindow():
+def closewindow() -> None:
+    """Closes the window."""
     pygame.quit()
 
 
 # Close the entire program
-def sysexit():
+def sysexit() -> None:
+    """It's just sys.exit."""
     theactualsysexit()
 
 
@@ -694,7 +677,7 @@ class inventory:
             self.slotnum -= 1
 
     # Make the inventory bigger
-    def enlarge(self, slotnum: int, slotdata):
+    def enlarge(self, slotnum: int, slotdata: list[Any]):
         """Make the inventory bigger."""
         for slot_index in range(self.slotnum, slotnum + self.slotnum):
             
@@ -1626,13 +1609,13 @@ def generate(
 
 # Actually generate a world (but faster)
 def optimized_generate(
-    seed: str,
+    seed: str | None,
     width: int,
     height: int,
     
-    air: block,
+    air: Any | block,
     
-    stone: block,
+    stone: Any | block,
     
     limit: Limit = Limit(100, 700),
     
@@ -1690,7 +1673,7 @@ def optimized_generate(
     
     next_block_limits: Limit = Limit(-1, 1),
         
-    starting_y: int = None, # my reasoning for this is that starting_Y will be randomly chosen if None.
+    starting_y: int | None = None, # starting_Y will be randomly chosen if None.
     terrain_types: list = [mountain_terrain_type, inverse_mountain_terrain_type, plateau_terrain_type]
 ):
     """Time to toss the so-called "epitome of my labor" in the trash and make a better one.
@@ -1963,7 +1946,7 @@ def turnarraytoblocks(arrayofblocks: list = [[block], [block]]) -> list:
 
 
 # Initiate an actual window to display stuff.
-def initiatewindow():
+def initiatewindow() -> None:
     """Initalizes everything necessary to make windows.
 
     Returns: Nothing.
@@ -1972,7 +1955,7 @@ def initiatewindow():
 
 
 # Close the window.
-def closewindow():
+def closewindow() -> None:
     """Closes all windows.
 
     Returns: Nothing. It just closes all windows.
@@ -1981,3 +1964,4 @@ def closewindow():
 
 
 multiprocessing.freeze_support()
+__all__ = ['bresenham', 'pygame']
