@@ -98,7 +98,7 @@ def terminal():
             
             try:
                 req = requests.get("https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/list.txt").text
-                if cinput[0] not in req:
+                if cinput[1] not in req:
                     raise NameError("You cannot download that.")
                 
                 urllib.request.urlretrieve(f"https://raw.githubusercontent.com/Real-Luxof/LuxOS/main/Apps/{cinput[1]}.py", f"{cinput[1]}.py")
